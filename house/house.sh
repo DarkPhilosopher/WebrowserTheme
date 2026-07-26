@@ -35,6 +35,7 @@ VIEW=2d          # 2d (flat art) | 3d (rotatable wireframe)
 RX=20            # 3D view rotation about X (degrees) — LOCAL to your phone
 RY=-30           # 3D view rotation about Y (degrees)
 RZ=0             # 3D view rotation about Z (degrees)
+ZOOM=1           # 3D view zoom factor (1 = default) — LOCAL to your phone
 
 MODE=solo        # solo | net
 DIR=""           # houses/<id> (net mode)
@@ -100,7 +101,7 @@ fillchar() { case "$WALLS" in brick) printf '#';; wood) printf '=';; stone) prin
 build_3d() {  # echo a rotatable 3D wireframe of the house (math done in awk)
     command -v awk >/dev/null 2>&1 || { echo "(3D view needs awk — in Termux: pkg install gawk)"; return; }
     awk -v rx="$RX" -v ry="$RY" -v rz="$RZ" -v roof="$ROOF" -v chim="$CHIMNEY" \
-        -v door="$DOOR" -v win="$WINDOWS" -v W=48 -v H=24 -v SX=5.0 -v SY=2.4 '
+        -v door="$DOOR" -v win="$WINDOWS" -v W=48 -v H=24 -v SX=5.0 -v SY=2.4 -v zm="$ZOOM" '
     function abs(v){ return v<0?-v:v }
     function addedge(a,b,c,d,e,f){ ne++; X1[ne]=a;Y1[ne]=b;Z1[ne]=c;X2[ne]=d;Y2[ne]=e;Z2[ne]=f }
     function addcube(x0,y0,z0,x1,y1,z1){
@@ -121,6 +122,7 @@ build_3d() {  # echo a rotatable 3D wireframe of the house (math done in awk)
     }
     BEGIN{
         PI=atan2(0,-1); rxr=rx*PI/180; ryr=ry*PI/180; rzr=rz*PI/180;
+        if(zm+0<=0) zm=1; SX=SX*zm; SY=SY*zm;     # apply zoom
         bx=2; by=1.5; bz=1;                       # body half-extents
         addcube(-bx,-by,-bz, bx,by,bz);           # walls
         if(roof=="peak"){ ap=3;
@@ -217,7 +219,7 @@ render() {
         "$ROOF" "$WALLS" "$DOOR" "$WINDOWS" "$CHIMNEY" "$GROUND"
     local line
     if [ "$VIEW" = 3d ]; then
-        printf '  3D view  rot x=%s y=%s z=%s   (rotate x 45 · rotate y 22.5 · spin · 2d)\n\n' "$RX" "$RY" "$RZ"
+        printf '  3D view  rot x=%s y=%s z=%s  zoom=%s   (rotate y 45 · zoom in · spin · 2d)\n\n' "$RX" "$RY" "$RZ" "$ZOOM"
         while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_3d)
     else
         while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_lines)
@@ -237,30 +239,38 @@ render() {
 # ===========================================================================
 show_help() {
     cat <<'EOF'
-house — commands
-================
-  roof    <peak|flat|dome>          Choose the roof shape.
-  walls   <brick|wood|stone>        Choose the wall material.
-  door    <single|double|arch|none> Choose the front door.
-  windows <0-4>                     How many windows.
-  chimney <on|off>                  Add or remove the chimney.
-  ground  <grass|fence|none>        What surrounds the house.
+house — all commands
+====================
 
-  3d                                Switch to the rotatable 3D wireframe view.
-  2d                                Switch back to the flat picture.
-  rotate  <x|y|z> <degrees>         Turn the 3D view (e.g. rotate y 45,
-                                    rotate x 22.5, rotate z -45). Also: rotate reset.
-  spin                              Auto-turn the house one full spin.
+BUILD THE HOUSE (these sync to everyone in an online game)
+  roof    <peak|flat|dome>           Choose the roof shape.
+  walls   <brick|wood|stone>         Choose the wall material.
+  door    <single|double|arch|none>  Choose the front door.
+  windows <0-4>                      How many windows.
+  chimney <on|off>                   Add or remove the chimney.
+  ground  <grass|fence|none>         What surrounds the house.
 
-  sync                              Pull the latest shared house (see others).
-  watch                             Live view; refreshes until you press Enter.
-  show                              Redraw now.
-  save [file]                       Save the ASCII art to a file (house.txt).
-  help                              Show this list.
-  quit | exit                       Leave.
+VIEW & CAMERA (local to your phone; does not change what others see)
+  3d                                 Rotatable 3D wireframe view.
+  2d                                 Flat picture view.
+  rotate  <x|y|z> <degrees>          Turn the 3D view any angle
+                                     (rotate y 45 · rotate x 22.5 · rotate z -45).
+  rotate  reset                      Recenter the 3D angles.
+  zoom    <in|out|reset|number>      Zoom the 3D view (zoom in · zoom out · zoom 1.5).
+  spin                               Auto-turn the house one full spin.
+  show | draw                        Redraw now (also pulls in an online game).
 
-Everyone editing the same house sees each other's parts as they're pushed.
-Different parts (roof vs walls vs door...) never collide, so build together!
+MULTIPLAYER (online games only)
+  sync                               Pull the latest shared house (see others).
+  watch                              Live view; refreshes until you press Enter.
+
+OTHER
+  save [file]                        Save the ASCII art to a file (default house.txt).
+  help | ?                           Show this list.
+  quit | exit                        Leave.
+
+Started from the shell, the script also takes:
+  house.sh new <id> | join <id> <name> | watch <id> | solo | help
 EOF
 }
 
@@ -293,6 +303,7 @@ do_cmd() {
         3d)      VIEW=3d ;;
         2d)      VIEW=2d ;;
         rotate|rot) do_rotate "${1:-}" "${2:-}" || return ;;
+        zoom)    do_zoom "${1:-}" || return ;;
         spin)    do_spin; return ;;
         sync)    [ "$MODE" = net ] && { pull; load_state; } ;;
         watch)   cmd_watch; return ;;
@@ -317,6 +328,20 @@ do_rotate() {
         x) RX="$(awk "BEGIN{printf \"%g\", ($RX+($deg))%360}")" ;;
         y) RY="$(awk "BEGIN{printf \"%g\", ($RY+($deg))%360}")" ;;
         z) RZ="$(awk "BEGIN{printf \"%g\", ($RZ+($deg))%360}")" ;;
+    esac
+    return 0
+}
+
+# zoom the local 3D view.  `zoom in`, `zoom out`, `zoom reset`, or `zoom 1.5`.
+do_zoom() {
+    local arg="$1"
+    VIEW=3d
+    case "$arg" in
+        in|'+')  ZOOM="$(awk "BEGIN{z=$ZOOM*1.3; if(z>6)z=6; printf \"%g\", z}")" ;;
+        out|'-') ZOOM="$(awk "BEGIN{z=$ZOOM/1.3; if(z<0.3)z=0.3; printf \"%g\", z}")" ;;
+        reset|'') ZOOM=1 ;;
+        *[!0-9.]*) echo "zoom: in | out | reset | <number>   e.g.  zoom in   zoom 1.5"; return 1 ;;
+        *) ZOOM="$(awk "BEGIN{z=$arg; if(z<0.3)z=0.3; if(z>6)z=6; printf \"%g\", z}")" ;;
     esac
     return 0
 }

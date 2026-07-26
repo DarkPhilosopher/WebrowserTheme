@@ -81,6 +81,7 @@ ground  grass | fence | none
 rotate  <x|y|z> <degrees>   turn the 3D view, any angle
                             e.g. rotate y 45 · rotate x 22.5 · rotate z -45
                             rotate reset   puts the view back
+zoom    <in|out|reset|num>  zoom the 3D view in or out (zoom in · zoom out · zoom 1.5)
 spin    auto-turn the house one full spin
 
 sync    pull the latest shared house (see others' changes)
@@ -101,6 +102,7 @@ and chimney are all real 3D geometry), then turn it to any angle:
 rotate y 45      # spin 45 degrees around the vertical axis
 rotate x 22.5    # tip it up 22.5 degrees
 rotate z -45     # roll it
+zoom in          # move the camera closer (zoom out to back away)
 spin             # one automatic full turn
 2d               # back to the flat picture
 ```
