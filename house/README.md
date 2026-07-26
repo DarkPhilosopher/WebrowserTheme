@@ -116,6 +116,34 @@ Each command you enter is pushed to the channel, and the house redraws with
 everyone's latest parts. Use `watch` to sit back and see the house change live as
 others build.
 
+## Colored display
+
+The house draws in color by default (brick = red, wood = tan, stone = gray,
+roof = brown, windows = cyan, grass = green). Turn it off/on any time with:
+
+```
+color off
+color on
+```
+
+Color is automatically skipped when output isn't a terminal (e.g. piped to a
+file), so `save` still writes plain ASCII.
+
+## Touch buttons above the keyboard (Termux)
+
+`house/termux.properties` adds a button bar over the Termux keyboard with
+one-tap house commands (**3D**, **2D**, **Z+/Z-** zoom, **SPIN**, **Y+45 / X+22**
+rotate, **SYNC**, **HELP**). Each button types the command and presses Enter.
+
+```bash
+mkdir -p ~/.termux
+cp house/termux.properties ~/.termux/termux.properties
+# then long-press in Termux -> "Reload settings"  (or restart Termux)
+```
+
+(If you already have a `~/.termux/termux.properties`, back it up first — this
+replaces the extra-keys row.)
+
 ## Want to try the display first, no setup?
 
 ```bash

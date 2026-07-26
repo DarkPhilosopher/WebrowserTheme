@@ -36,6 +36,7 @@ RX=20            # 3D view rotation about X (degrees) — LOCAL to your phone
 RY=-30           # 3D view rotation about Y (degrees)
 RZ=0             # 3D view rotation about Z (degrees)
 ZOOM=1           # 3D view zoom factor (1 = default) — LOCAL to your phone
+COLOR=on         # on | off — colored display (auto-disabled when not a terminal)
 
 MODE=solo        # solo | net
 DIR=""           # houses/<id> (net mode)
@@ -208,22 +209,55 @@ build_lines() {  # echo the raw ASCII art lines (no chrome)
     printf '%s\n' "${out[@]}"
 }
 
+# colorize(): wrap each art character in an ANSI color (material-aware).
+# Reads stdin, writes colored stdout. Used only for on-screen display, never
+# for `save`, so saved files stay plain text.
+colorize() {
+    local E R; E="$(printf '\033')"; R="${E}[0m"
+    sed \
+        -e "s/\[/${E}[36m[${R}/g" \
+        -e "s/\]/${E}[36m]${R}/g" \
+        -e "s/+/${E}[36m+${R}/g" \
+        -e "s/#/${E}[38;5;131m#${R}/g" \
+        -e "s/=/${E}[38;5;179m=${R}/g" \
+        -e "s/%/${E}[38;5;247m%${R}/g" \
+        -e "s#/#${E}[38;5;173m/${R}#g" \
+        -e "s/\\\\/${E}[38;5;173m\\\\${R}/g" \
+        -e "s/_/${E}[38;5;173m_${R}/g" \
+        -e "s/~/${E}[38;5;173m~${R}/g" \
+        -e "s/o/${E}[33mo${R}/g" \
+        -e "s/,/${E}[32m,${R}/g" \
+        -e "s/\\./${E}[32m.${R}/g"
+}
+
+use_color() { [ "$COLOR" = on ] && [ -t 1 ]; }
+
 render() {
     printf '\033[2J\033[H'
+    local CH="" CR=""
+    if use_color; then CH="$(printf '\033[1;36m')"; CR="$(printf '\033[0m')"; fi
     if [ "$MODE" = net ]; then
-        printf '  House "%s"  —  you are %s  (building live over GitHub)\n' "$HID" "$NAME"
+        printf '  %sHouse "%s"  —  you are %s  (building live over GitHub)%s\n' "$CH" "$HID" "$NAME" "$CR"
     else
-        printf '  Your house  (solo / offline)\n'
+        printf '  %sYour house  (solo / offline)%s\n' "$CH" "$CR"
     fi
     printf '  [roof:%s walls:%s door:%s windows:%s chimney:%s ground:%s]\n\n' \
         "$ROOF" "$WALLS" "$DOOR" "$WINDOWS" "$CHIMNEY" "$GROUND"
-    local line
+
+    local art
     if [ "$VIEW" = 3d ]; then
         printf '  3D view  rot x=%s y=%s z=%s  zoom=%s   (rotate y 45 · zoom in · spin · 2d)\n\n' "$RX" "$RY" "$RZ" "$ZOOM"
-        while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_3d)
+        art="$(build_3d)"
     else
-        while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_lines)
+        art="$(build_lines)"
     fi
+    local line
+    if use_color; then
+        while IFS= read -r line; do printf '   %s\n' "$line"; done < <(printf '%s\n' "$art" | colorize)
+    else
+        while IFS= read -r line; do printf '   %s\n' "$line"; done <<< "$art"
+    fi
+
     if [ "$MODE" = net ]; then
         local feed; feed="$(feed_lines)"
         if [ -n "$feed" ]; then
@@ -257,6 +291,7 @@ VIEW & CAMERA (local to your phone; does not change what others see)
                                      (rotate y 45 · rotate x 22.5 · rotate z -45).
   rotate  reset                      Recenter the 3D angles.
   zoom    <in|out|reset|number>      Zoom the 3D view (zoom in · zoom out · zoom 1.5).
+  color   <on|off>                   Toggle the colored display.
   spin                               Auto-turn the house one full spin.
   show | draw                        Redraw now (also pulls in an online game).
 
@@ -304,6 +339,7 @@ do_cmd() {
         2d)      VIEW=2d ;;
         rotate|rot) do_rotate "${1:-}" "${2:-}" || return ;;
         zoom)    do_zoom "${1:-}" || return ;;
+        color)   case "${1:-}" in on) COLOR=on ;; off) COLOR=off ;; ''|toggle) [ "$COLOR" = on ] && COLOR=off || COLOR=on ;; *) echo "color: on|off"; return ;; esac ;;
         spin)    do_spin; return ;;
         sync)    [ "$MODE" = net ] && { pull; load_state; } ;;
         watch)   cmd_watch; return ;;
