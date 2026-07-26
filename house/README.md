@@ -131,18 +131,47 @@ file), so `save` still writes plain ASCII.
 
 ## Touch buttons above the keyboard (Termux)
 
-`house/termux.properties` adds a button bar over the Termux keyboard with
-one-tap house commands (**3D**, **2D**, **Z+/Z-** zoom, **SPIN**, **Y+45 / X+22**
-rotate, **SYNC**, **HELP**). Each button types the command and presses Enter.
+`house/termux.properties` adds a 3-row button bar over the Termux keyboard with
+one-tap house commands. Each button types the command and presses Enter:
+
+```
+[ ESC ][ 3D ][ 2D ][ ASCII ][ Z+ ][ Z- ][ ⏎ ]     view / zoom
+[ SPIN ][ Y+45 ][ Y-45 ][ X+22 ][ SYNC ][ HELP ][ ⏎ ]   rotate / util
+[ ROOF ][ WALL ][ DOOR ][ WIN ][ CHIM ][ GRND ][ COL ]  build (each tap cycles)
+```
+
+The build buttons send the command with **no value**, which cycles to the next
+option each tap — so tapping **ROOF** steps peak → flat → dome, **WALL** steps
+the materials, and so on. **ASCII** flips to the plain 2D look; **COL** toggles
+color.
 
 ```bash
 mkdir -p ~/.termux
 cp house/termux.properties ~/.termux/termux.properties
-# then long-press in Termux -> "Reload settings"  (or restart Termux)
+termux-reload-settings            # or long-press Termux -> "Reload settings"
 ```
 
-(If you already have a `~/.termux/termux.properties`, back it up first — this
-replaces the extra-keys row.)
+### Switching back to your normal keys
+
+The game bar is a **separate file**, so your normal keys aren't lost. To restore
+the standard row when you're done playing:
+
+```bash
+cp house/termux-default.properties ~/.termux/termux.properties
+termux-reload-settings
+```
+
+Handy shortcuts — add these to `~/.bashrc` (adjust the path to where you cloned):
+
+```bash
+alias house-keys='cp ~/house-party/house/termux.properties ~/.termux/termux.properties && termux-reload-settings'
+alias normal-keys='cp ~/house-party/house/termux-default.properties ~/.termux/termux.properties && termux-reload-settings'
+```
+
+Then just run `house-keys` before playing and `normal-keys` afterwards.
+
+(If you already had a `~/.termux/termux.properties`, keep a copy first — these
+replace the extra-keys row.)
 
 ## Want to try the display first, no setup?
 

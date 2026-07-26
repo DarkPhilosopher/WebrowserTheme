@@ -37,6 +37,7 @@ RY=-30           # 3D view rotation about Y (degrees)
 RZ=0             # 3D view rotation about Z (degrees)
 ZOOM=1           # 3D view zoom factor (1 = default) — LOCAL to your phone
 COLOR=on         # on | off — colored display (auto-disabled when not a terminal)
+PARG=""          # scratch: the argument passed to a build command (or empty)
 
 MODE=solo        # solo | net
 DIR=""           # houses/<id> (net mode)
@@ -292,7 +293,11 @@ VIEW & CAMERA (local to your phone; does not change what others see)
   rotate  reset                      Recenter the 3D angles.
   zoom    <in|out|reset|number>      Zoom the 3D view (zoom in · zoom out · zoom 1.5).
   color   <on|off>                   Toggle the colored display.
+  ascii                              Plain look: flat 2D view + color off.
   spin                               Auto-turn the house one full spin.
+
+  (tip: the build commands with NO value cycle to the next option,
+   e.g. just `roof` steps peak->flat->dome, `walls` steps the materials.)
   show | draw                        Redraw now (also pulls in an online game).
 
 MULTIPLAYER (online games only)
@@ -316,6 +321,25 @@ save_house() { local f="${1:-house.txt}"; build_lines > "$f"; echo "Saved to $f"
 # ===========================================================================
 in_list() { local v="$1"; shift; local x; for x in "$@"; do [ "$v" = "$x" ] && return 0; done; return 1; }
 
+# next_val <current> <opt1> <opt2> ...  -> the option after <current>, wrapping
+# around (and returning the first option if <current> isn't found).
+next_val() {
+    local cur="$1"; shift; local first="$1" x found=0
+    for x in "$@"; do
+        if [ "$found" = 1 ]; then printf '%s' "$x"; return; fi
+        [ "$x" = "$cur" ] && found=1
+    done
+    printf '%s' "$first"
+}
+
+# part <key> <current> <opt...> : set from arg $PARG if given & valid, else cycle.
+part() {
+    local key="$1" cur="$2"; shift 2
+    if [ -z "$PARG" ]; then apply "$key" "$(next_val "$cur" "$@")"; return 0; fi
+    in_list "$PARG" "$@" && { apply "$key" "$PARG"; return 0; }
+    echo "$key: $*"; return 1
+}
+
 # apply a validated part change to the right place (globals in solo, files in net)
 apply() {
     local key="$1" val="$2"
@@ -329,14 +353,15 @@ apply() {
 do_cmd() {
     local cmd="${1:-}"; shift || true
     case "$cmd" in
-        roof)    in_list "${1:-}" peak flat dome         && apply roof "$1"    || { echo "roof: peak|flat|dome"; return; } ;;
-        walls)   in_list "${1:-}" brick wood stone       && apply walls "$1"   || { echo "walls: brick|wood|stone"; return; } ;;
-        door)    in_list "${1:-}" single double arch none && apply door "$1"   || { echo "door: single|double|arch|none"; return; } ;;
-        windows) case "${1:-}" in [0-4]) apply windows "$1";; *) echo "windows: 0-4"; return;; esac ;;
-        chimney) in_list "${1:-}" on off                 && apply chimney "$1" || { echo "chimney: on|off"; return; } ;;
-        ground)  in_list "${1:-}" grass fence none        && apply ground "$1"  || { echo "ground: grass|fence|none"; return; } ;;
+        roof)    PARG="${1:-}"; part roof    "$ROOF"    peak flat dome          || return ;;
+        walls)   PARG="${1:-}"; part walls   "$WALLS"   brick wood stone         || return ;;
+        door)    PARG="${1:-}"; part door    "$DOOR"    single double arch none  || return ;;
+        windows) PARG="${1:-}"; part windows "$WINDOWS" 0 1 2 3 4                || return ;;
+        chimney) PARG="${1:-}"; part chimney "$CHIMNEY" on off                   || return ;;
+        ground)  PARG="${1:-}"; part ground  "$GROUND"  grass fence none         || return ;;
         3d)      VIEW=3d ;;
         2d)      VIEW=2d ;;
+        ascii|plain) VIEW=2d; COLOR=off ;;
         rotate|rot) do_rotate "${1:-}" "${2:-}" || return ;;
         zoom)    do_zoom "${1:-}" || return ;;
         color)   case "${1:-}" in on) COLOR=on ;; off) COLOR=off ;; ''|toggle) [ "$COLOR" = on ] && COLOR=off || COLOR=on ;; *) echo "color: on|off"; return ;; esac ;;
