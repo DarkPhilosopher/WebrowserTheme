@@ -15,7 +15,8 @@
 #   ./house.sh solo                       # offline, no git (try the display)
 #   ./house.sh help
 #
-# Inside the builder type `help` for the command list.
+# Inside the builder type `help` for the command list. Type `3d` for a
+# rotatable 3D wireframe view, then e.g. `rotate y 45`, `rotate x 22.5`, `spin`.
 #
 set -uo pipefail
 
@@ -29,6 +30,11 @@ GROUND=grass     # grass | fence | none
 
 IW=16            # interior width (chars between the walls)
 POLL=3           # seconds between refreshes in `watch`
+
+VIEW=2d          # 2d (flat art) | 3d (rotatable wireframe)
+RX=20            # 3D view rotation about X (degrees) — LOCAL to your phone
+RY=-30           # 3D view rotation about Y (degrees)
+RZ=0             # 3D view rotation about Z (degrees)
 
 MODE=solo        # solo | net
 DIR=""           # houses/<id> (net mode)
@@ -91,6 +97,72 @@ stamp() { local -n _row="$1"; local pos="$2" txt="$3"; local n=${#txt}; _row="${
 fill_row() { printf '%*s' "$IW" '' | tr ' ' "$1"; }
 fillchar() { case "$WALLS" in brick) printf '#';; wood) printf '=';; stone) printf '%%';; *) printf '#';; esac; }
 
+build_3d() {  # echo a rotatable 3D wireframe of the house (math done in awk)
+    command -v awk >/dev/null 2>&1 || { echo "(3D view needs awk — in Termux: pkg install gawk)"; return; }
+    awk -v rx="$RX" -v ry="$RY" -v rz="$RZ" -v roof="$ROOF" -v chim="$CHIMNEY" \
+        -v door="$DOOR" -v win="$WINDOWS" -v W=48 -v H=24 -v SX=5.0 -v SY=2.4 '
+    function abs(v){ return v<0?-v:v }
+    function addedge(a,b,c,d,e,f){ ne++; X1[ne]=a;Y1[ne]=b;Z1[ne]=c;X2[ne]=d;Y2[ne]=e;Z2[ne]=f }
+    function addcube(x0,y0,z0,x1,y1,z1){
+        addedge(x0,y0,z0,x1,y0,z0); addedge(x1,y0,z0,x1,y0,z1); addedge(x1,y0,z1,x0,y0,z1); addedge(x0,y0,z1,x0,y0,z0);
+        addedge(x0,y1,z0,x1,y1,z0); addedge(x1,y1,z0,x1,y1,z1); addedge(x1,y1,z1,x0,y1,z1); addedge(x0,y1,z1,x0,y1,z0);
+        addedge(x0,y0,z0,x0,y1,z0); addedge(x1,y0,z0,x1,y1,z0); addedge(x1,y0,z1,x1,y1,z1); addedge(x0,y0,z1,x0,y1,z1);
+    }
+    function rot(x,y,z,   c,s,tx,ty,tz){
+        c=cos(rxr);s=sin(rxr); ty=y*c-z*s; tz=y*s+z*c; y=ty; z=tz;   # about X
+        c=cos(ryr);s=sin(ryr); tx=x*c+z*s; tz=-x*s+z*c; x=tx; z=tz;  # about Y
+        c=cos(rzr);s=sin(rzr); tx=x*c-y*s; ty=x*s+y*c; x=tx; y=ty;   # about Z
+        RXo=x; RYo=y; RZo=z;
+    }
+    function drawline(x1,y1,x2,y2,ch,   dx,dy,st,i,xx,yy){
+        dx=x2-x1; dy=y2-y1; st=(abs(dx)>abs(dy))?abs(dx):abs(dy); if(st<1)st=1;
+        for(i=0;i<=st;i++){ xx=int(x1+dx*i/st+0.5); yy=int(y1+dy*i/st+0.5);
+            if(xx>=0 && xx<W && yy>=0 && yy<H) G[yy SUBSEP xx]=ch }
+    }
+    BEGIN{
+        PI=atan2(0,-1); rxr=rx*PI/180; ryr=ry*PI/180; rzr=rz*PI/180;
+        bx=2; by=1.5; bz=1;                       # body half-extents
+        addcube(-bx,-by,-bz, bx,by,bz);           # walls
+        if(roof=="peak"){ ap=3;
+            addedge(0,ap,-bz, 0,ap,bz);
+            addedge(0,ap,-bz,-bx,by,-bz); addedge(0,ap,-bz, bx,by,-bz);
+            addedge(0,ap, bz,-bx,by, bz); addedge(0,ap, bz, bx,by, bz);
+        } else if(roof=="flat"){ addcube(-bx,by,-bz, bx,by+0.4,bz);
+        } else { ap=by+1.5;                       # dome -> hip/pyramid roof
+            addedge(0,ap,0,-bx,by,-bz); addedge(0,ap,0, bx,by,-bz);
+            addedge(0,ap,0, bx,by, bz); addedge(0,ap,0,-bx,by, bz);
+        }
+        if(chim=="on") addcube(0.8,2.0,-0.3, 1.2,3.0,0.1);   # chimney
+        if(door!="none"){ dw=(door=="double")?0.6:0.35; z=bz; y0=-by; y1=-by+1.4;
+            addedge(-dw,y0,z, dw,y0,z); addedge(dw,y0,z, dw,y1,z);
+            addedge(dw,y1,z,-dw,y1,z); addedge(-dw,y1,z,-dw,y0,z);
+            if(door=="double") addedge(0,y0,z, 0,y1,z);
+        }
+        wn=win+0;
+        if(wn>0){ z=bz;
+            for(k=0;k<wn;k++){ cx=-1.3 + 2.6*(k+0.5)/wn; wx=0.28; a=0.2; b=0.9;
+                addedge(cx-wx,a,z, cx+wx,a,z); addedge(cx+wx,a,z, cx+wx,b,z);
+                addedge(cx+wx,b,z, cx-wx,b,z); addedge(cx-wx,b,z, cx-wx,a,z);
+                addedge(cx,a,z, cx,b,z); addedge(cx-wx,(a+b)/2,z, cx+wx,(a+b)/2,z);
+            }
+        }
+        for(i=1;i<=ne;i++){
+            rot(X1[i],Y1[i],Z1[i]); px=RXo; py=RYo;
+            rot(X2[i],Y2[i],Z2[i]); qx=RXo; qy=RYo;
+            sx1=int(W/2+px*SX+0.5); sy1=int(H/2-py*SY+0.5);
+            sx2=int(W/2+qx*SX+0.5); sy2=int(H/2-qy*SY+0.5);
+            ddx=sx2-sx1; ddy=sy2-sy1; a1=abs(ddx); a2=abs(ddy);
+            if(a1>2*a2) ch="-"; else if(a2>2*a1) ch="|";
+            else if((ddx>0)==(ddy>0)) ch="\\"; else ch="/";
+            drawline(sx1,sy1,sx2,sy2,ch);
+        }
+        for(y=0;y<H;y++){ line="";
+            for(x=0;x<W;x++){ kk=y SUBSEP x; line=line ((kk in G)?G[kk]:" ") }
+            sub(/ +$/,"",line); print line;
+        }
+    }'
+}
+
 build_lines() {  # echo the raw ASCII art lines (no chrome)
     local -a out=()
     if [ "$CHIMNEY" = on ]; then
@@ -144,7 +216,12 @@ render() {
     printf '  [roof:%s walls:%s door:%s windows:%s chimney:%s ground:%s]\n\n' \
         "$ROOF" "$WALLS" "$DOOR" "$WINDOWS" "$CHIMNEY" "$GROUND"
     local line
-    while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_lines)
+    if [ "$VIEW" = 3d ]; then
+        printf '  3D view  rot x=%s y=%s z=%s   (rotate x 45 · rotate y 22.5 · spin · 2d)\n\n' "$RX" "$RY" "$RZ"
+        while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_3d)
+    else
+        while IFS= read -r line; do printf '   %s\n' "$line"; done < <(build_lines)
+    fi
     if [ "$MODE" = net ]; then
         local feed; feed="$(feed_lines)"
         if [ -n "$feed" ]; then
@@ -168,6 +245,12 @@ house — commands
   windows <0-4>                     How many windows.
   chimney <on|off>                  Add or remove the chimney.
   ground  <grass|fence|none>        What surrounds the house.
+
+  3d                                Switch to the rotatable 3D wireframe view.
+  2d                                Switch back to the flat picture.
+  rotate  <x|y|z> <degrees>         Turn the 3D view (e.g. rotate y 45,
+                                    rotate x 22.5, rotate z -45). Also: rotate reset.
+  spin                              Auto-turn the house one full spin.
 
   sync                              Pull the latest shared house (see others).
   watch                             Live view; refreshes until you press Enter.
@@ -207,6 +290,10 @@ do_cmd() {
         windows) case "${1:-}" in [0-4]) apply windows "$1";; *) echo "windows: 0-4"; return;; esac ;;
         chimney) in_list "${1:-}" on off                 && apply chimney "$1" || { echo "chimney: on|off"; return; } ;;
         ground)  in_list "${1:-}" grass fence none        && apply ground "$1"  || { echo "ground: grass|fence|none"; return; } ;;
+        3d)      VIEW=3d ;;
+        2d)      VIEW=2d ;;
+        rotate|rot) do_rotate "${1:-}" "${2:-}" || return ;;
+        spin)    do_spin; return ;;
         sync)    [ "$MODE" = net ] && { pull; load_state; } ;;
         watch)   cmd_watch; return ;;
         show|draw) [ "$MODE" = net ] && { pull; load_state; } ;;
@@ -217,6 +304,31 @@ do_cmd() {
         *) echo "unknown command '$cmd' — type 'help'"; return ;;
     esac
     render
+}
+
+# rotate the local 3D view. Accepts any angle (45, 22.5, -45, ...).
+do_rotate() {
+    local axis="$1" deg="$2"
+    if [ "$axis" = reset ]; then RX=20; RY=-30; RZ=0; VIEW=3d; return 0; fi
+    case "$axis" in x|y|z) ;; *) echo "rotate: x|y|z <degrees>   e.g.  rotate y 45   rotate x 22.5"; return 1 ;; esac
+    case "$deg" in ''|*[!0-9.+-]*) echo "rotate: degrees must be a number, e.g. 45, 22.5, -45"; return 1 ;; esac
+    VIEW=3d
+    case "$axis" in
+        x) RX="$(awk "BEGIN{printf \"%g\", ($RX+($deg))%360}")" ;;
+        y) RY="$(awk "BEGIN{printf \"%g\", ($RY+($deg))%360}")" ;;
+        z) RZ="$(awk "BEGIN{printf \"%g\", ($RZ+($deg))%360}")" ;;
+    esac
+    return 0
+}
+
+# quick auto-spin: eight 22.5-degree steps around Y (a full turn).
+do_spin() {
+    VIEW=3d; local i
+    for i in 1 2 3 4 5 6 7 8; do
+        RY="$(awk "BEGIN{printf \"%g\", ($RY+22.5)%360}")"
+        render
+        sleep 0.15 2>/dev/null || true
+    done
 }
 
 cmd_watch() {

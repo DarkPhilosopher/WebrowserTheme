@@ -76,6 +76,13 @@ windows 0-4
 chimney on | off
 ground  grass | fence | none
 
+3d      switch to the rotatable 3D wireframe view
+2d      switch back to the flat picture
+rotate  <x|y|z> <degrees>   turn the 3D view, any angle
+                            e.g. rotate y 45 · rotate x 22.5 · rotate z -45
+                            rotate reset   puts the view back
+spin    auto-turn the house one full spin
+
 sync    pull the latest shared house (see others' changes)
 watch   live view; refreshes until you press Enter
 show    redraw now
@@ -83,6 +90,25 @@ save    write the ASCII art to a file
 help    command list
 quit    leave
 ```
+
+### 3D view
+
+Type `3d` to see the house as a rotatable wireframe (body, roof, door, windows,
+and chimney are all real 3D geometry), then turn it to any angle:
+
+```
+3d
+rotate y 45      # spin 45 degrees around the vertical axis
+rotate x 22.5    # tip it up 22.5 degrees
+rotate z -45     # roll it
+spin             # one automatic full turn
+2d               # back to the flat picture
+```
+
+Angles accumulate and accept any number (45, 22.5, -30, ...). The 3D view is
+**local to your phone** — rotating doesn't change what anyone else sees; it's
+just your camera. The shared build (roof/walls/door/...) still syncs as normal.
+It needs `awk` (already in Termux/iSH; if missing: `pkg install gawk`).
 
 Each command you enter is pushed to the channel, and the house redraws with
 everyone's latest parts. Use `watch` to sit back and see the house change live as
