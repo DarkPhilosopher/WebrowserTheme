@@ -206,6 +206,79 @@ python3 /wherever/parts/connect.py spark /sdcard   # point at the file
 cd /the/folder/holding/parts && python3 -m parts connect spark
 ```
 
+## Changing it later
+
+Run this after changing anything:
+
+```bash
+python3 -m parts check
+```
+
+```
+ok   the one contract             123 checked
+ok   names do not clash           123 checked
+ok   all blocks reachable         119 checked
+ok   all blocks described         123 checked
+ok   the text format knows them   123 checked
+ok   the examples still parse      10 checked
+ok   things actually work           7 checked
+
+628 checked, all well -- 119 blocks
+```
+
+It is not a test of clever behaviour. It checks the rules the language
+quietly depends on — the ones that break without saying anything:
+
+| Check | Catches |
+|---|---|
+| **the one contract** | A block whose `step()` cannot be called — including one shadowed by a setting of the same name |
+| **names do not clash** | Two blocks sharing a lower-case name, which the text format cannot tell apart |
+| **all blocks reachable** | A block in a catalogue that nobody exported from `__init__` |
+| **all blocks described** | A block the menus would show as "no description" |
+| **the text format knows them** | A block that cannot be named in a `.parts` program |
+| **the examples still parse** | An example that stopped working |
+| **things actually work** | Seven real behaviours, end to end |
+
+A failure names the block and the rule, so you know what to change:
+
+```
+FAIL all blocks described        123 checked
+       core.Sort: has no description
+       files.IsDir: has no description
+```
+
+Every one of these catches a mistake that was actually made while
+building this. `Box` once stored its spacing as `self.step` and shadowed
+the method every block must have; `Count`, `Move`, `Size` and `Strip`
+each collided with a name already taken. The check finds both in a
+second.
+
+### Adding your own block
+
+Subclass `Part`, give it a sentence, override `step`:
+
+```python
+class Newer(Part):
+    """Keep only paths changed in the last few days."""
+    def __init__(self, days=7): self.days = days
+    def step(self, ctx):
+        return Age().step(ctx) < self.days
+```
+
+Then three things, and `check` will tell you if you miss one:
+
+1. Add it to its module's `CATALOGUE`, under a kind.
+2. Export it from `parts/__init__.py`.
+3. Make sure its name is not already taken.
+
+It is then usable everywhere every other block is — in Python, in a
+`.parts` file, in the numbered menu, and on the pad.
+
+**One rule worth knowing:** never store a setting called `step`. It
+would shadow the `step()` method and the block would break at run time
+rather than when you wrote it. `Box` takes `gap` and `Ray` takes `step`
+but keeps it as `self.stride` for exactly this reason.
+
 ## The command line
 
 ```bash
@@ -216,6 +289,7 @@ python3 -m parts install          # make import work anywhere
 python3 -m parts run prog.parts   # run a plain-text program
 python3 -m parts menu             # build one with numbers only
 python3 -m parts pad              # build one by pressing squares
+python3 -m parts check            # make sure it all still hangs together
 ```
 
 ## pad — the window as eight squares you press

@@ -216,7 +216,7 @@ class Osc(Part):
 # ==========================================================================
 
 class Gain(Part):
-    """Multiply."""
+    """Multiply the number. The volume knob of the language."""
     def __init__(self, k=1.0): self.k = k
     def step(self, ctx): return ctx.value * self.k
 
@@ -323,14 +323,17 @@ class PID(Part):
 # ==========================================================================
 
 class Lower(Part):
+    """Make every letter small. HELLO becomes hello."""
     def step(self, ctx): return str(ctx.value).lower()
 
 
 class Upper(Part):
+    """Make every letter big. hello becomes HELLO."""
     def step(self, ctx): return str(ctx.value).upper()
 
 
 class Strip(Part):
+    """Trim the blank space off both ends of some text."""
     def step(self, ctx): return str(ctx.value).strip()
 
 
@@ -348,6 +351,7 @@ class Join(Part):
 
 
 class Replace(Part):
+    """Swap one piece of text for another, everywhere it appears."""
     def __init__(self, old, new=""): self.old, self.new = old, new
     def step(self, ctx): return str(ctx.value).replace(self.old, self.new)
 
@@ -405,10 +409,12 @@ class Text(Part):
 # ==========================================================================
 
 class Count(Part):
+    """How many things are in the list."""
     def step(self, ctx): return len(_as_list(ctx.value))
 
 
 class First(Part):
+    """The first thing in the list, or the first few."""
     def __init__(self, n=1): self.n = n
     def step(self, ctx):
         items = _as_list(ctx.value)
@@ -416,6 +422,7 @@ class First(Part):
 
 
 class Last(Part):
+    """The last thing in the list, or the last few."""
     def __init__(self, n=1): self.n = n
     def step(self, ctx):
         items = _as_list(ctx.value)
@@ -424,6 +431,7 @@ class Last(Part):
 
 
 class Sort(Part):
+    """Put the list in order. `down=true` turns it around."""
     def __init__(self, by=None, down=False): self.by, self.down = by, down
     def step(self, ctx):
         items = _as_list(ctx.value)
@@ -433,6 +441,7 @@ class Sort(Part):
 
 
 class Uniq(Part):
+    """Throw away anything that appears more than once."""
     def step(self, ctx):
         seen, out = set(), []
         for x in _as_list(ctx.value):

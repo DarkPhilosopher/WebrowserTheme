@@ -150,14 +150,17 @@ class Clock(Part):
 
 
 class Height(Part):
+    """How high above the ground this body is."""
     def step(self, ctx): return ctx.body.pos.z
 
 
 class Speed(Part):
+    """How fast it is going, whichever way it is going."""
     def step(self, ctx): return ctx.body.vel.length()
 
 
 class Heading(Part):
+    """Which way it is facing, as an angle."""
     def step(self, ctx): return ctx.body.yaw
 
 
@@ -253,6 +256,7 @@ class Thrust(Part):
 
 
 class Lift(Part):
+    """Push it straight up, whatever way it is facing."""
     def __init__(self, power=1.0): self.power = power
     def step(self, ctx):
         ctx.body.force = ctx.body.force + UP * (ctx.value * self.power)
@@ -268,6 +272,7 @@ class Turn(Part):
 
 
 class Tilt(Part):
+    """Point its nose up or down."""
     def __init__(self, rate=1.0, limit=1.4): self.rate, self.limit = rate, limit
     def step(self, ctx):
         b = ctx.body

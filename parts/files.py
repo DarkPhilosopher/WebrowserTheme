@@ -124,16 +124,19 @@ class Lines(Part):
 
 
 class Exists(Part):
+    """Is there anything at this path -- a file or a folder?"""
     def __init__(self, path=None): self.path = path
     def step(self, ctx): return os.path.exists(_pick(self.path, ctx))
 
 
 class IsDir(Part):
+    """Is this path a folder?"""
     def __init__(self, path=None): self.path = path
     def step(self, ctx): return os.path.isdir(_pick(self.path, ctx))
 
 
 class IsFile(Part):
+    """Is this path a file, rather than a folder?"""
     def __init__(self, path=None): self.path = path
     def step(self, ctx): return os.path.isfile(_pick(self.path, ctx))
 
