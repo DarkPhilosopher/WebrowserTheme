@@ -26,9 +26,19 @@ import os
 import re
 import sys
 
-from .core import (Abs, Chain, Contains, Each, Field, Gate, Is, Minus, Pack,
-                   Part, Threshold, Var, run, _as_list)
-from .files import Age, Ext, Name, Parent, Read, Size, Walk
+# Run as a module (python3 -m parts.connect) the relative imports below are
+# right. Run as a plain file (python3 parts/connect.py) there is no package
+# around them, so put this file's parent folder on the path and import by
+# name instead. Both ways work, from any folder, with no setup.
+if __package__ in (None, ""):
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from parts.core import (Abs, Chain, Contains, Each, Field, Gate, Is,
+                            Minus, Pack, Part, Threshold, Var, run, _as_list)
+    from parts.files import Age, Ext, Name, Parent, Read, Size, Walk
+else:
+    from .core import (Abs, Chain, Contains, Each, Field, Gate, Is, Minus,
+                       Pack, Part, Threshold, Var, run, _as_list)
+    from .files import Age, Ext, Name, Parent, Read, Size, Walk
 
 # Anything bigger than this is indexed by name only -- never read.
 READABLE = 400_000
