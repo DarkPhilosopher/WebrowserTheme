@@ -1,188 +1,207 @@
-# parts — the minimal interchangeable kit for a 3D world
+# parts — one small language of interchangeable blocks
 
-Not `when X do Y`. This is the other way to build behaviour: a **signal
-flowing down a chain**, the way a wire runs from a sensor, through some
-electronics, into a motor.
+Not `when X do Y`. This is the other way: a **signal running down a chain**,
+the way a wire runs from a sensor, through some electronics, into a motor.
 
-Python standard library only, one file. Runs anywhere Python runs —
-including 32-bit phones where heavier tools won't install.
+```python
+from parts import *
 
-```bash
-python3 parts.py        # runs the demo: a hunter that chases and shoots
+Chain([Walk("~/notes"), Keep(Ext(".md")), Count(), Say()])
 ```
+
+Python standard library only. No installs, no threads, no 64-bit
+requirement — runs on a 32-bit phone.
 
 ## The one contract
 
-Every part — sensor, conduit, motor, and any chain of them — is an object
-with exactly this:
+Every block is an object with exactly this:
 
 ```python
-part.step(ctx) -> float
+part.step(ctx) -> value
 ```
 
-`ctx` carries the world, the body the part is bolted to, and `dt`. A part
-reads what it likes and returns a number.
+`ctx.value` is the signal. It may be a **number, text, a path, a list, or
+a dict** — whatever the block before it returned. That single rule is the
+whole language, and it is why any block fits any slot.
 
-**That is the whole interface**, and it is the reason any part can be
-swapped for any other part. A `Chain` is itself a part, so chains nest
-inside chains without limit.
+A `Chain` is itself a block, so chains nest without limit.
 
-## The four kinds
+## Four kinds
 
-| Kind | Shape | Does |
+| Kind | Shape | Role |
 |---|---|---|
-| **Property** | state | Lives on the world or a body — position, mass, fuel |
-| **Sensor** | world → number | Ignores its input |
-| **Conduit** | number → number | The glue: gain, clamp, delay, PID |
-| **Motor** | number → world | Ignores its output |
+| **Source** | → value | Ignores its input (a sensor) |
+| **Conduit** | value → value | The glue |
+| **Sink** | value → effect | Ignores its output (a motor) |
+| **Link** | holds blocks | `Chain` `Fan` `Each` `Keep` |
+
+## Four modules, one tongue
 
 ```python
-eye = Chain([Ray(reach=20), Invert(), Bias(20), Gain(0.1), Thrust()])
+from parts import *                      # everything
+from parts.files import Walk, Copy       # or be exact
 ```
 
-Read that left to right: look ahead → flip it → so *close* is now *big* →
-scale it down → push. Four interchangeable parts, one behaviour.
-
-## Properties
-
-Everything the parts read and write.
-
-**On a body** — `pos` `vel` `yaw` `pitch` `spin` `mass` `drag` `radius`
-`solid` `alive` `tags` `store` `parts` `force`
-
-**On the world** — `gravity` `bounds` `time` `bodies` `store`
-
-`store` is a plain dict of named numbers, so fuel, hp, ammo and score need
-no new machinery.
-
-## Sensors — world in, number out
-
-| Part | Reports |
+| Module | Covers |
 |---|---|
-| `Clock()` | Seconds since the world began |
-| `Height()` | How high this body is |
-| `Speed()` | How fast it's going, any direction |
-| `Heading()` | Which way it faces, in radians |
-| `Level(key)` | A named number off the body — fuel, hp, ammo |
-| `Near(radius, tag)` | Distance to the nearest other body in range |
-| `Touch(tag)` | 1.0 if something is overlapping, else 0.0 |
-| `Ray(reach, step, tag)` | Distance to the first thing straight ahead |
-| `Bearing(tag, radius)` | Angle from where you look to where the target is |
+| `core` | The contract, and blocks that work on any value |
+| `space` | A 3D world: bodies, sensors, motors |
+| `files` | Folders, files, copying and moving |
+| `net` | Other machines: fetching, reaching, downloading |
 
-`Ray` is the rangefinder every robot has. `Bearing` is the steering
-sensor — 0 means dead ahead, ±π means directly behind.
+**90 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+explains one.
 
-## Conduits — number in, number out
+---
 
-| Part | Does |
-|---|---|
-| `Const(v)` | Ignore the input, emit a fixed number |
-| `Gain(k)` | Multiply — the volume knob |
-| `Bias(k)` | Add a constant — shifts the zero point |
-| `Invert()` | Flip the sign |
-| `Clamp(lo, hi)` | Never leave these limits |
-| `Threshold(at)` | 1.0 above the line, 0.0 below — analogue becomes digital |
-| `Smooth(rate)` | Low-pass filter — kills jitter |
-| `Delay(ticks)` | What came in n ticks ago — reaction time |
-| `Integrate()` | Accumulate over time — speed becomes distance |
-| `Derive()` | Rate of change — distance becomes speed |
-| `Osc(period, low, high)` | A wave; needs no input and never sits still |
-| `PID(p, i, d)` | Steer the input toward zero |
-| `Fan(branches, how)` | Run several chains on one input, combine them |
-| `Gate(control)` | Pass the signal only while `control` reads above zero |
+## core — works on any value
 
-`Fan` takes `how="sum" \| "max" \| "min" \| "mul"`. Using `"mul"` with two
-`Threshold` branches gives you AND; `"max"` gives you OR.
+**Links** `Chain` `Fan` `Each` `Keep` `Drop` `Gate` `Try`
 
-## Motors — number in, world out
+`Fan(branches, how=)` runs several chains on one input and combines them —
+`"sum" "max" "min" "mul" "all" "any" "list" "first"`. Use `"all"` for AND,
+`"any"` for OR.
 
-| Part | Does |
-|---|---|
-| `Thrust(power)` | Push along the way the body faces — the engine |
-| `Lift(power)` | Push straight up, whatever it's facing |
-| `Turn(rate)` | Set how fast it swings left or right — the rudder |
-| `Tilt(rate, limit)` | Point the nose up or down |
-| `Store(key)` | Write the signal into a named number |
-| `Drain(key, per_second)` | Spend a named number over time — fuel, charge |
-| `Spawn(make, ahead, speed, cooldown)` | Emit a new body — the gun |
-| `Expire(after)` | Die once the signal has been up for n seconds |
-| `Die()` | Remove the body the moment the signal goes up |
+**Sources** `Const` `Var` `Osc`
 
-### Shooting, and how long a shot lives
+**Numbers** `Gain` `Bias` `Invert` `Clamp` `Threshold` `Smooth` `Delay`
+`Integrate` `Derive` `PID`
 
-The two halves that usually need special-casing are just parts here.
+**Text** `Lower` `Upper` `Strip` `Split` `Join` `Replace` `Contains`
+`Match` `Grab` `Text`
 
-**Fires in the direction the body faces** — `Spawn` reads `body.forward()`
-and inherits the shooter's velocity, so a shot from a moving ship leads
-correctly:
+**Lists** `Count` `First` `Last` `Sort` `Uniq` `Flatten` `Field`
+
+**Sinks** `Say` `Put` `Do`
+
+`Say` is the debugger of this language — drop it anywhere in a chain to
+see what is passing through.
+
+## space — a 3D world
+
+**Properties.** On a body: `pos` `vel` `yaw` `pitch` `spin` `mass` `drag`
+`radius` `solid` `alive` `tags` `store` `parts` `force`. On the world:
+`gravity` `bounds` `time` `bodies` `store`.
+
+**Sensors** `Clock` `Height` `Speed` `Heading` `Level` `Near` `Touch`
+`Ray` `Bearing`
+
+**Motors** `Thrust` `Lift` `Turn` `Tilt` `Store` `Drain` `Spawn` `Expire` `Die`
+
+`Ray` is the rangefinder. `Bearing` is the steering sensor — 0 means dead
+ahead, ±π directly behind.
+
+## files — folders and files
+
+Every block takes its path **either as an argument or from the signal**,
+which is what lets them sit anywhere in a line:
 
 ```python
-Chain([Const(1), Spawn(bullet, ahead=1.0, speed=14.0, cooldown=0.4)])
+Chain([Const("~/notes"), Walk(), Keep(Ext(".md"))])
+Chain([Walk("~/notes"),  Keep(Ext(".md"))])        # identical
 ```
 
-**Cleans itself up** — the shot carries its own lifetime, so nothing else
-has to track it:
+**Where** `Here` `Home` `Parent` `Name` `Ext`
+**Look** `Ls` `Walk` `Glob` `Exists` `IsDir` `IsFile` `Size` `Age`
+**Read** `Read` `Lines`
+**Change** `MakeDir` `Make` `Write` `Copy` `Move` `Rename` `Remove`
 
+`Walk` skips `.git`, `node_modules`, `__pycache__`, `.cache`, `.venv` by
+default. `Age` is in days. `Remove` deletes files freely but needs
+`folders=True` before it will delete a tree — that is the one mistake you
+cannot undo.
+
+## net — other machines
+
+**Ask** `Fetch` `Status` `Reach` `Address` `Mine`
+**Read** `Json` `Links` `Host`
+**Put** `Send` `Download`
+
+Nothing here raises. A dead link gives `""`, an unreachable host gives
+`False`, a bad URL gives `0` — so one broken address never stops a run
+over a thousand of them.
+
+---
+
+## Worked examples
+
+**Every markdown file that mentions a word**
 ```python
-def bullet():
-    b = Body("shot", radius=0.2, drag=0.0, tags={"shot"})
-    b.parts = [Chain([Const(1), Expire(after=1.5)])]
-    return b
+run(Chain([
+    Walk("~/notes"),
+    Keep(Ext(".md")),
+    Keep(Chain([Read(), Contains("spark")])),
+    Say("found"),
+]))
 ```
 
-Swap `Expire(after=1.5)` for `Chain([Near(radius=0.5), Threshold(0.4), Die()])`
-and the shot dies on contact instead of on a timer. Same slot, same
-interface — that's the interchangeability doing the work.
+**Copy them somewhere, then write an index**
+```python
+run(Chain([
+    Walk("~/notes"), Keep(Ext(".md")),
+    Keep(Chain([Read(), Contains("spark")])),
+    Put("hits"), Copy(into="~/out"),
+    Var("hits"), Each(Name()), Join("\n"), Write("~/out/index.txt"),
+]))
+```
 
-## A complete creature
+**Everything on the phone bigger than 100 MB**
+```python
+run(Chain([
+    Walk("/sdcard"),
+    Keep(Chain([Size(), Threshold(100_000_000)])),
+    Say("big"),
+]))
+```
 
-From the demo: a hunter that steers toward prey, slows near obstacles, and
-fires when the target is roughly ahead and within range.
+**Pull every link off a page and download the PDFs**
+```python
+run(Chain([
+    Fetch("https://example.com/papers"),
+    Links(base="https://example.com/papers"),
+    Keep(Match(r"\.pdf$")),
+    Download(into="~/papers"),
+    Say("saved"),
+]))
+```
 
+**A creature, in the 3D world**
 ```python
 hunter.parts = [
-    # steer: angle to the prey -> PID -> rudder
     Chain([Bearing("prey"), PID(p=2.0, d=0.1), Clamp(-2, 2), Turn()]),
-
-    # throttle: full ahead, but back off when something is close
-    Chain([Ray(reach=12.0), Gain(1/12.0), Clamp(0.15, 1.0),
-           Gain(4.0), Thrust()]),
-
-    # fire when the prey is roughly ahead AND within 10
-    Chain([Fan([Chain([Bearing("prey"), Gain(-1), Clamp(-0.3, 0.3),
-                       Threshold(-0.29)]),
-                Chain([Near(radius=10.0, tag="prey"), Invert(), Bias(10),
-                       Threshold(0.5)])], how="mul"),
-           Spawn(bullet, ahead=1.0, speed=14.0, cooldown=0.4)]),
+    Chain([Ray(reach=12), Gain(1/12), Clamp(0.15, 1), Gain(4), Thrust()]),
+    Chain([Near(radius=10, tag="prey"), Invert(), Bias(10), Threshold(0.5),
+           Spawn(bullet, speed=14, cooldown=0.3)]),
 ]
 ```
 
 Three chains, each independent. Delete one and the rest still work.
 
-## Why this shape
+## Rearranging
 
-- **One signature** means an editor can offer every part in every slot
-  without knowing what any of them do.
-- **Chains nest**, so a useful combination becomes a single reusable part
-  with no new concept.
-- **No dependencies and no threads** — it steps when you call `world.step(dt)`,
-  so it drops into a terminal loop, a game tick, or a test unchanged.
-- **Sensors never write and motors never read**, so a chain can always be
-  cut anywhere and inspected.
+Editing behaviour means reordering names in a list. Nothing else changes,
+because every block has the same shape.
+
+- Swap `Thrust()` for `Lift()` — it climbs instead of advancing.
+- Drop `Clamp` — it stalls against walls.
+- Put `Smooth(0.2)` anywhere in the line — the whole thing gets less twitchy.
+- Swap `Expire(after=1.5)` for `Chain([Near(radius=0.5), Threshold(0.4), Die()])`
+  — the shot dies on contact instead of on a timer.
+
+The same conduits work in every domain. A `PID` does not care whether it
+is steering a ship or pacing a download; `Keep` does not care whether it
+is filtering bodies or filenames. That is the reason the language is
+split the way it is.
 
 ## Adding your own
 
-Subclass `Part`, override `step`. That's it — it is now usable everywhere
-every other part is.
+Subclass `Part`, override `step`. It is now usable everywhere every other
+block is.
 
 ```python
-class Bounce(Part):
-    """Flip the body's vertical speed when the signal goes up."""
+class Newer(Part):
+    """Keep only paths changed in the last n days."""
+    def __init__(self, days=7): self.days = days
     def step(self, ctx):
-        if ctx.value > 0:
-            ctx.body.vel.z = abs(ctx.body.vel.z)
-        return ctx.value
+        return Age().step(ctx) < self.days
 ```
-
-`CATALOGUE` at the bottom of `parts.py` lists every part by kind, ready to
-drive a menu or an editor.
