@@ -177,6 +177,73 @@ hunter.parts = [
 
 Three chains, each independent. Delete one and the rest still work.
 
+## connect — a script written in this language
+
+```bash
+python3 -m parts.connect spark                # a word
+python3 -m parts.connect ~/notes/plan.md      # a file
+python3 -m parts.connect spark /sdcard        # say where to look
+python3 -m parts.connect spark ~ --strict     # only 2+ routes agreeing
+python3 -m parts.connect --help               # list the routes
+```
+
+Give it a thing. It walks every folder below `where` and asks the same
+question of each file along **nine different routes at once**. Every route
+that answers yes is one point; results come back ranked by how many routes
+agreed.
+
+| Route | Says yes when |
+|---|---|
+| `name` | Its filename carries the word |
+| `mentions` | Its text says the word |
+| `backlink` | Its text names the thing's own file |
+| `linked` | The thing's text names this file |
+| `sibling` | It sits in the same folder |
+| `kind` | It is the same sort of file |
+| `when` | It changed within a day of the thing |
+| `words` | It shares uncommon words with the thing |
+| `addresses` | It points at an address the thing also points at |
+
+```
+connections to 'parts/files.py' (file), looking under ~/WebrowserTheme
+
+  6  connect.py   mentions sibling kind when words addresses
+  5  core.py      sibling kind when words addresses
+  3  house.sh     mentions words addresses
+  2  tfind.sh     mentions words
+```
+
+**Each route is one chain in the `ROUTES` list**, and that is the whole
+design:
+
+```python
+("sibling",
+ "it sits in the same folder",
+ Chain([Field("folder"), Is(Var("folder"))])),
+
+("when",
+ "it changed within a day of the thing",
+ Chain([Field("age"), Minus(Var("age")), Abs(),
+        Threshold(1.0, above=0, below=1)])),
+```
+
+Delete a line and that route stops being consulted. Reorder them and
+nothing breaks. Write a new one out of any blocks in the language and it
+joins the vote — nothing else in the file has to know it exists. Or pass
+your own list in:
+
+```python
+from parts.connect import connect, ROUTES
+only = [r for r in ROUTES if r[0] in ("name", "addresses")]
+connect("spark", "~/notes", routes=only)
+```
+
+The means of connection are data, not code.
+
+`connect.py` adds exactly three blocks of its own — `Words`, `Urls` and
+`Shared` — because comparing two bags of things is its own question.
+Everything else in it comes straight out of the language.
+
 ## Rearranging
 
 Editing behaviour means reordering names in a list. Nothing else changes,

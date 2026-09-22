@@ -38,12 +38,12 @@ from .core import (  # noqa: F401
     # sources
     Const, Var, Osc,
     # numbers
-    Gain, Bias, Invert, Clamp, Threshold, Smooth, Delay,
+    Gain, Bias, Invert, Minus, Abs, Is, Clamp, Threshold, Smooth, Delay,
     Integrate, Derive, PID,
     # text
     Lower, Upper, Strip, Split, Join, Replace, Contains, Match, Grab, Text,
     # lists
-    Count, First, Last, Sort, Uniq, Flatten, Field,
+    Count, First, Last, Sort, Uniq, Flatten, Field, Pack,
     # sinks
     Say, Put, Do,
 )

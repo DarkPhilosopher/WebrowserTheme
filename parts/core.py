@@ -232,6 +232,27 @@ class Invert(Part):
     def step(self, ctx): return -ctx.value
 
 
+class Minus(Part):
+    """Subtract. `other` may be a literal or another part."""
+    def __init__(self, other=0.0): self.other = other
+    def step(self, ctx): return ctx.value - _val(self.other, ctx)
+
+
+class Abs(Part):
+    """Distance from zero. Turns a difference into a gap."""
+    def step(self, ctx): return abs(ctx.value)
+
+
+class Is(Part):
+    """True when the signal equals this. Literal or another part."""
+    def __init__(self, other, fold=True): self.other, self.fold = other, fold
+    def step(self, ctx):
+        a, b = ctx.value, _val(self.other, ctx)
+        if self.fold and isinstance(a, str) and isinstance(b, str):
+            return a.lower() == b.lower()
+        return a == b
+
+
 class Clamp(Part):
     """Hold it between limits."""
     def __init__(self, lo=0.0, hi=1.0): self.lo, self.hi = lo, hi
@@ -332,20 +353,38 @@ class Replace(Part):
 
 
 class Contains(Part):
-    """True when the text is in the value. Case-insensitive by default."""
+    """True when the text is in the value. Case-insensitive by default.
+
+    `text` may be a literal, or another part -- `Contains(Var("name"))`
+    tests against whatever was stashed under that name earlier in the run.
+    """
     def __init__(self, text, fold=True): self.text, self.fold = text, fold
     def step(self, ctx):
-        hay, need = str(ctx.value), self.text
+        hay  = str(ctx.value)
+        need = str(_val(self.text, ctx))
+        if not need:
+            return False
         if self.fold:
             hay, need = hay.lower(), need.lower()
         return need in hay
 
 
 class Match(Part):
-    """True when the value matches this regular expression."""
+    """True when the value matches this regular expression.
+
+    `pattern` may be a literal or another part, same as Contains.
+    """
     def __init__(self, pattern, fold=True):
-        self.rx = re.compile(pattern, re.I if fold else 0)
-    def step(self, ctx): return bool(self.rx.search(str(ctx.value)))
+        self.pattern, self.fold = pattern, fold
+        self._rx = None if isinstance(pattern, Part) else \
+            re.compile(pattern, re.I if fold else 0)
+
+    def step(self, ctx):
+        rx = self._rx
+        if rx is None:
+            rx = re.compile(str(_val(self.pattern, ctx)),
+                            re.I if self.fold else 0)
+        return bool(rx.search(str(ctx.value)))
 
 
 class Grab(Part):
@@ -412,10 +451,35 @@ class Flatten(Part):
         return out
 
 
+class Pack(Part):
+    """Run several parts on the same input and collect them into a record.
+
+    Fan combines its branches into one answer; Pack keeps them apart under
+    names, so later blocks can pick with Field.
+
+        Pack({"name": Name(), "text": Read(), "size": Size()})
+    """
+    def __init__(self, fields):
+        self.fields = dict(fields)
+
+    def step(self, ctx):
+        seed, out = ctx.value, {}
+        for key, part in self.fields.items():
+            ctx.value = seed
+            out[key] = part.step(ctx)
+        ctx.value = out
+        return out
+
+
 class Field(Part):
     """Pull one named field out of a dict (or attribute off an object)."""
     def __init__(self, key, default=None): self.key, self.default = key, default
     def step(self, ctx): return _field(ctx.value, self.key, self.default)
+
+
+def _val(x, ctx):
+    """Resolve an argument that may be a literal or another part."""
+    return x.step(ctx) if isinstance(x, Part) else x
 
 
 def _field(v, key, default=None):
@@ -462,10 +526,10 @@ class Do(Part):
 CATALOGUE = {
     "link":    [Chain, Fan, Each, Keep, Drop, Gate, Try],
     "source":  [Const, Var, Osc],
-    "number":  [Gain, Bias, Invert, Clamp, Threshold, Smooth, Delay,
+    "number":  [Gain, Bias, Invert, Minus, Abs, Is, Clamp, Threshold, Smooth, Delay,
                 Integrate, Derive, PID],
     "text":    [Lower, Upper, Strip, Split, Join, Replace, Contains, Match,
                 Grab, Text],
-    "list":    [Count, First, Last, Sort, Uniq, Flatten, Field],
+    "list":    [Count, First, Last, Sort, Uniq, Flatten, Field, Pack],
     "sink":    [Say, Put, Do],
 }
