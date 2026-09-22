@@ -1,0 +1,22 @@
+# YOUR OWN BUTTONS.
+#
+#   python3 -m parts run my-buttons.parts
+#
+# The window becomes a strip across the top and eight squares.
+# Press one and it tells you which. Change the words in quotes
+# to whatever you like -- the squares are yours.
+#
+# Only works in Termux itself, where the screen can be touched.
+
+pad
+banner "press a square"
+button 1 "find files"
+button 2 "spin a cube"
+button 3 "paint"
+button 4 "big files"
+button 5 "my notes"
+button 6 "downloads"
+button 7 "more"
+button 8 "back"
+press
+say "you pressed"

@@ -49,8 +49,9 @@ from parts.files import Walk, Copy       # or be exact
 | `files` | Folders, files, copying and moving |
 | `net` | Other machines: fetching, reaching, downloading |
 | `screen` | A grid of pixels, shapes in 3D, and touch |
+| `pad` | The window as eight squares you press |
 
-**115 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+**119 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
 explains one.
 
 ---
@@ -73,7 +74,7 @@ explains one.
 
 **Lists** `Count` `First` `Last` `Sort` `Uniq` `Flatten` `Field` `Pack`
 
-**Sinks** `Say` `Put` `Do`
+**Sinks** `Say` `Put` `Tick` `Do`
 
 `Say` is the debugger of this language — drop it anywhere in a chain to
 see what is passing through.
@@ -214,7 +215,88 @@ python3 -m parts connect <thing>  # find what touches a thing
 python3 -m parts install          # make import work anywhere
 python3 -m parts run prog.parts   # run a plain-text program
 python3 -m parts menu             # build one with numbers only
+python3 -m parts pad              # build one by pressing squares
 ```
+
+## pad — the window as eight squares you press
+
+```bash
+python3 -m parts pad
+```
+
+The window is divided into a strip across the top and eight squares
+below it, sized to whatever window Termux gives them:
+
+```
+ parts -- press a square
+ 1. walk /sdcard
+
+
++-1----------------++-2----------------+
+|                  ||                  |
+|   add a block    ||   change lines   |
+|                  ||                  |
++------------------++------------------+
++-3----------------++-4----------------+
+|                  ||                  |
+|      run it      ||       save       |
+|                  ||                  |
++------------------++------------------+
++-5----------------++-6----------------+
+|                  ||                  |
+|       open       ||    see it all    |
+|                  ||                  |
++------------------++------------------+
++-7----------------++-8----------------+
+|                  ||                  |
+|       more       ||       back       |
+|                  ||                  |
++------------------++------------------+
+```
+
+**Eight squares, because that is the same rule the numbered menu keeps:**
+never more than eight choices, the last always goes back, and a longer
+list turns the seventh into `more`. The pad is that menu with the numbers
+replaced by places to press.
+
+**The strip is the top two squares joined.** It is where the program
+speaks — the question being asked, and the last lines of what you have
+built. When a block needs a setting typed, the pad steps aside and you
+type at the ordinary Termux prompt, then it redraws.
+
+Press squares to walk module → kind → block, and the block joins your
+program. Save it and it is an ordinary `.parts` file: the pad, the
+numbered menu and the text file are three views of one thing.
+
+### The pad is made of blocks
+
+Nothing about it is special. A program can lay out its own:
+
+```
+pad
+banner "press a square"
+button 1 "find files"
+button 2 "spin a cube"
+button 8 "back"
+press
+say "you pressed"
+```
+
+| Block | Does |
+|---|---|
+| `Pad` | Divide the window into squares and clear it |
+| `Button` | Draw one square, with words in it |
+| `Banner` | Write into the strip across the top |
+| `Press` | Wait for a square to be pressed; answers its number |
+
+`pad 2 4` sets how many across and down; `pad 3 4 strip=1` gives twelve
+squares instead of eight. `button 3 "" on=true` fills a square in, so it
+can show something being on as well as being pressable.
+
+**Touch, with a way out.** `press` reads the terminal's own touch
+reporting. Where that is not available it takes a typed digit instead, so
+the same program works either way — and with no terminal at all it
+answers `None` rather than hanging.
 
 ## screen — pixels, shapes, and touch
 

@@ -22,6 +22,7 @@ FOUR MODULES, ONE TONGUE
     files   folders, files, copying and moving
     net     other machines: fetching, reaching, downloading
     screen  a grid of pixels, shapes in 3D, and touch
+    pad     the window as eight squares you press
 
 Import the lot with `from parts import *`, or take one module at a time
 with `from parts.files import Walk, Copy` when you want to be exact.
@@ -29,7 +30,7 @@ with `from parts.files import Walk, Copy` when you want to be exact.
 Standard library only. No installs, no threads, no 64-bit requirement.
 """
 
-from . import core, files, net, screen, space
+from . import core, files, net, pad, screen, space
 
 from .core import (  # noqa: F401
     # the contract
@@ -66,6 +67,10 @@ from .net import (  # noqa: F401
     Send, Download,
 )
 
+from .pad import (  # noqa: F401
+    Pad, Button, Banner, Press,
+)
+
 from .screen import (  # noqa: F401
     Grid, Screen, Draw, Clear, Wipe,
     Light, Dark, Meter, Fill, Lit, Lights,
@@ -80,6 +85,7 @@ CATALOGUE = {
     "files": files.CATALOGUE,
     "net":    net.CATALOGUE,
     "screen": screen.CATALOGUE,
+    "pad":    pad.CATALOGUE,
 }
 
 

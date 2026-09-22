@@ -8,6 +8,7 @@
     python3 -m parts connect <thing>    find what touches a thing
     python3 -m parts run prog.parts     run a plain-text program
     python3 -m parts menu               build one with numbers only
+    python3 -m parts pad                build one by pressing squares
 """
 
 import sys
@@ -28,6 +29,10 @@ def main(argv):
 
     if argv and argv[0] == "run":
         from .script import main as go
+        return go(argv[1:])
+
+    if argv and argv[0] == "pad":
+        from .pad import main as go
         return go(argv[1:])
 
     if argv and argv[0] == "menu":
