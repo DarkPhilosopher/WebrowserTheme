@@ -1,0 +1,16 @@
+# A CUBE THAT TURNS BY ITSELF.
+#
+#   python3 -m parts run spin-a-cube.parts --loop
+#
+# Press ctrl-c to stop it.
+# Try: change `by=12` to `by=3` to slow it down,
+#      change `box 3 3 3` to `ball 2` for a ball.
+
+tick angle by=12 wrap=360
+screen fit
+box 3 3 3
+spin y var=angle
+spin x 20
+flat
+plot
+draw

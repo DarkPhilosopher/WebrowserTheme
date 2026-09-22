@@ -21,6 +21,7 @@ FOUR MODULES, ONE TONGUE
     space   a 3D world: bodies, sensors, motors
     files   folders, files, copying and moving
     net     other machines: fetching, reaching, downloading
+    screen  a grid of pixels, shapes in 3D, and touch
 
 Import the lot with `from parts import *`, or take one module at a time
 with `from parts.files import Walk, Copy` when you want to be exact.
@@ -28,7 +29,7 @@ with `from parts.files import Walk, Copy` when you want to be exact.
 Standard library only. No installs, no threads, no 64-bit requirement.
 """
 
-from . import core, files, net, space
+from . import core, files, net, screen, space
 
 from .core import (  # noqa: F401
     # the contract
@@ -45,7 +46,7 @@ from .core import (  # noqa: F401
     # lists
     Count, First, Last, Sort, Uniq, Flatten, Field, Pack,
     # sinks
-    Say, Put, Do,
+    Say, Put, Tick, Do,
 )
 
 from .space import (  # noqa: F401
@@ -65,13 +66,20 @@ from .net import (  # noqa: F401
     Send, Download,
 )
 
+from .screen import (  # noqa: F401
+    Grid, Screen, Draw, Clear, Wipe,
+    Light, Dark, Meter, Fill, Lit, Lights,
+    Dot, Box, Ball, Spin, Shift, Grow, Flat, Plot, Tap, Spot,
+)
+
 
 # Every block, by module and kind -- for menus, editors, and browsing.
 CATALOGUE = {
     "core":  core.CATALOGUE,
     "space": space.CATALOGUE,
     "files": files.CATALOGUE,
-    "net":   net.CATALOGUE,
+    "net":    net.CATALOGUE,
+    "screen": screen.CATALOGUE,
 }
 
 

@@ -1,0 +1,12 @@
+# PAINT BY TOUCHING THE SCREEN.
+#
+#   python3 -m parts run paint.parts --loop
+#
+# Touch anywhere and that square lights up. Press ctrl-c to stop.
+# Touch is read straight from the terminal, so it only works in
+# Termux itself -- not through a pipe.
+
+screen fit
+tap
+spot
+draw

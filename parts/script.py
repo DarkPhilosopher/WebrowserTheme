@@ -51,11 +51,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     import parts as _parts
     from parts import connect as _connect
-    from parts.core import Chain, Fan, Part, run
+    from parts.core import Chain, Ctx, Fan, Part, run
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
-    from .core import Chain, Fan, Part, run
+    from .core import Chain, Ctx, Fan, Part, run
 
 
 # Blocks that hold another block rather than a plain setting.
@@ -349,17 +349,61 @@ def main(argv):
         if "--show" in argv:
             show(text)
             return 0
-        answer = run(parse(text))
+        chain = parse(text)
     except ScriptError as e:
         print("\n%s\n" % e)
         return 1
 
+    if "--loop" in argv:
+        return _loop(chain, argv)
+
+    answer = run(chain)
     # A program that ends in `say` has already spoken for itself.
     if answer is not None and not isinstance(answer, (list, tuple)):
         print(answer)
     elif isinstance(answer, (list, tuple)) and "--quiet" not in argv:
         print("%d item%s" % (len(answer), "" if len(answer) == 1 else "s"))
     return 0
+
+
+def _loop(chain, argv):
+    """Run the same program over and over, keeping what it remembers.
+
+    One Ctx is reused, so `tick` keeps counting and anything with a memory
+    -- smooth, delay, integrate -- carries on where it left off. Stop it
+    with ctrl-c.
+    """
+    import time
+
+    times = _after("--loop", argv)
+    times = int(times) if times and str(times).lstrip("-").isdigit() else 0
+    pause = _after("--fps", argv)
+    pause = 1.0 / float(pause) if pause else 1 / 12.0
+
+    ctx = Ctx()
+    sys.stdout.write("\033[2J\033[?25l")          # clear, hide the cursor
+    n = 0
+    try:
+        while times <= 0 or n < times:
+            ctx.value = None
+            chain.step(ctx)
+            n += 1
+            time.sleep(pause)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        sys.stdout.write("\033[?25h\n")           # cursor back
+        sys.stdout.flush()
+    return 0
+
+
+def _after(flag, argv):
+    """The word after a flag, if there is one that isn't another flag."""
+    if flag in argv:
+        i = argv.index(flag)
+        if i + 1 < len(argv) and not argv[i + 1].startswith("-"):
+            return argv[i + 1]
+    return None
 
 
 if __name__ == "__main__":

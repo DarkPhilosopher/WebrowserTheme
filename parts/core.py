@@ -508,11 +508,34 @@ class Say(Part):
 
 
 class Put(Part):
-    """Save the value into the run's scratch space under a name."""
-    def __init__(self, key): self.key = key
+    """Save a value into the run's scratch space under a name.
+
+    With no value it saves whatever is coming down the chain; with one it
+    saves that instead, so `put hot 0.8` sets a variable outright.
+    """
+    def __init__(self, key, value=None):
+        self.key, self.value = key, value
+
     def step(self, ctx):
-        ctx.vars[self.key] = ctx.value
+        ctx.vars[self.key] = ctx.value if self.value is None else self.value
         return ctx.value
+
+
+class Tick(Part):
+    """Count up in a named variable, a step each time this is reached.
+
+    The way a program makes something move: `tick angle by=10` adds ten
+    to `angle` every pass, and anything reading `angle` follows along.
+    """
+    def __init__(self, key, by=1, start=0, wrap=None):
+        self.key, self.by, self.start, self.wrap = key, by, start, wrap
+
+    def step(self, ctx):
+        now = ctx.vars.get(self.key, self.start) + self.by
+        if self.wrap:
+            now %= self.wrap
+        ctx.vars[self.key] = now
+        return now
 
 
 class Do(Part):
@@ -531,5 +554,5 @@ CATALOGUE = {
     "text":    [Lower, Upper, Strip, Split, Join, Replace, Contains, Match,
                 Grab, Text],
     "list":    [Count, First, Last, Sort, Uniq, Flatten, Field, Pack],
-    "sink":    [Say, Put, Do],
+    "sink":    [Say, Put, Tick, Do],
 }

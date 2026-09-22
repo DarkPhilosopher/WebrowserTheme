@@ -48,8 +48,9 @@ from parts.files import Walk, Copy       # or be exact
 | `space` | A 3D world: bodies, sensors, motors |
 | `files` | Folders, files, copying and moving |
 | `net` | Other machines: fetching, reaching, downloading |
+| `screen` | A grid of pixels, shapes in 3D, and touch |
 
-**94 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+**115 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
 explains one.
 
 ---
@@ -214,6 +215,138 @@ python3 -m parts install          # make import work anywhere
 python3 -m parts run prog.parts   # run a plain-text program
 python3 -m parts menu             # build one with numbers only
 ```
+
+## screen — pixels, shapes, and touch
+
+A grid of pixels you can light from a number, shapes in XYZ, and touch.
+
+### A number turning a pixel on
+
+This is the point of the module, and it is three lines:
+
+```
+screen 12 6
+put hot 0.8
+
+var hot
+light 2 2 at=0.5
+light 4 2 at=0.9
+meter 0 4 10 most=1.0
+draw
+```
+
+```
+........................
+........................
+....##..................       hot is 0.8
+........................       so the 0.5 pixel is ON
+################........       and the 0.9 pixel is OFF
+........................       and the meter is 80% full
+```
+
+Change `0.8` to `0.3` and both pixels go out and the bar shrinks. The
+number keeps travelling down the chain, so **one number can drive any
+number of pixels, each at its own threshold**. That number can come from
+anywhere in the language — a file's size, a sensor in the 3D world, a
+reading off the network.
+
+### The blocks
+
+| Group | Blocks |
+|---|---|
+| **screen** | `Screen` `Draw` `Clear` `Wipe` |
+| **pixels** | `Light` `Dark` `Meter` `Fill` `Lit` `Lights` |
+| **shapes** | `Dot` `Box` `Ball` |
+| **matrix** | `Spin` `Shift` `Grow` `Flat` `Plot` |
+| **touch** | `Tap` `Spot` |
+
+`screen fit` makes the grid as big as the terminal window. Each pixel
+draws two characters wide, because a character is taller than it is wide
+— two side by side come out square.
+
+### Shapes and the XYZ matrices
+
+```
+screen 24 12
+box 3 3 3
+spin y 35
+spin x 20
+flat
+plot
+draw
+```
+
+```
+......................########..................
+..................######..######................
+..............######......##..####..............
+..............######......##....##..............
+..............##..################..............
+..............##......######......##............
+..............##......##..##......##............
+..............##......##..##......##............
+............##........##..##......##............
+............##..####################............
+............########################............
+```
+
+A shape is a list of XYZ points. `spin` `shift` `grow` are the rotation,
+translation and scaling matrices — they turn the points. `flat` drops
+them onto the grid (with perspective; `flat near=0` for none). `plot`
+lights whatever pixels they land on.
+
+### Making it move
+
+`tick` counts up in a variable, `spin ... var=` reads it, and `--loop`
+runs the program over and over:
+
+```
+tick angle by=12 wrap=360
+screen fit
+box 3 3 3
+spin y var=angle
+flat
+plot
+draw
+```
+
+```bash
+python3 -m parts run spin-a-cube.parts --loop
+python3 -m parts run spin-a-cube.parts --loop 50 --fps 20
+```
+
+One run of the loop remembers the last, so `tick`, `smooth`, `delay` and
+`integrate` all carry on where they left off. Ctrl-c stops it.
+
+### Touch
+
+`tap` waits for a touch and answers `{"x": .., "y": ..}` — the pixel you
+touched. `spot` lights the pixel the signal names. Together they are a
+painting program:
+
+```
+screen fit
+tap
+spot
+draw
+```
+
+Touch is read straight from the terminal, so it works in Termux itself
+but not through a pipe. Where there is no terminal, `tap` answers `None`
+at once rather than hanging.
+
+### Locking the screen upright
+
+**A program cannot do this** — screen rotation is an Android setting, not
+something Python can reach. Set it once, by hand:
+
+- **Android:** open quick settings and turn **auto-rotate off** while the
+  phone is upright.
+- **Termux:** Settings → Terminal → **Orientation → portrait** pins
+  Termux itself regardless of the system setting.
+
+`screen fit` then measures whatever window it is given, so the grid fills
+the area either way.
 
 ## The menu — building with numbers only
 

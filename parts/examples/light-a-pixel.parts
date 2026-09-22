@@ -1,0 +1,15 @@
+# ONE PIXEL, TURNED ON BY A NUMBER.
+#
+#   python3 -m parts run light-a-pixel.parts
+#
+# Change 0.8 to 0.3 and run it again. The dot goes out, and the
+# bar gets shorter. That is the whole idea: a number decides.
+
+screen 12 6
+put hot 0.8
+
+var hot
+light 2 2 at=0.5
+light 4 2 at=0.9
+meter 0 4 10 most=1.0
+draw top=false
