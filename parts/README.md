@@ -49,7 +49,7 @@ from parts.files import Walk, Copy       # or be exact
 | `files` | Folders, files, copying and moving |
 | `net` | Other machines: fetching, reaching, downloading |
 
-**90 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+**94 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
 explains one.
 
 ---
@@ -64,13 +64,13 @@ explains one.
 
 **Sources** `Const` `Var` `Osc`
 
-**Numbers** `Gain` `Bias` `Invert` `Clamp` `Threshold` `Smooth` `Delay`
+**Numbers** `Gain` `Bias` `Invert` `Minus` `Abs` `Is` `Clamp` `Threshold` `Smooth` `Delay`
 `Integrate` `Derive` `PID`
 
 **Text** `Lower` `Upper` `Strip` `Split` `Join` `Replace` `Contains`
 `Match` `Grab` `Text`
 
-**Lists** `Count` `First` `Last` `Sort` `Uniq` `Flatten` `Field`
+**Lists** `Count` `First` `Last` `Sort` `Uniq` `Flatten` `Field` `Pack`
 
 **Sinks** `Say` `Put` `Do`
 
@@ -188,7 +188,7 @@ python3 -m parts.connect --help               # list the routes
 ```
 
 Give it a thing. It walks every folder below `where` and asks the same
-question of each file along **nine different routes at once**. Every route
+question of each file along **ten different routes at once**. Every route
 that answers yes is one point; results come back ranked by how many routes
 agreed.
 
@@ -203,14 +203,40 @@ agreed.
 | `when` | It changed within a day of the thing |
 | `words` | It shares uncommon words with the thing |
 | `addresses` | It points at an address the thing also points at |
+| `git` | It was committed alongside the thing |
+
+`git` is the strongest of them. Two files edited in the same commit were,
+by someone's judgement at the time, **one change** — that beats any amount
+of guessing from names. It reads real history (`git log` on the file, then
+`git diff-tree` on each commit) and quietly returns nothing outside a
+repository.
+
+### A route that matches everything is ignored
+
+After a fresh clone every file has the same timestamp, so `when` answers
+yes to all of them. In a folder of notes, `kind` does the same. A route
+like that carries no information, so **any route matching more than half
+of what it looked at stops counting** — it still shows, in brackets, but
+its votes do not score.
+
+```
+  3  tiles.md  mentions sibling words (kind) (when)
+  1  diary.md  sibling (kind) (when)
+
+  not counted (matched nearly everything): kind 100%, when 100%
+```
+
+Without that rule the same search returns three unrelated files scoring 2
+apiece on nothing but `kind` and `when`. Pass `common=1.0` to let every
+route vote regardless.
 
 ```
 connections to 'parts/files.py' (file), looking under ~/WebrowserTheme
 
-  6  connect.py   mentions sibling kind when words addresses
-  5  core.py      sibling kind when words addresses
-  3  house.sh     mentions words addresses
-  2  tfind.sh     mentions words
+  5  README.md    mentions backlink sibling when git (words) (addresses)
+  5  __init__.py  mentions sibling kind when git (words) (addresses)
+  4  connect.py   mentions sibling kind when (words) (addresses)
+  1  house.sh     mentions (words) (addresses)
 ```
 
 **Each route is one chain in the `ROUTES` list**, and that is the whole
@@ -240,8 +266,8 @@ connect("spark", "~/notes", routes=only)
 
 The means of connection are data, not code.
 
-`connect.py` adds exactly three blocks of its own — `Words`, `Urls` and
-`Shared` — because comparing two bags of things is its own question.
+`connect.py` adds four blocks of its own — `Words`, `Urls`, `Shared` and
+`Among` — because comparing two bags of things is its own question.
 Everything else in it comes straight out of the language.
 
 ## Rearranging

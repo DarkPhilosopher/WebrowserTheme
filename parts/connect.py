@@ -80,6 +80,52 @@ class Shared(Part):
         return len(mine & other) >= self.least
 
 
+class Among(Part):
+    """True when the signal is one of a stashed collection."""
+    def __init__(self, key):
+        self.key = key
+
+    def step(self, ctx):
+        return ctx.value in (ctx.vars.get(self.key) or set())
+
+
+def cochanged(path, commits=60):
+    """Every file that has ever been committed alongside this one.
+
+    Git already knows what belongs together -- two files edited in the
+    same commit were, by someone's judgement at the time, one change.
+    That is a stronger signal than any amount of guessing from names.
+    Returns an empty set outside a repository.
+    """
+    import subprocess
+    folder = os.path.dirname(path) or "."
+
+    def git(*args):
+        try:
+            out = subprocess.run(("git", "-C", folder) + args,
+                                 capture_output=True, text=True, timeout=20)
+            return out.stdout.splitlines() if out.returncode == 0 else []
+        except Exception:
+            return []
+
+    root = git("rev-parse", "--show-toplevel")
+    if not root:
+        return set()
+    root = root[0]
+
+    shas = git("log", "--format=%H", "-n", str(commits), "--", path)
+    if not shas:
+        return set()
+
+    together = set()
+    for sha in shas:
+        for name in git("diff-tree", "--no-commit-id", "--name-only",
+                        "-r", sha):
+            together.add(os.path.join(root, name))
+    together.discard(os.path.abspath(path))
+    return together
+
+
 # ==========================================================================
 #  WHAT WE LEARN ABOUT EACH FILE
 # ==========================================================================
@@ -141,6 +187,10 @@ ROUTES = [
     ("addresses",
      "it points at an address the thing also points at",
      Chain([Field("text"), Urls(), Shared("urls")])),
+
+    ("git",
+     "it was committed alongside the thing",
+     Chain([Field("path"), Among("cochanged")])),
 ]
 
 
@@ -163,6 +213,7 @@ def about(thing):
             "age":    run(Age(), path),
             "words":  run(Words(), text),
             "urls":   run(Urls(), text),
+            "cochanged": cochanged(path),
             "self":   path,
         }
     # Not a file -- treat it as a plain word. Routes that compare against a
@@ -173,18 +224,30 @@ def about(thing):
     word = str(thing)
     return {"word": word, "file": "\0", "source": "\0",
             "folder": "\0", "ext": "\0", "age": -1e9,
-            "words": {word.lower()}, "urls": set(), "self": None}
+            "words": {word.lower()}, "urls": set(), "cochanged": set(),
+            "self": None}
 
 
-def connect(thing, where="~", routes=ROUTES, least=1, limit=40):
-    """Return [(score, path, [route names]), ...], best first."""
+def connect(thing, where="~", routes=ROUTES, least=1, limit=40,
+            common=0.5, explain=False):
+    """Return [(score, path, [route names]), ...], best first.
+
+    A route that says yes to more than `common` of everything it looked at
+    is carrying no information -- after a fresh clone `when` matches every
+    file on disk, and in a folder of notes `kind` matches every one of
+    them. Such a route is still shown, in brackets, but its votes do not
+    count toward the score. Set common=1.0 to let every route vote.
+
+    With explain=True, returns (results, {route: hit rate}) for the routes
+    that were discounted.
+    """
     facts   = about(thing)
     records = run(Chain([Walk(where), Each(RECORD)]))
+    records = [r for r in records if r["path"] != facts["self"]]
 
-    scored = []
+    # 1. ask every route about every file
+    raw = []
     for rec in records:
-        if rec["path"] == facts["self"]:
-            continue
         hits = []
         for name, _why, chain in routes:
             try:
@@ -192,20 +255,38 @@ def connect(thing, where="~", routes=ROUTES, least=1, limit=40):
                     hits.append(name)
             except Exception:
                 pass
-        if len(hits) >= least:
-            scored.append((len(hits), rec["path"], hits))
+        raw.append((rec["path"], hits))
+
+    # 2. find the routes that answered yes to nearly everything
+    dropped = {}
+    if records and len(records) >= 4:
+        for name, _why, _chain in routes:
+            rate = sum(1 for _, hits in raw if name in hits) / len(records)
+            if rate > common:
+                dropped[name] = rate
+
+    # 3. score on what is left, but keep the weak hits visible
+    scored = []
+    for path, hits in raw:
+        strong = [h for h in hits if h not in dropped]
+        if len(strong) < least:
+            continue
+        shown = strong + ["(%s)" % h for h in hits if h in dropped]
+        scored.append((len(strong), path, shown))
 
     scored.sort(key=lambda r: (-r[0], r[1]))
-    return scored[:limit]
+    scored = scored[:limit]
+    return (scored, dropped) if explain else scored
 
 
-def report(thing, where="~", least=1, limit=40):
+def report(thing, where="~", least=1, limit=40, common=0.5):
     facts = about(thing)
     kind  = "file" if facts["self"] else "word"
     root  = os.path.abspath(os.path.expanduser(where))
     print("\nconnections to %r (%s), looking under %s\n" % (str(thing), kind, root))
 
-    found = connect(thing, where, least=least, limit=limit)
+    found, dropped = connect(thing, where, least=least, limit=limit,
+                             common=common, explain=True)
     if not found:
         print("  nothing connected.")
         print("  routes tried: %s\n" % ", ".join(n for n, _, _ in ROUTES))
@@ -216,8 +297,14 @@ def report(thing, where="~", least=1, limit=40):
         print("  %d  %-*s  %s" % (score, width, os.path.basename(path),
                                   " ".join(hits)))
         print("     %s" % (os.path.dirname(path) or "."))
-    ways = sorted({h for _, _, hs in found for h in hs})
-    print("\n  %d connected, by: %s\n" % (len(found), ", ".join(ways)))
+
+    ways = sorted({h for _, _, hs in found for h in hs if not h.startswith("(")})
+    print("\n  %d connected, by: %s" % (len(found), ", ".join(ways) or "nothing"))
+    if dropped:
+        print("  not counted (matched nearly everything): %s" %
+              ", ".join("%s %d%%" % (n, r * 100)
+                        for n, r in sorted(dropped.items())))
+    print()
     return found
 
 
