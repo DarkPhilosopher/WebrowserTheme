@@ -7,6 +7,7 @@
     python3 -m parts where              say whether that is done
     python3 -m parts connect <thing>    find what touches a thing
     python3 -m parts run prog.parts     run a plain-text program
+    python3 -m parts menu               build one with numbers only
 """
 
 import sys
@@ -27,6 +28,10 @@ def main(argv):
 
     if argv and argv[0] == "run":
         from .script import main as go
+        return go(argv[1:])
+
+    if argv and argv[0] == "menu":
+        from .menu import main as go
         return go(argv[1:])
 
     from . import describe, blocks

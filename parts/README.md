@@ -212,7 +212,71 @@ python3 -m parts Ray              # explain one block
 python3 -m parts connect <thing>  # find what touches a thing
 python3 -m parts install          # make import work anywhere
 python3 -m parts run prog.parts   # run a plain-text program
+python3 -m parts menu             # build one with numbers only
 ```
+
+## The menu — building with numbers only
+
+For a phone, where typing is the hard part:
+
+```bash
+python3 -m parts menu
+python3 -m parts menu mine.parts     # start from a file
+```
+
+```
+==============================================
+ parts -- build with blocks
+==============================================
+ your program:
+   1  walk /tmp/lab
+   2  keep ext .md
+   3  say found
+----------------------------------------------
+  1) add a block
+  2) edit the lines
+  3) run it
+  4) see its shape
+  5) save to a file
+  6) open a file
+  7) explain a block
+  8) quit
+ 1-8:
+```
+
+**Never more than eight options, and the last always goes back.** When a
+list is longer than fits, the seventh becomes `more...` so the count on
+screen never changes:
+
+```
+ core / number  (1 of 3)
+----------------------------------------------
+  1) Gain
+  2) Bias
+  3) Invert
+  4) Minus
+  5) Abs
+  6) Is
+  7) more...
+  8) back
+```
+
+You walk module → kind → block, and only type when a block wants a
+setting. The screen always shows the program as it stands, so you can see
+what you are connecting to what.
+
+**The menu and the text are two views of one thing.** What you build here
+saves as an ordinary `.parts` file, which you can then edit by hand, run
+from the command line, and open in the menu again:
+
+```bash
+python3 -m parts menu              # build it with numbers
+python3 -m parts run mine.parts    # run what it saved
+```
+
+Two things the menu will not do, because one line cannot say them: a
+holder is never offered another holder, and `fan` can only be added as
+`fan all` — indent its `- ` branches underneath in a text editor.
 
 ## Writing a program as plain text
 
