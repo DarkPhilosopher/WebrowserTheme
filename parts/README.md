@@ -177,6 +177,42 @@ hunter.parts = [
 
 Three chains, each independent. Delete one and the rest still work.
 
+## Putting it anywhere
+
+Keep the folder wherever you like — Downloads, a memory card, anywhere —
+and run this once:
+
+```bash
+python3 /wherever/parts/install.py
+```
+
+`import parts` then works from **any folder, in any script**, with nothing
+copied and no `PYTHONPATH` to remember. It writes a one-line `.pth` file
+into Python's site-packages naming the folder; Python reads those at
+startup. Move the folder later and run it again.
+
+```bash
+python3 -m parts where      # is it installed, and pointing where?
+python3 -m parts install    # same as install.py
+python3 /wherever/parts/install.py --remove
+```
+
+Without installing, these still work:
+
+```bash
+python3 /wherever/parts/connect.py spark /sdcard   # point at the file
+cd /the/folder/holding/parts && python3 -m parts connect spark
+```
+
+## The command line
+
+```bash
+python3 -m parts                  # every block, by module and kind
+python3 -m parts Ray              # explain one block
+python3 -m parts connect <thing>  # find what touches a thing
+python3 -m parts install          # make import work anywhere
+```
+
 ## connect — a script written in this language
 
 ```bash
