@@ -1,0 +1,8 @@
+# Write a list of your notes into one file.
+
+walk ~/notes
+keep ext .md
+each name
+sort
+join "\n"
+write ~/notes/index.txt

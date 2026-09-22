@@ -1,0 +1,11 @@
+# Anything you touched in the last two days, newest habits first.
+#
+# `age` is in days, so `threshold 2 above=0 below=1` keeps what is
+# YOUNGER than two days -- above the line scores 0, below it scores 1.
+
+walk ~
+keep
+    age
+    threshold 2 above=0 below=1
+sort
+say recent

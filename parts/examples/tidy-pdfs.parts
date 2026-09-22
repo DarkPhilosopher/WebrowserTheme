@@ -1,0 +1,9 @@
+# Gather every PDF scattered around the phone into one folder.
+#
+# Copy leaves the originals alone. Swap `copy` for `move` to take them
+# out of where they were -- same line, same shape.
+
+walk /sdcard
+keep ext .pdf
+copy ~/pdfs
+say gathered

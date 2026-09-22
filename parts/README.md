@@ -211,7 +211,90 @@ python3 -m parts                  # every block, by module and kind
 python3 -m parts Ray              # explain one block
 python3 -m parts connect <thing>  # find what touches a thing
 python3 -m parts install          # make import work anywhere
+python3 -m parts run prog.parts   # run a plain-text program
 ```
+
+## Writing a program as plain text
+
+A program can be a plain text file, one block a line — no brackets, no
+commas, no Python. Edit it in any text editor.
+
+```
+# every markdown file on the phone that talks about spark
+walk /sdcard
+keep ext .md
+keep
+    read
+    contains spark
+say found
+```
+
+```bash
+python3 -m parts run find-notes.parts
+python3 -m parts run find-notes.parts --show    # print the shape, run nothing
+```
+
+### The rules, all of them
+
+1. A line is `blockname setting setting`.
+2. Blank lines are ignored. Anything after `#` is a note to yourself.
+3. A block that holds another — `keep` `drop` `each` `gate` `try` — takes
+   it on the same line, or indented underneath:
+
+   ```
+   keep ext .md                 # same line, one block
+   keep                         # indented, a whole chain
+       read
+       contains spark
+   ```
+
+4. `fan` holds branches, each marked `-`, and combines them with
+   `all` `any` `sum` `max` `min` `mul` `list`:
+
+   ```
+   fan any
+       - read
+         contains spark
+       - name
+         contains engine
+   ```
+
+5. Numbers become numbers; `true`, `false` and `none` become themselves.
+6. `name=value` sets a setting by name: `copy into=~/out`.
+7. Quotes only group words. **A backslash is left alone**, so
+   `match \.pdf$` reaches the regex intact — except inside quotes, where
+   `\n` and `\t` mean what they look like: `join "\n"`.
+
+Every block in the language works, under its own name in lower case.
+
+### When you get it wrong
+
+The error names the line and, for a misspelling, what you probably meant:
+
+```
+line 3: there is no block called 'saay'.
+  Did you mean: say
+
+line 2: keep needs a block to hold, either after it or indented under it
+
+line 2: threshold does not take those settings (takes from 1 to 4
+  positional arguments but 6 were given).
+  Try: python3 -m parts Threshold
+```
+
+### Examples to start from
+
+`parts/examples/` holds six working programs — copy one and change the
+paths:
+
+| File | Does |
+|---|---|
+| `find-notes.parts` | Markdown files that mention a word |
+| `big-files.parts` | Everything over 100 MB |
+| `tidy-pdfs.parts` | Gather scattered PDFs into one folder |
+| `index.parts` | Write a list of your notes to a file |
+| `page-links.parts` | Pull every PDF linked from a web page |
+| `recent-work.parts` | Anything touched in the last two days |
 
 ## connect — a script written in this language
 

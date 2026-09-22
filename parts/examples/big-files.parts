@@ -1,0 +1,7 @@
+# What is eating the space -- everything over 100 MB.
+
+walk /sdcard
+keep
+    size
+    threshold 100000000
+say big

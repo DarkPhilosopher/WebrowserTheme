@@ -1,0 +1,11 @@
+# Every PDF linked from a web page, pulled down.
+#
+# fetch reads the page, links pulls the addresses out of it, keep throws
+# away the ones that are not PDFs, download saves what is left.
+
+fetch https://example.com/papers
+links base=https://example.com/papers
+keep
+    match \.pdf$
+download ~/papers
+say saved

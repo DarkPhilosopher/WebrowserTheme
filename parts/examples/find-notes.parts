@@ -1,0 +1,13 @@
+# Every markdown file on the phone that talks about spark.
+#
+#   python3 -m parts run find-notes.parts
+#
+# Change /sdcard to wherever you keep things, and spark to whatever
+# you are looking for. Nothing else needs touching.
+
+walk /sdcard
+keep ext .md
+keep
+    read
+    contains spark
+say found
