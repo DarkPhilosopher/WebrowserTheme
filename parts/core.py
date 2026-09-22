@@ -215,32 +215,50 @@ class Osc(Part):
 #  NUMBER CONDUITS
 # ==========================================================================
 
-class Gain(Part):
+class Number(Part):
+    """One number in, one number out -- the shape every block below shares.
+
+    A `None` passes straight through untouched. That matters: a `gate`
+    that shut hands on None, and a `delay` hands on None until it has
+    filled up. Without this, the very next block in the chain would stop
+    the whole program with a type error over something that is simply
+    not there yet.
+
+    To write one of these, override `on` rather than `step`.
+    """
+    def step(self, ctx):
+        return None if ctx.value is None else self.on(ctx.value, ctx)
+
+    def on(self, value, ctx):
+        return value
+
+
+class Gain(Number):
     """Multiply the number. The volume knob of the language."""
     def __init__(self, k=1.0): self.k = k
-    def step(self, ctx): return ctx.value * self.k
+    def on(self, v, ctx): return v * self.k
 
 
-class Bias(Part):
-    """Add a constant."""
+class Bias(Number):
+    """Add a constant to the number."""
     def __init__(self, k=0.0): self.k = k
-    def step(self, ctx): return ctx.value + self.k
+    def on(self, v, ctx): return v + self.k
 
 
-class Invert(Part):
-    """Flip the sign."""
-    def step(self, ctx): return -ctx.value
+class Invert(Number):
+    """Flip the sign: 3 becomes -3, and -3 becomes 3."""
+    def on(self, v, ctx): return -v
 
 
-class Minus(Part):
+class Minus(Number):
     """Subtract. `other` may be a literal or another part."""
     def __init__(self, other=0.0): self.other = other
-    def step(self, ctx): return ctx.value - _val(self.other, ctx)
+    def on(self, v, ctx): return v - _val(self.other, ctx)
 
 
-class Abs(Part):
+class Abs(Number):
     """Distance from zero. Turns a difference into a gap."""
-    def step(self, ctx): return abs(ctx.value)
+    def on(self, v, ctx): return abs(v)
 
 
 class Is(Part):
@@ -253,69 +271,77 @@ class Is(Part):
         return a == b
 
 
-class Clamp(Part):
-    """Hold it between limits."""
-    def __init__(self, lo=0.0, hi=1.0): self.lo, self.hi = lo, hi
-    def step(self, ctx): return max(self.lo, min(self.hi, ctx.value))
+class Clamp(Number):
+    """Hold the number between two limits.
+
+    Given them the wrong way round -- `clamp 10 0` for "between 0 and 10"
+    -- it swaps them, rather than silently answering 10 to everything.
+    """
+    def __init__(self, lo=0.0, hi=1.0):
+        self.lo, self.hi = (lo, hi) if lo <= hi else (hi, lo)
+    def on(self, v, ctx): return max(self.lo, min(self.hi, v))
 
 
-class Threshold(Part):
-    """Above the line or not. Analogue becomes yes/no."""
+class Threshold(Number):
+    """Above the line or not. Turns a measurement into a yes or no."""
     def __init__(self, at=0.5, above=1.0, below=0.0):
         self.at, self.above, self.below = at, above, below
-    def step(self, ctx): return self.above if ctx.value > self.at else self.below
+    def on(self, v, ctx): return self.above if v > self.at else self.below
 
 
-class Smooth(Part):
-    """Low-pass filter. Kills jitter."""
+class Smooth(Number):
+    """Low-pass filter. Lets change through slowly, so jitter dies down."""
     def __init__(self, rate=0.2): self.rate, self.state = rate, 0.0
-    def step(self, ctx):
-        self.state += (ctx.value - self.state) * self.rate
+    def on(self, v, ctx):
+        self.state += (v - self.state) * self.rate
         return self.state
 
 
 class Delay(Part):
-    """What came in n steps ago."""
+    """What came in n steps ago. Reaction time.
+
+    Until it has seen n things it hands on None, which every Number block
+    passes through untouched.
+    """
     def __init__(self, steps=1): self.buf = [None] * max(1, steps)
     def step(self, ctx):
         self.buf.append(ctx.value)
         return self.buf.pop(0)
 
 
-class Integrate(Part):
-    """Accumulate over time."""
+class Integrate(Number):
+    """Add the number up over time. Speed becomes distance."""
     def __init__(self, start=0.0, limit=None): self.total, self.limit = start, limit
-    def step(self, ctx):
-        self.total += ctx.value * (ctx.dt or 1.0)
+    def on(self, v, ctx):
+        self.total += v * (ctx.dt or 1.0)
         if self.limit is not None:
             self.total = max(-self.limit, min(self.limit, self.total))
         return self.total
 
 
-class Derive(Part):
-    """Rate of change."""
+class Derive(Number):
+    """How fast the number is changing. Distance becomes speed."""
     def __init__(self): self.last = None
-    def step(self, ctx):
+    def on(self, v, ctx):
         if self.last is None:
-            self.last = ctx.value
+            self.last = v
             return 0.0
-        out = (ctx.value - self.last) / max(ctx.dt or 1.0, 1e-9)
-        self.last = ctx.value
+        out = (v - self.last) / max(ctx.dt or 1.0, 1e-9)
+        self.last = v
         return out
 
 
-class PID(Part):
-    """Steer the input toward zero."""
+class PID(Number):
+    """Steer the number toward zero. The whole of control, in one block."""
     def __init__(self, p=1.0, i=0.0, d=0.0):
         self.p, self.i, self.d = p, i, d
         self.total, self.last = 0.0, None
-    def step(self, ctx):
-        e  = ctx.value
+    def on(self, v, ctx):
         dt = ctx.dt or 1.0
-        self.total += e * dt
-        slope = 0.0 if self.last is None else (e - self.last) / max(dt, 1e-9)
-        self.last = e
-        return self.p * e + self.i * self.total + self.d * slope
+        self.total += v * dt
+        slope = 0.0 if self.last is None else (v - self.last) / max(dt, 1e-9)
+        self.last = v
+        return self.p * v + self.i * self.total + self.d * slope
 
 
 # ==========================================================================
@@ -414,10 +440,15 @@ class Count(Part):
 
 
 class First(Part):
-    """The first thing in the list, or the first few."""
+    """The first thing in the list, or the first few.
+
+    An empty list answers None, the same as Last does.
+    """
     def __init__(self, n=1): self.n = n
     def step(self, ctx):
         items = _as_list(ctx.value)
+        if not items:
+            return None if self.n == 1 else []
         return items[0] if self.n == 1 else items[:self.n]
 
 
@@ -431,13 +462,20 @@ class Last(Part):
 
 
 class Sort(Part):
-    """Put the list in order. `down=true` turns it around."""
+    """Put the list in order. `down=true` turns it around.
+
+    `sort by=size` orders by a named field. Anything without that field
+    sorts as if it were empty, rather than stopping the program.
+    """
     def __init__(self, by=None, down=False): self.by, self.down = by, down
     def step(self, ctx):
         items = _as_list(ctx.value)
         if self.by is None:
             return sorted(items, key=str, reverse=self.down)
-        return sorted(items, key=lambda x: _field(x, self.by), reverse=self.down)
+        def key(x):
+            got = _field(x, self.by)
+            return (got is None, str(got) if isinstance(got, str) else got or 0)
+        return sorted(items, key=key, reverse=self.down)
 
 
 class Uniq(Part):

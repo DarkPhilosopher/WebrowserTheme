@@ -238,6 +238,7 @@ quietly depends on — the ones that break without saying anything:
 | **the text format knows them** | A block that cannot be named in a `.parts` program |
 | **the examples still parse** | An example that stopped working |
 | **things actually work** | Seven real behaviours, end to end |
+| **the awkward cases** | Blocks that keep every rule and are still wrong |
 
 A failure names the block and the rule, so you know what to change:
 
@@ -246,6 +247,14 @@ FAIL all blocks described        123 checked
        core.Sort: has no description
        files.IsDir: has no description
 ```
+
+**The last one is the only check that can catch a lie.** The others
+prove shape: that a block exists, has a name to itself, can be called.
+None of them can prove `Threshold` puts `above` above rather than below.
+So `the awkward cases` tries the things that run fine and answer wrongly
+— an empty list handed to `First`, limits given backwards, a shut gate
+feeding the block behind it. Each of those was a real fault, found by
+trying it. When you find another, add it there.
 
 Every one of these catches a mistake that was actually made while
 building this. `Box` once stored its spacing as `self.step` and shadowed

@@ -14,7 +14,14 @@ quietly:
   * every block has a sentence saying what it does
   * every block the text format offers can actually be built
   * every example program still parses
-  * and a handful of things actually do what they claim
+  * a handful of things actually do what they claim
+  * and the awkward cases answer sensibly rather than lying
+
+That last one is the only check that can catch a block which keeps every
+rule perfectly and is still wrong. An empty list handed to First, limits
+given the wrong way round, a shut gate feeding the block behind it --
+each of those was a real fault, found by trying it rather than by any
+rule. New ones belong there.
 
 Each check says what it looked at and what it found. A failure names the
 block and the rule, so you know what to change.
@@ -28,11 +35,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     import parts as _parts
     from parts import connect as _connect
-    from parts.core import Chain, Ctx, Part
+    from parts.core import Chain, Const, Count, Delay, First, Gain, Gate, Bias, Minus, Invert, Threshold, Clamp, Ctx, Last, Part, Sort
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
-    from .core import Chain, Ctx, Part
+    from .core import (Chain, Const, Count, Delay, First, Gain, Gate, Bias, Minus, Invert, Threshold, Clamp, Ctx, Last, Part, Sort)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -278,6 +285,70 @@ def things_actually_work(r):
             r.fault(what, "%s: %s" % (type(e).__name__, e))
 
 
+def awkward_cases(r):
+    """The things that run fine and answer wrongly.
+
+    Every one of these was a real fault found by trying it, not by any
+    rule above. A block can keep the contract perfectly and still lie,
+    and this is the only check that notices.
+    """
+    from .core import Ctx, run
+
+    def gives(what, chain, want):
+        r.looked()
+        try:
+            got = run(chain)
+        except Exception as e:
+            r.fault(what, "stopped: %s: %s" % (type(e).__name__, e))
+            return
+        if got != want:
+            r.fault(what, "answered %r, expected %r" % (got, want))
+
+    # nothing at all, handed to blocks that expect a list
+    gives("First on an empty list", Chain([Const([]), First()]), None)
+    gives("Last on an empty list",  Chain([Const([]), Last()]),  None)
+    gives("Count on an empty list", Chain([Const([]), Count()]), 0)
+    gives("Sort on an empty list",  Chain([Const([]), Sort()]),  [])
+
+    # settings given the wrong way round: do what was meant, do not lie
+    gives("Clamp given its limits backwards",
+          Chain([Const(5), Clamp(10, 0)]), 5)
+    gives("Clamp the right way round still holds",
+          Chain([Const(50), Clamp(0, 10)]), 10)
+
+    # sorting by a field that is not there must not stop the program
+    gives("Sort by a field nothing has",
+          Chain([Const(["b", "a"]), Sort(by="nope")]), ["b", "a"])
+    gives("Sort by a field that is there",
+          Chain([Const([{"n": 2}, {"n": 1}]), Sort(by="n")]),
+          [{"n": 1}, {"n": 2}])
+
+    # a gate that shut, and a delay still filling, hand on nothing --
+    # the blocks behind them must survive it
+    gives("a shut gate does not break what follows",
+          Chain([Const(5), Gate(Const(0)), Gain(2)]), None)
+    gives("a delay still filling does not break what follows",
+          Chain([Const(5), Delay(2), Gain(2)]), None)
+
+    # ...and the delay must still be a delay
+    r.looked()
+    chain, ctx, outs = Chain([Const(5), Delay(2), Gain(2)]), Ctx(), []
+    for _ in range(4):
+        ctx.value = None
+        outs.append(chain.step(ctx))
+    if outs != [None, None, 10, 10]:
+        r.fault("a delay hands on what came two steps ago",
+                "gave %r, expected [None, None, 10, 10]" % outs)
+
+    # the plain arithmetic, in case a refactor turns it around
+    gives("Gain multiplies",        Chain([Const(6), Gain(7)]), 42)
+    gives("Bias adds",              Chain([Const(6), Bias(4)]), 10)
+    gives("Minus subtracts",        Chain([Const(6), Minus(4)]), 2)
+    gives("Invert flips the sign",  Chain([Const(6), Invert()]), -6)
+    gives("Threshold above is above", Chain([Const(9), Threshold(5)]), 1.0)
+    gives("Threshold below is below", Chain([Const(1), Threshold(5)]), 0.0)
+
+
 CHECKS = [
     ("the one contract",        keeps_the_contract),
     ("names do not clash",      names_do_not_clash),
@@ -286,6 +357,7 @@ CHECKS = [
     ("the text format knows them", text_format_knows_them),
     ("the examples still parse", examples_parse),
     ("things actually work",    things_actually_work),
+    ("the awkward cases",       awkward_cases),
 ]
 
 
