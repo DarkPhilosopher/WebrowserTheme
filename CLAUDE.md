@@ -18,12 +18,23 @@ python3 whereami.py
 Then **say which machine you think it is, and wait for Gabriel to
 agree.** Not as a formality — the answer changes what is possible:
 
+**He has three machines and only three.** Anything else that turns up
+is not his.
+
 | Machine | What changes |
 |---|---|
 | cloud container | No reach to any of his machines. Say so plainly rather than offering workarounds |
-| Dell laptop | Windows paths. Two profiles, `sauve` and `xzg4b`, on the one machine. Also has an `S:` drive |
-| a 64-bit phone | Claude Code runs, but only inside `proot-distro ubuntu` |
-| a 32-bit phone | Claude Code **cannot run at all**. No build exists. Do not suggest proot |
+| Dell i7 laptop | Modified, bought on Facebook Marketplace. Windows paths. Two profiles, `sauve` and `xzg4b`, on the one machine. Also has an `S:` drive |
+| A33 | Samsung Galaxy A33, 64-bit. Usually the one he is on. Claude Code runs, but only inside `proot-distro ubuntu` |
+| A17 | His other Android phone. Architecture not yet confirmed — run `whereami.py` there |
+
+His 32-bit phone was a **Hotpepper ACP** and he has **disposed of it**,
+so neither remaining phone has that limitation. The 32-bit entry stays
+on the register because the warning is still true of any 32-bit phone.
+
+The **Lenovo tower** on the register is a **friend's**, not his, and is
+listed only to carry the reminder that he wants it removed. Ask before
+removing it.
 
 If `whereami.py` says the machine is not on the register, **ask**. Do
 not pick the closest one and carry on.
@@ -40,8 +51,8 @@ The cure is a name written on each machine, once:
 python3 whereami.py --name "Revvl 7"
 ```
 
-One phone is the **A33** (Samsung Galaxy A33, 64-bit), named by
-Gabriel. That writes `~/.whereami`, and **a written name beats every
+The two phones are the **A33** and the **A17**, and the signs alone
+cannot tell them apart. That writes `~/.whereami`, and **a written name beats every
 other sign**. When a machine has one, `whereami.py` reports it as fact rather
 than as a guess. When a phone has no name yet, offer to name it.
 

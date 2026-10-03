@@ -59,10 +59,10 @@ REGISTER = [
         ],
     },
     {
-        "name": "Dell laptop (Windows)",
-        "note": "Two profiles on the one machine: `sauve` and `xzg4b`. "
-                "Confirmed by Gabriel as the same Dell. Has an S: drive "
-                "as well as C:.",
+        "name": "Dell i7 laptop",
+        "note": "Modified, bought on Facebook Marketplace. Windows. Two "
+                "profiles on the one machine, `sauve` and `xzg4b`. Has an "
+                "S: drive as well as C:.",
         "sure": True,
         "signs": [
             ("fact", "system", "Windows"),
@@ -70,49 +70,63 @@ REGISTER = [
         ],
     },
     {
-        "name": "Lenovo tower",
-        "note": "A desktop, not a laptop. Would not boot past the recovery "
-                "command prompt. F12 for the boot menu, F1 for BIOS.",
+        "name": "A33",
+        "note": "Samsung Galaxy A33, Android, 64-bit. The phone Gabriel is "
+                "usually on. Claude Code runs here, inside proot-distro "
+                "ubuntu. Name it with --name A33 so it says so itself.",
+        "sure": True,
+        "signs": [
+            ("file", "/data/data/com.termux"),
+            ("fact", "machine", "aarch64"),
+        ],
+    },
+    {
+        "name": "A17",
+        "note": "Android phone. Gabriel's other one. Not yet run on, so "
+                "its architecture is unconfirmed -- run whereami.py there. "
+                "Name it with --name A17; the signs alone cannot tell it "
+                "from the A33.",
         "sure": False,
         "signs": [
-            ("fact", "system", "Windows"),
-            ("fact", "chassis", "tower"),
-        ],
-    },
-    {
-        "name": "A33",
-        "note": "Samsung Galaxy A33, Android, 64-bit. Gabriel named it "
-                "himself. Claude Code runs here, inside proot-distro "
-                "ubuntu. Run `whereami.py --name A33` on it so it says "
-                "so for itself rather than being guessed at.",
-        "sure": True,
-        "signs": [
             ("file", "/data/data/com.termux"),
             ("fact", "machine", "aarch64"),
         ],
     },
     {
-        "name": "a 64-bit phone (Termux)",
-        "note": "aarch64. Claude Code runs here, but only inside "
-                "proot-distro ubuntu -- not in Termux directly. "
-                "THERE IS MORE THAN ONE PHONE and this entry cannot tell "
-                "them apart -- it is what matches when a phone has not "
-                "been named. One of them is the A33. Name each one.",
+        "name": "an unnamed Android phone",
+        "note": "A phone carrying Termux that has not been named. It is "
+                "the A33 or the A17 -- the signs cannot say which. Run "
+                "`whereami.py --name` on it and this stops happening.",
         "sure": True,
         "signs": [
             ("file", "/data/data/com.termux"),
-            ("fact", "machine", "aarch64"),
         ],
     },
     {
         "name": "a 32-bit phone (Termux)",
-        "note": "armv7l. Claude Code CANNOT run here at all -- the package "
-                "ships no 32-bit build, so proot and Ubuntu do not help. "
-                "Python, git and the parts language all work fine.",
+        "note": "armv7l. Claude Code CANNOT run here -- the package ships "
+                "no 32-bit build, so proot and Ubuntu do not help. "
+                "Gabriel's own 32-bit phone was a Hotpepper ACP and he has "
+                "DISPOSED OF IT, so this should no longer match anything "
+                "of his. Kept because the warning stays true for any "
+                "32-bit phone.",
         "sure": True,
         "signs": [
             ("file", "/data/data/com.termux"),
             ("fact", "machine", "armv7l"),
+        ],
+    },
+    {
+        "name": "Lenovo tower -- NOT GABRIEL'S",
+        "note": "A friend's machine. Would not boot past the recovery "
+                "prompt; F12 for the boot menu, F1 for BIOS. REMINDER: "
+                "Gabriel asked for this to be taken off the register. It "
+                "is listed only so the reminder is not lost. Ask him "
+                "before removing it.",
+        "sure": True,
+        "signs": [
+            ("fact", "system", "Windows"),
+            ("fact", "chassis", "tower"),
         ],
     },
 ]
