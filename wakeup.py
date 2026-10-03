@@ -91,7 +91,9 @@ def go(*args):
     """Run one of our own programs and wait for it, showing its own output."""
     cmd = [PY] + list(args)
     line()
-    line("  $ " + " ".join(cmd[1:]))
+    # Show the command the way you would type it, so you can run it
+    # yourself next time and not need this menu at all.
+    line("  $ " + " ".join([os.path.basename(PY)] + cmd[1:]))
     line()
     try:
         subprocess.call(cmd, cwd=HERE)
@@ -265,6 +267,11 @@ def more_menu():
 
 
 def main(argv=()):
+    argv = list(argv)
+    if "-h" in argv or "--help" in argv:
+        print(__doc__)
+        return 0
+
     line()
     line("  wakeup")
     line("  %s" % HERE)

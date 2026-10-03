@@ -92,12 +92,11 @@ step "making the blocks reachable from any folder"
 "$PY" "$INTO/sparkblocks/install.py" || say "  (carrying on without it)"
 
 # --------------------------------------------------------- the `wakeup` word
-step "making `wakeup` a word you can type"
-BIN=""
-if [ -n "$PREFIX" ] && [ -w "$PREFIX/bin" ]; then
+step 'making the word `wakeup` work'
+# Termux's own bin, or yours. Never a system folder -- this is your
+# program, and it should not need root or write on anybody else's machine.
+if [ "$IS_TERMUX" = yes ] && [ -w "$PREFIX/bin" ]; then
   BIN="$PREFIX/bin"
-elif [ -w /usr/local/bin ]; then
-  BIN="/usr/local/bin"
 else
   BIN="$HOME/.local/bin"
   mkdir -p "$BIN"
