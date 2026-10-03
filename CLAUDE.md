@@ -1,7 +1,8 @@
 # CLAUDE.md
 
-**This project is called Claude WakUp.** The repository it lives in
-is still named `WebrowserTheme`, from before it had a name.
+**This project is called Wakeup** — one word, with the `e`. The
+repository it lives in is still named `WebrowserTheme`, from before it
+had a name.
 
 ## Before anything else: know which machine you are on
 
@@ -124,6 +125,42 @@ python3 -m parts json --html
 explains the three steps for adding a block, and the one rule worth
 knowing: never store a setting called `step`, because it shadows the
 method every block must have.
+
+## How he wants programs built
+
+**A launcher opens a terminal first, and the big picture mode from
+there.** This is a standing preference for everything he makes, not
+just this project. The terminal is the thing that always works; the
+graphical mode is reached from inside it, never instead of it.
+
+`panel/panel.py` is the shape to copy: it runs anywhere a prompt does,
+and carries *open the browser panel* as one of its own choices.
+
+Three consequences worth keeping:
+
+- **Never make the graphical way the only way.** If the colours, the
+  mouse or the browser are missing, the terminal still does the job.
+- **Degrade, do not fail.** `panel.py` without the Python package still
+  reads its catalogue, still builds, still saves — and says plainly
+  that it cannot run anything here.
+- **Eight choices at most, the last always back.** This holds in the
+  numbered menu, the touch pad, the plain panel and the browser squares.
+  It is the one interface rule the whole project keeps.
+
+## Notes worth keeping
+
+- **`spark` and `parts` stay separate languages.** He has said so
+  twice. Do not propose bridging them.
+- **He was right and I was wrong about the 32-bit build.** The answer
+  was in the npm package metadata, not in memory. When he pushes back
+  on a limit, go and check.
+- **His Google Drive connector is `xzg4b3xz@gmail.com`**, which is not
+  the address his git commits use (`lewisgabe33@gmail.com`). Two
+  accounts. `xzg4b` is also the second Windows profile on the Dell.
+- **The repository is public.** He asked for personal details to be
+  written into it and confirmed after being told; a safety classifier
+  refused the push. That file is `ABOUT.md` and is **not** committed.
+  It goes in only if he makes the repository private.
 
 ## How Gabriel works
 

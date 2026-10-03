@@ -1,4 +1,4 @@
-# Claude WakUp
+# Wakeup
 
 Getting Claude running on your own machines, knowing which machine you
 are on, and a language of blocks that works even where Claude will not.

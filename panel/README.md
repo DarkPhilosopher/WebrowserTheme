@@ -68,6 +68,46 @@ Blocks that touch files or the network cannot run in a browser. They are
 marked `not in browser` in the list, refuse by name rather than failing
 oddly, and the program still saves for the terminal to run.
 
+### advanced — write code and watch it apply
+
+The third button. A made-up terminal that takes code and applies it to
+the page, live. Three tabs:
+
+| Tab | What it does with what you write |
+|---|---|
+| **javascript** | Runs it, with `panel` handed in. Ctrl+Enter also runs |
+| **style** | Adds it to the page as CSS |
+| **html** | First line names a part, the rest replaces its insides |
+
+**It can rearrange the panel itself**, which is the point:
+
+```js
+panel.order('draw', 'strip', 'pad')   // put them in this order
+panel.move('draw', 'top')             // one of them to the top
+panel.side('draw')                    // into the right-hand column
+panel.hide('pad')   panel.show('pad')
+panel.wide()                          // one column instead of two
+```
+
+The parts are `strip` `pad` `draw` `program` `code` `terminal`. Name one
+that does not exist and it says so, and lists the ones that do.
+
+It can also drive the panel:
+
+```js
+panel.program = ['screen 20 10', 'ball 2', 'flat', 'plot', 'draw']
+panel.run()    panel.stop()    panel.draw()
+panel.add('box 3 3 3')
+panel.grid()   panel.book      panel.parts
+```
+
+**keep on reload** writes what you wrote into this browser, so it comes
+back next time you open the file. **forget** throws all of it away and
+reloads clean — this is the one pane that can break the panel, so there
+is always a way back.
+
+Broken code is caught and shown in red rather than stopping the page.
+
 ### It agrees with the Python
 
 The page carries a small reading of the same language. Run the same

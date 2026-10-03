@@ -414,7 +414,7 @@ def main(argv):
         else "Cannot run programs here -- build and save, run elsewhere.")
 
     while True:
-        what = choose("Claude WakUp -- control panel", [
+        what = choose("Wakeup -- control panel", [
             ("add a block", "add"),
             ("change the lines", "edit"),
             ("run it", "run"),

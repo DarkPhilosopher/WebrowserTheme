@@ -56,7 +56,7 @@ def book():
     from .script import FANWAYS, HOLDERS
 
     out = {
-        "what": "Claude WakUp -- the parts language",
+        "what": "Wakeup -- the parts language",
         "blocks": {},
         "modules": {},
         "holders": sorted(HOLDERS),

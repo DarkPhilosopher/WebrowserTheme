@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claude WakUp — panel</title>
+<title>Wakeup — panel</title>
 
 <!--
   The browser panel. Open this file in Chrome. No server, no install.
@@ -112,6 +112,25 @@ aside{
   color:var(--on); min-height:40px;
 }
 
+/* ---- the advanced pane ---- */
+#adv{display:none}
+#advtabs{display:flex; gap:6px; margin-bottom:8px}
+.tab{padding:5px 11px; font-size:13px}
+.tab.on{background:var(--on); border-color:var(--on); color:#08121a}
+#code{
+  width:100%; height:34vh; font-family:var(--mono); font-size:13px;
+  background:#0a1015; color:var(--ink); border:1px solid var(--edge);
+  border-radius:4px; padding:10px; resize:vertical; line-height:1.4;
+}
+#code:focus{outline:none; border-color:var(--on)}
+#advtools{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+#advlog{
+  margin-top:10px; font-size:13px; white-space:pre-wrap;
+  color:var(--dim); max-height:22vh; overflow:auto;
+}
+#advlog .err{color:var(--bad)}
+#advlog .ok{color:var(--on)}
+
 /* ---- the program ---- */
 #prog{display:flex; flex-direction:column; gap:2px; margin-bottom:12px}
 .line{
@@ -133,9 +152,10 @@ aside{
 </style>
 
 <header>
-  <h1>Claude <span>WakUp</span></h1>
+  <h1>Claude <span>Wakeup</span></h1>
   <button id="mode-buttons" class="on">buttons</button>
   <button id="mode-term">terminal</button>
+  <button id="mode-adv">advanced</button>
   <span class="grow"></span>
   <button id="run">run</button>
   <button id="stop" class="quiet">stop</button>
@@ -155,6 +175,23 @@ aside{
         <input id="typed" autocomplete="off" autocapitalize="off"
                spellcheck="false" placeholder="a block a line, or: help, run, list, clear">
       </div>
+    </div>
+
+    <div id="adv">
+      <p class="label">live code — applied to this page as you run it</p>
+      <div id="advtabs">
+        <button class="tab on" data-kind="js">javascript</button>
+        <button class="tab" data-kind="css">style</button>
+        <button class="tab" data-kind="html">html</button>
+      </div>
+      <textarea id="code" spellcheck="false"></textarea>
+      <div id="advtools">
+        <button id="apply">run it</button>
+        <button id="keep" class="quiet">keep on reload</button>
+        <button id="forget" class="quiet">forget</button>
+        <button id="advhelp" class="quiet">what can I write?</button>
+      </div>
+      <div id="advlog"></div>
     </div>
 
     <div id="draw"></div>
@@ -2515,7 +2552,7 @@ aside{
    ]
   }
  },
- "what": "Claude WakUp -- the parts language"
+ "what": "Wakeup -- the parts language"
 }
 </script>
 
@@ -2622,7 +2659,7 @@ function redraw(){
 
 function topScreen(){
   where.at = "top"; where.page = 0;
-  strip("Claude WakUp", BOOK.count + " blocks · pick a module to add one");
+  strip("Wakeup", BOOK.count + " blocks · pick a module to add one");
   const mods = Object.keys(BOOK.modules).sort();
   squares(mods.map(m => ({
     label: m, go: () => { where = {at:"mod", mod:m, kind:null, page:0, holder:where.holder}; redraw(); }
@@ -2971,18 +3008,212 @@ function runProgram(){
 
 function stopLoop(){ if (timer){ clearInterval(timer); timer = null; } }
 
+
+// ==========================================================================
+//  THE ADVANCED PANE
+//
+//  A made-up terminal that takes code and applies it to this page, live.
+//  It is your own browser running your own file, so there is nothing to
+//  ask permission for -- but it is the one place here that can break the
+//  panel, so `forget` puts everything back.
+//
+//  Three kinds, by the tabs: javascript is run, style is added as CSS,
+//  html replaces a named region. Anything kept is written to this
+//  browser and comes back on reload.
+// ==========================================================================
+let advKind = "js";
+const KEPT = "wakeup.advanced";
+
+// The regions the page is made of, by the name you refer to them by.
+const REGIONS = {
+  strip: "strip", pad: "pad", draw: "draw",
+  program: "prog", code: "adv", terminal: "term",
+};
+
+function advSay(text, cls){
+  const log = document.getElementById("advlog");
+  const el = document.createElement("div");
+  if (cls) el.className = cls;
+  el.textContent = text;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+}
+
+function regionOf(name){
+  const id = REGIONS[name] || name;
+  const el = document.getElementById(id);
+  if (!el) throw new Error("there is no part called '" + name + "'. " +
+                           "Try: " + Object.keys(REGIONS).join(", "));
+  return el;
+}
+
+// ---- what your code is handed -------------------------------------------
+const panel = {
+  // move the parts of the page around
+  order(...names){
+    const main = document.querySelector("main");
+    names.forEach(n => main.appendChild(regionOf(n)));
+    return "order: " + names.join(" ");
+  },
+  move(name, where){
+    const el = regionOf(name), main = document.querySelector("main");
+    if (where === "top") main.insertBefore(el, main.firstChild);
+    else main.appendChild(el);
+    return name + " to the " + where;
+  },
+  hide(name){ regionOf(name).style.display = "none"; return "hid " + name; },
+  show(name){ regionOf(name).style.display = "";     return "showed " + name; },
+  side(name){
+    document.querySelector("aside").appendChild(regionOf(name));
+    return name + " moved to the side";
+  },
+  wide(on = true){
+    document.getElementById("wrap").style.gridTemplateColumns =
+      on ? "1fr" : "1fr 300px";
+    return on ? "one column" : "two columns";
+  },
+  css(text){
+    let tag = document.getElementById("yourstyle");
+    if (!tag){
+      tag = document.createElement("style");
+      tag.id = "yourstyle";
+      document.head.appendChild(tag);
+    }
+    tag.textContent += "\n" + text;
+    return "style added";
+  },
+  // the panel's own workings, so your code can drive it
+  get program(){ return program; },
+  set program(v){ program = v; chosen = -1; showProgram(); },
+  add: addLine,
+  run: runProgram,
+  stop: stopLoop,
+  draw: paint,
+  book: BOOK,
+  step: step,
+  grid(){ return grid; },
+  vars(){ return vars; },
+  say: advSay,
+  parts: Object.keys(BOOK.blocks),
+};
+
+const ADV_HELP = [
+  "Whatever you write here runs in this page, now.",
+  "",
+  "MOVING THE PARTS AROUND",
+  "  panel.order('draw','strip','pad')   put them in this order",
+  "  panel.move('draw','top')            one of them to the top",
+  "  panel.side('draw')                  move it into the right column",
+  "  panel.hide('pad')  panel.show('pad')",
+  "  panel.wide()                        one column instead of two",
+  "",
+  "  the parts are: " + Object.keys(REGIONS).join(", "),
+  "",
+  "DRIVING THE PANEL",
+  "  panel.add('box 3 3 3')              add a line to the program",
+  "  panel.program = ['screen 20 10','ball 2','flat','plot','draw']",
+  "  panel.run()   panel.stop()   panel.draw()",
+  "  panel.grid()                        the pixels, as they stand",
+  "  panel.book                          every block, as data",
+  "",
+  "STYLE tab      plain CSS, added to the page",
+  "HTML tab       first line names a part, the rest replaces its insides:",
+  "                 strip",
+  "                 <b>my own banner</b>",
+  "",
+  "keep on reload   writes it into this browser, so it comes back",
+  "forget           throws all of it away and reloads clean",
+].join("\n");
+
+function applyCode(kind, text){
+  if (!text.trim()){ advSay("nothing to run"); return; }
+  try {
+    if (kind === "css"){
+      advSay(panel.css(text), "ok");
+    } else if (kind === "html"){
+      const nl = text.indexOf("\n");
+      const name = (nl < 0 ? text : text.slice(0, nl)).trim();
+      const body = nl < 0 ? "" : text.slice(nl + 1);
+      regionOf(name).innerHTML = body;
+      advSay("replaced the insides of " + name, "ok");
+    } else {
+      // eslint-disable-next-line no-new-func
+      const out = Function("panel", '"use strict";' + text)(panel);
+      advSay(out === undefined ? "ran" : String(out), "ok");
+    }
+  } catch (e){
+    advSay(String(e.message || e), "err");
+  }
+}
+
+function keptLoad(){
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEPT) || "null"); }
+  catch { saved = null; }
+  if (!saved) return;
+  ["css", "html", "js"].forEach(kind => {
+    if (saved[kind]) applyCode(kind, saved[kind]);
+  });
+  if (saved[advKind]) document.getElementById("code").value = saved[advKind];
+  advSay("your kept code was put back", "ok");
+}
+
+function keptSave(){
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEPT) || "{}") || {}; }
+  catch { saved = {}; }
+  saved[advKind] = document.getElementById("code").value;
+  try {
+    localStorage.setItem(KEPT, JSON.stringify(saved));
+    advSay("kept -- it will come back when you open this file again", "ok");
+  } catch (e){
+    advSay("this browser will not let the page remember: " + e.message, "err");
+  }
+}
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+    tab.classList.add("on");
+    advKind = tab.dataset.kind;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEPT) || "{}") || {}; }
+    catch { saved = {}; }
+    document.getElementById("code").value = saved[advKind] || "";
+  };
+});
+
+document.getElementById("apply").onclick = () =>
+  applyCode(advKind, document.getElementById("code").value);
+document.getElementById("keep").onclick = keptSave;
+document.getElementById("advhelp").onclick = () => advSay(ADV_HELP);
+document.getElementById("forget").onclick = () => {
+  try { localStorage.removeItem(KEPT); } catch {}
+  location.reload();
+};
+document.getElementById("code").addEventListener("keydown", e => {
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){
+    e.preventDefault();
+    applyCode(advKind, e.target.value);
+  }
+});
+
+
 // ==========================================================================
 //  WIRING
 // ==========================================================================
 const show = which => {
   document.getElementById("pad-view").style.display = which === "buttons" ? "" : "none";
   document.getElementById("term").style.display     = which === "term" ? "" : "none";
-  document.getElementById("mode-buttons").classList.toggle("on", which === "buttons");
-  document.getElementById("mode-term").classList.toggle("on", which === "term");
+  document.getElementById("adv").style.display      = which === "adv" ? "" : "none";
+  ["buttons", "term", "adv"].forEach(m =>
+    document.getElementById("mode-" + m).classList.toggle("on", which === m));
   if (which === "term") document.getElementById("typed").focus();
+  if (which === "adv")  document.getElementById("code").focus();
 };
 document.getElementById("mode-buttons").onclick = () => show("buttons");
 document.getElementById("mode-term").onclick    = () => show("term");
+document.getElementById("mode-adv").onclick     = () => show("adv");
 document.getElementById("run").onclick  = runProgram;
 document.getElementById("stop").onclick = () => { stopLoop(); say("stopped", "note"); };
 
@@ -3018,8 +3249,9 @@ document.getElementById("load").onclick = () => {
   chosen = -1; showProgram(); say("read " + program.length + " lines", "note");
 };
 
-say("Claude WakUp — browser panel. " + BOOK.count + " blocks.", "note");
+say("Wakeup — browser panel. " + BOOK.count + " blocks.", "note");
 say("Press the squares, or switch to terminal and type. `help` for words.", "note");
 showProgram();
 topScreen();
+keptLoad();
 </script>
