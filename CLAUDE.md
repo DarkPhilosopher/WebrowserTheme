@@ -99,6 +99,8 @@ nothing. Do not reach for `--force` on his behalf; ask.
 | `claude-ready.py` | Is this phone ready to run Claude in Termux, and if not, why |
 | `tfind.md` | Documentation for `tfind.sh` — it used to be the root README |
 | `panel/` | Three control panels: plain terminal, browser, and the fancier ones in `parts` |
+| `INDEX.md` | Every piece: where it belongs, what it is for, what it runs on, and what is not built yet |
+| `rustbuild/` | **Gabriel's, not mine.** A Rust-style ASCII construction editor, here before this work |
 
 Gabriel also has `DarkPhilosopher/spark` (a game engine, `when`/`do`
 rules) and `DarkPhilosopher/ASC` (a 16×16 ASCII grid). **`spark` and
@@ -146,6 +148,13 @@ Three consequences worth keeping:
 - **Eight choices at most, the last always back.** This holds in the
   numbered menu, the touch pad, the plain panel and the browser squares.
   It is the one interface rule the whole project keeps.
+
+## Before changing something that looks wrong
+
+`INDEX.md` section 7 lists every place this project departs from common
+practice **and why**. No dependencies, no pytest, nothing that raises,
+eight choices everywhere, the repo name not matching the project — all
+deliberate. Read it before "fixing" one of them.
 
 ## Notes worth keeping
 

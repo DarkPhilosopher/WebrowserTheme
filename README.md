@@ -6,6 +6,10 @@ are on, and a language of blocks that works even where Claude will not.
 Python standard library only. No installs, no 64-bit requirement — it
 runs on a phone.
 
+**[INDEX.md](INDEX.md)** lists every piece — where it belongs, what it
+is for, what data it needs and what it runs on — including the things
+not built yet and where they would go.
+
 ## Start here
 
 ```bash
