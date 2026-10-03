@@ -28,6 +28,11 @@ def _pick(arg, ctx):
     return str(arg if arg is not None else ctx.value)
 
 
+def _bare(url):
+    """Just the machine's name, whether you were given one or a whole address."""
+    return urllib.parse.urlparse(url).hostname or url if "//" in url else url
+
+
 def _open(url, data=None, headers=None, timeout=15, method=None):
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("User-Agent", AGENT)
@@ -37,20 +42,42 @@ def _open(url, data=None, headers=None, timeout=15, method=None):
 
 
 # ==========================================================================
-#  SOURCES -- ask the network something
+#  THE SHAPE, WRITTEN ONCE
 # ==========================================================================
 
-class Fetch(Part):
-    """The text at a URL. Anything that goes wrong gives "" rather than a crash."""
-    def __init__(self, url=None, timeout=15, limit=5_000_000):
-        self.url, self.timeout, self.limit = url, timeout, limit
+class Reaching(Part):
+    """A block that asks the network something. Override `about`.
+
+    Nothing here is allowed to raise. Whatever goes wrong -- a dead
+    link, no signal, a name that does not exist -- answers `missing`, so
+    one bad address never stops a run over a thousand of them.
+    """
+    missing = ""
+
+    def __init__(self, url=None, timeout=15):
+        self.url, self.timeout = url, timeout
 
     def step(self, ctx):
         try:
-            with _open(_pick(self.url, ctx), timeout=self.timeout) as r:
-                return r.read(self.limit).decode("utf-8", "ignore")
+            return self.about(_pick(self.url, ctx))
         except Exception:
-            return ""
+            return self.missing
+
+    def about(self, url):
+        return url
+
+
+# ==========================================================================
+#  SOURCES -- ask the network something
+# ==========================================================================
+
+class Fetch(Reaching):
+    """The text at a web address. Anything that goes wrong gives ""."""
+    def __init__(self, url=None, timeout=15, limit=5_000_000):
+        self.url, self.timeout, self.limit = url, timeout, limit
+    def about(self, url):
+        with _open(url, timeout=self.timeout) as r:
+            return r.read(self.limit).decode("utf-8", "ignore")
 
 
 class Json(Part):
@@ -62,53 +89,36 @@ class Json(Part):
             return None
 
 
-class Status(Part):
-    """The HTTP number a URL answers with. 0 means it could not be reached."""
+class Status(Reaching):
+    """The number a web address answers with. 0 means it was not reached."""
+    missing = 0
     def __init__(self, url=None, timeout=10): self.url, self.timeout = url, timeout
-
-    def step(self, ctx):
+    def about(self, url):
         try:
-            with _open(_pick(self.url, ctx), timeout=self.timeout,
-                       method="HEAD") as r:
+            with _open(url, timeout=self.timeout, method="HEAD") as r:
                 return r.status
         except urllib.error.HTTPError as e:
             return e.code
-        except Exception:
-            return 0
 
 
-class Reach(Part):
-    """True if a TCP connection opens. Works on bare hosts, not just URLs."""
+class Reach(Reaching):
+    """Can this machine be reached at all? Works on bare names too."""
+    missing = False
     def __init__(self, host=None, port=443, timeout=5):
-        self.host, self.port, self.timeout = host, port, timeout
-
-    def step(self, ctx):
-        host = _pick(self.host, ctx)
-        if "//" in host:
-            host = urllib.parse.urlparse(host).hostname or host
-        try:
-            socket.create_connection((host, self.port), self.timeout).close()
-            return True
-        except Exception:
-            return False
+        self.url, self.port, self.timeout = host, port, timeout
+    def about(self, url):
+        socket.create_connection((_bare(url), self.port), self.timeout).close()
+        return True
 
 
-class Host(Part):
-    """Pull the machine name out of a URL."""
-    def __init__(self, url=None): self.url = url
-    def step(self, ctx):
-        return urllib.parse.urlparse(_pick(self.url, ctx)).hostname or ""
+class Host(Reaching):
+    """Pull the machine's name out of a web address."""
+    def about(self, url): return urllib.parse.urlparse(url).hostname or ""
 
 
-class Address(Part):
-    """Look a name up in DNS. Unknown names give ""."""
-    def __init__(self, host=None): self.host = host
-    def step(self, ctx):
-        host = _pick(self.host, ctx)
-        if "//" in host:
-            host = urllib.parse.urlparse(host).hostname or host
-        try:    return socket.gethostbyname(host)
-        except Exception: return ""
+class Address(Reaching):
+    """Look a machine's name up and answer its number. Unknown gives ""."""
+    def about(self, url): return socket.gethostbyname(_bare(url))
 
 
 class Links(Part):

@@ -141,6 +141,37 @@ class World:
 
 
 # ==========================================================================
+#  THE SHAPES, WRITTEN ONCE
+#
+#  A sensor reads the body and answers a number. A motor takes a number
+#  and moves the body, handing the number on so several motors can share
+#  one. Each block below is the smallest difference from one of those.
+# ==========================================================================
+
+class Sense(Part):
+    """A block that reads the body and answers a number. Override `about`."""
+    def step(self, ctx):
+        return self.about(ctx.body, ctx)
+
+    def about(self, body, ctx):
+        return 0.0
+
+
+class Motor(Part):
+    """A block that moves the body. Override `push`.
+
+    The number carries on untouched, so one number can drive the engine,
+    the rudder and the fuel gauge at once.
+    """
+    def step(self, ctx):
+        self.push(ctx.value, ctx.body, ctx)
+        return ctx.value
+
+    def push(self, value, body, ctx):
+        pass
+
+
+# ==========================================================================
 #  SENSORS -- world in, number out
 # ==========================================================================
 
@@ -149,25 +180,25 @@ class Clock(Part):
     def step(self, ctx): return ctx.world.time
 
 
-class Height(Part):
+class Height(Sense):
     """How high above the ground this body is."""
-    def step(self, ctx): return ctx.body.pos.z
+    def about(self, body, ctx): return body.pos.z
 
 
-class Speed(Part):
+class Speed(Sense):
     """How fast it is going, whichever way it is going."""
-    def step(self, ctx): return ctx.body.vel.length()
+    def about(self, body, ctx): return body.vel.length()
 
 
-class Heading(Part):
+class Heading(Sense):
     """Which way it is facing, as an angle."""
-    def step(self, ctx): return ctx.body.yaw
+    def about(self, body, ctx): return body.yaw
 
 
-class Level(Part):
+class Level(Sense):
     """Read a named number off the body -- fuel, hp, ammo."""
     def __init__(self, key, default=0.0): self.key, self.default = key, default
-    def step(self, ctx): return ctx.body.store.get(self.key, self.default)
+    def about(self, body, ctx): return body.store.get(self.key, self.default)
 
 
 class Near(Part):
@@ -247,55 +278,45 @@ class Bearing(Part):
 #  MOTORS -- number in, world out
 # ==========================================================================
 
-class Thrust(Part):
+class Thrust(Motor):
     """Push along the way the body faces. The engine."""
     def __init__(self, power=1.0): self.power = power
-    def step(self, ctx):
-        ctx.body.force = ctx.body.force + ctx.body.forward() * (ctx.value * self.power)
-        return ctx.value
+    def push(self, v, body, ctx):
+        body.force = body.force + body.forward() * (v * self.power)
 
 
-class Lift(Part):
+class Lift(Motor):
     """Push it straight up, whatever way it is facing."""
     def __init__(self, power=1.0): self.power = power
-    def step(self, ctx):
-        ctx.body.force = ctx.body.force + UP * (ctx.value * self.power)
-        return ctx.value
+    def push(self, v, body, ctx): body.force = body.force + UP * (v * self.power)
 
 
-class Turn(Part):
+class Turn(Motor):
     """Set how fast it swings left or right. The rudder."""
     def __init__(self, rate=1.0): self.rate = rate
-    def step(self, ctx):
-        ctx.body.spin = ctx.value * self.rate
-        return ctx.value
+    def push(self, v, body, ctx): body.spin = v * self.rate
 
 
-class Tilt(Part):
+class Tilt(Motor):
     """Point its nose up or down."""
     def __init__(self, rate=1.0, limit=1.4): self.rate, self.limit = rate, limit
-    def step(self, ctx):
-        b = ctx.body
-        b.pitch = max(-self.limit,
-                      min(self.limit, b.pitch + ctx.value * self.rate * ctx.dt))
-        return ctx.value
+    def push(self, v, body, ctx):
+        body.pitch = max(-self.limit,
+                         min(self.limit, body.pitch + v * self.rate * ctx.dt))
 
 
-class Store(Part):
-    """Write the signal into a named number on the body."""
+class Store(Motor):
+    """Write the number into a named slot on the body."""
     def __init__(self, key): self.key = key
-    def step(self, ctx):
-        ctx.body.store[self.key] = ctx.value
-        return ctx.value
+    def push(self, v, body, ctx): body.store[self.key] = v
 
 
-class Drain(Part):
+class Drain(Motor):
     """Spend a named number over time. Fuel, charge, health."""
     def __init__(self, key, per_second=1.0): self.key, self.rate = key, per_second
-    def step(self, ctx):
-        s = ctx.body.store
-        s[self.key] = s.get(self.key, 0.0) - abs(ctx.value) * self.rate * ctx.dt
-        return s[self.key]
+    def push(self, v, body, ctx):
+        body.store[self.key] = (body.store.get(self.key, 0.0)
+                                - abs(v) * self.rate * ctx.dt)
 
 
 class Spawn(Part):

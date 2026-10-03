@@ -154,38 +154,70 @@ class Wipe(Part):
 
 
 # ==========================================================================
+#  THE SHAPES, WRITTEN ONCE
+#
+#  Three recur here: a block that uses a number to touch one pixel, a
+#  block that makes a shape out of points, and a block that moves those
+#  points about. Each block below is the smallest difference from one.
+# ==========================================================================
+
+class Pixel(Part):
+    """A block that lets a number touch the grid. Override `onto`.
+
+    The number carries on untouched, so one number can drive any amount
+    of pixels, each at its own line.
+    """
+    def step(self, ctx):
+        self.onto(grid_of(ctx), ctx.value, ctx)
+        return ctx.value
+
+    def onto(self, grid, value, ctx):
+        pass
+
+
+class Shape(Part):
+    """A block that makes a shape, as a list of points. Override `points`."""
+    def step(self, ctx):
+        return self.points()
+
+    def points(self):
+        return []
+
+
+class Moves(Part):
+    """A block that moves points about. Override `moved`.
+
+    This is where the matrices live: turning, shifting, scaling and
+    flattening are all the same shape -- points in, points out.
+    """
+    def step(self, ctx):
+        return self.moved(_points(ctx.value), ctx)
+
+    def moved(self, points, ctx):
+        return points
+
+
+# ==========================================================================
 #  A NUMBER DRIVING PIXELS  -- the point of all this
 # ==========================================================================
 
-class Light(Part):
+class Light(Pixel):
     """Turn one pixel on when the number is over the line, off when under.
 
         var hot
         light 3 4 at=0.5
-
-    The number keeps travelling, so several lights can share one number.
     """
-    def __init__(self, x, y, at=0.5):
-        self.x, self.y, self.at = x, y, at
-
-    def step(self, ctx):
-        v = ctx.value
-        grid_of(ctx).set(self.x, self.y, _over(v, self.at))
-        return v
+    def __init__(self, x, y, at=0.5): self.x, self.y, self.at = x, y, at
+    def onto(self, g, v, ctx): g.set(self.x, self.y, _over(v, self.at))
 
 
-class Dark(Part):
+class Dark(Pixel):
     """The other way round: on when the number is UNDER the line."""
-    def __init__(self, x, y, at=0.5):
-        self.x, self.y, self.at = x, y, at
-
-    def step(self, ctx):
-        v = ctx.value
-        grid_of(ctx).set(self.x, self.y, not _over(v, self.at))
-        return v
+    def __init__(self, x, y, at=0.5): self.x, self.y, self.at = x, y, at
+    def onto(self, g, v, ctx): g.set(self.x, self.y, not _over(v, self.at))
 
 
-class Meter(Part):
+class Meter(Pixel):
     """A row of pixels that fills up as the number grows.
 
         var loud
@@ -193,32 +225,20 @@ class Meter(Part):
     """
     def __init__(self, x, y, length=10, most=1.0):
         self.x, self.y, self.length, self.most = x, y, int(length), most
-
-    def step(self, ctx):
-        v = ctx.value
-        try:
-            share = float(v) / float(self.most or 1)
-        except (TypeError, ValueError):
-            share = 0.0
-        share = max(0.0, min(1.0, share))
-        full = int(round(share * self.length))
-        g = grid_of(ctx)
+    def onto(self, g, v, ctx):
+        full = int(round(_share(v, self.most) * self.length))
         for i in range(self.length):
             g.set(self.x + i, self.y, i < full)
-        return v
 
 
-class Fill(Part):
+class Fill(Pixel):
     """Every pixel at once, on or off, from one number."""
-    def __init__(self, at=0.5):
-        self.at = at
-
-    def step(self, ctx):
-        g, on = grid_of(ctx), _over(ctx.value, self.at)
+    def __init__(self, at=0.5): self.at = at
+    def onto(self, g, v, ctx):
+        on = _over(v, self.at)
         for y in range(g.h):
             for x in range(g.w):
                 g.set(x, y, on)
-        return ctx.value
 
 
 class Lit(Part):
@@ -236,6 +256,14 @@ class Lights(Part):
         return grid_of(ctx).lit()
 
 
+def _share(v, most):
+    """How far along a number is, between nothing and `most`, as 0 to 1."""
+    try:
+        return max(0.0, min(1.0, float(v) / float(most or 1)))
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def _over(v, line):
     """Is this number past the line? Anything unnumbered counts as off."""
     try:
@@ -248,23 +276,21 @@ def _over(v, line):
 #  SHAPES, AND THE MATRICES THAT TURN THEM
 # ==========================================================================
 
-class Dot(Part):
+class Dot(Shape):
     """One point in space. The start of a shape."""
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.p = (float(x), float(y), float(z))
-
-    def step(self, ctx):
-        return [self.p]
+    def points(self): return [self.p]
 
 
-class Box(Part):
+class Box(Shape):
     """The twelve edges of a box, as points."""
     def __init__(self, w=2.0, h=2.0, d=2.0, gap=0.25):
         # NB: not `self.step` -- that would shadow the step() method every
         # block in this language must have.
         self.w, self.h, self.d, self.gap = w / 2.0, h / 2.0, d / 2.0, gap
 
-    def step(self, ctx):
+    def points(self):
         w, h, d = self.w, self.h, self.d
         corners = [(-w, -h, -d), (w, -h, -d), (w, h, -d), (-w, h, -d),
                    (-w, -h,  d), (w, -h,  d), (w, h,  d), (-w, h,  d)]
@@ -277,12 +303,12 @@ class Box(Part):
         return out
 
 
-class Ball(Part):
+class Ball(Shape):
     """Points spread over the surface of a ball."""
     def __init__(self, r=1.5, rings=9):
         self.r, self.rings = float(r), int(rings)
 
-    def step(self, ctx):
+    def points(self):
         out = []
         for i in range(self.rings):
             lat = math.pi * (i + 0.5) / self.rings
@@ -304,7 +330,7 @@ def _line(a, b, step):
             for i in range(n + 1)]
 
 
-class Spin(Part):
+class Spin(Moves):
     """Turn the shape around an axis. `spin y 40` is forty degrees.
 
     This is the rotation matrix, written out. Spins add up, so `spin y 40`
@@ -316,7 +342,7 @@ class Spin(Part):
     def __init__(self, axis="y", degrees=0.0, var=None):
         self.axis, self.degrees, self.var = str(axis).lower(), float(degrees), var
 
-    def step(self, ctx):
+    def moved(self, points, ctx):
         turn = self.degrees
         if self.var is not None:
             try:
@@ -326,7 +352,7 @@ class Spin(Part):
         a = math.radians(turn)
         c, s = math.cos(a), math.sin(a)
         out = []
-        for x, y, z in _points(ctx.value):
+        for x, y, z in points:
             if self.axis == "x":
                 y, z = y * c - z * s, y * s + z * c
             elif self.axis == "z":
@@ -337,29 +363,28 @@ class Spin(Part):
         return out
 
 
-class Shift(Part):
+class Shift(Moves):
     """Shift the shape. The translation matrix."""
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.d = (float(x), float(y), float(z))
-
-    def step(self, ctx):
+    def moved(self, points, ctx):
         dx, dy, dz = self.d
-        return [(x + dx, y + dy, z + dz) for x, y, z in _points(ctx.value)]
+        return [(x + dx, y + dy, z + dz) for x, y, z in points]
 
 
-class Grow(Part):
+class Grow(Moves):
     """Make it bigger or smaller. The scaling matrix."""
     def __init__(self, k=1.0, y=None, z=None):
         self.kx = float(k)
         self.ky = float(k if y is None else y)
         self.kz = float(k if z is None else z)
 
-    def step(self, ctx):
+    def moved(self, points, ctx):
         return [(x * self.kx, y * self.ky, z * self.kz)
-                for x, y, z in _points(ctx.value)]
+                for x, y, z in points]
 
 
-class Flat(Part):
+class Flat(Moves):
     """Drop the shape from XYZ onto the grid: 3D becomes 2D.
 
     `near` decides how much closer things look bigger. Set it to 0 for a
@@ -368,12 +393,12 @@ class Flat(Part):
     def __init__(self, zoom=None, near=6.0):
         self.zoom, self.near = zoom, float(near)
 
-    def step(self, ctx):
+    def moved(self, points, ctx):
         g = grid_of(ctx)
         zoom = self.zoom if self.zoom is not None else min(g.w, g.h) / 5.0
         cx, cy = g.w / 2.0, g.h / 2.0
         out = []
-        for x, y, z in _points(ctx.value):
+        for x, y, z in points:
             if self.near > 0:
                 depth = self.near + z
                 if depth <= 0.1:

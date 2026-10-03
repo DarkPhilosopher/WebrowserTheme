@@ -741,6 +741,31 @@ straight through so a shut gate never breaks the block behind it. Write
 This is the rule to keep when adding anything: **if two blocks share a
 shape, write the shape once and make each block the difference.**
 
+### The twelve shapes
+
+It holds across the whole project. Sixty-six of the blocks are now the
+smallest difference from one of these:
+
+| Shape | In | A block built on it |
+|---|---|---|
+| `Number` | core | one number in, one out — a `None` passes through |
+| `Test` | tool | answers yes or no |
+| `Doing` | tool | does a thing, says what came of it |
+| `Asking` | tool | asks you something, never hangs where nobody is there |
+| `Pather` | files | looks at one path; the disk refusing answers `missing` |
+| `Changer` | files | changes many paths at once; one failing skips, not stops |
+| `Reaching` | net | asks the network; nothing is allowed to raise |
+| `Sense` | space | reads the body, answers a number |
+| `Motor` | space | moves the body, hands the number on |
+| `Pixel` | screen | lets a number touch the grid |
+| `Shape` | screen | makes a shape, as points |
+| `Moves` | screen | points in, points out — this is where the matrices live |
+
+Two of them carry a rule that would otherwise have to be remembered in
+every block: `Number` passes a `None` through, so a shut gate never
+breaks what follows; `Motor` hands the number on, so one number can
+drive the engine, the rudder and the fuel gauge at once.
+
 ## connect — a script written in this language
 
 ```bash

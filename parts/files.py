@@ -26,9 +26,80 @@ def _p(path):
     return os.path.abspath(os.path.expanduser(str(path)))
 
 
+def _dotted(word):
+    """`.md` and `md` both mean the same extension."""
+    w = str(word).lower()
+    return w if w.startswith(".") else "." + w
+
+
 def _pick(arg, ctx):
     """Use the argument if given, otherwise whatever is coming down the chain."""
     return _p(arg if arg is not None else ctx.value)
+
+
+# ==========================================================================
+#  THE SHAPES, WRITTEN ONCE
+#
+#  Most of what follows is one of two shapes. Each block is then the
+#  smallest difference from its shape: a name, a sentence, one line.
+# ==========================================================================
+
+class Pather(Part):
+    """A block that looks at ONE path. Override `about`.
+
+    The path is the argument when you give one, and whatever is coming
+    down the chain when you do not -- which is what lets these sit
+    anywhere in a line. Anything the disk refuses answers `missing`
+    rather than stopping the program.
+    """
+    missing = None
+
+    def __init__(self, path=None):
+        self.path = path
+
+    def step(self, ctx):
+        try:
+            return self.about(_pick(self.path, ctx))
+        except (OSError, ValueError):
+            return self.missing
+
+    def about(self, path):
+        return path
+
+
+class Changer(Part):
+    """A block that changes MANY paths at once. Override `change`.
+
+    Whatever comes down the chain -- one path or a whole list of them --
+    is handled one at a time, and anything the disk refuses is skipped
+    rather than stopping the rest. What comes back matches what went in:
+    a list for a list, one path for one path.
+    """
+    def __init__(self, into=None):
+        self.into = into
+
+    def step(self, ctx):
+        made = []
+        for one in _as_list(ctx.value):
+            try:
+                got = self.change(_p(one), ctx)
+                if got is not None:
+                    made.append(got)
+            except (OSError, shutil.Error, ValueError):
+                pass
+        if isinstance(ctx.value, (list, tuple, set)):
+            return made
+        return made[0] if made else None
+
+    def change(self, path, ctx):
+        return path
+
+
+def _dest(into):
+    """The folder a Changer puts things into, made if it is not there."""
+    where = _p(into)
+    os.makedirs(where, exist_ok=True)
+    return where
 
 
 # ==========================================================================
@@ -103,95 +174,83 @@ class Glob(Part):
                                    self.pattern.lower())]
 
 
-class Read(Part):
+class Read(Pather):
     """The text inside a file. Unreadable or binary gives ""."""
+    missing = ""
     def __init__(self, path=None, limit=2_000_000):
         self.path, self.limit = path, limit
-
-    def step(self, ctx):
-        try:
-            with open(_pick(self.path, ctx), "r", errors="ignore") as fh:
-                return fh.read(self.limit)
-        except (OSError, ValueError):
-            return ""
+    def about(self, p):
+        with open(p, "r", errors="ignore") as fh:
+            return fh.read(self.limit)
 
 
-class Lines(Part):
+class Lines(Pather):
     """The lines of a file, as a list."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx):
-        return Read(self.path).step(ctx).splitlines()
+    missing = []
+    def about(self, p): return Read(p).about(p).splitlines()
 
 
-class Exists(Part):
+class Exists(Pather):
     """Is there anything at this path -- a file or a folder?"""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx): return os.path.exists(_pick(self.path, ctx))
+    missing = False
+    def about(self, p): return os.path.exists(p)
 
 
-class IsDir(Part):
+class IsDir(Pather):
     """Is this path a folder?"""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx): return os.path.isdir(_pick(self.path, ctx))
+    missing = False
+    def about(self, p): return os.path.isdir(p)
 
 
-class IsFile(Part):
+class IsFile(Pather):
     """Is this path a file, rather than a folder?"""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx): return os.path.isfile(_pick(self.path, ctx))
+    missing = False
+    def about(self, p): return os.path.isfile(p)
 
 
-class Size(Part):
-    """Bytes. A missing file is 0."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx):
-        try:    return os.path.getsize(_pick(self.path, ctx))
-        except OSError: return 0
+class Size(Pather):
+    """How many bytes a file is. A missing one is 0."""
+    missing = 0
+    def about(self, p): return os.path.getsize(p)
 
 
-class Age(Part):
-    """Days since it was last changed."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx):
-        try:    return (time.time() - os.path.getmtime(_pick(self.path, ctx))) / 86400.0
-        except OSError: return 1e9
+class Age(Pather):
+    """Days since it was last changed. A missing one is very old."""
+    missing = 1e9
+    def about(self, p): return (time.time() - os.path.getmtime(p)) / 86400.0
 
 
-class Name(Part):
-    """Just the file's own name, no folders."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx): return os.path.basename(_pick(self.path, ctx))
+class Name(Pather):
+    """Just the file's own name, with no folders in front of it."""
+    missing = ""
+    def about(self, p): return os.path.basename(p)
 
 
-class Parent(Part):
+class Parent(Pather):
     """The folder a path sits in."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx): return os.path.dirname(_pick(self.path, ctx))
+    missing = ""
+    def about(self, p): return os.path.dirname(p)
 
 
-class Ext(Part):
-    """With no argument: the extension. With one: True when it matches."""
+class Ext(Pather):
+    """With no setting: the extension. With one: true when it matches."""
     def __init__(self, is_=None, path=None): self.is_, self.path = is_, path
-    def step(self, ctx):
-        e = os.path.splitext(_pick(self.path, ctx))[1].lower()
+    def about(self, p):
+        got = os.path.splitext(p)[1].lower()
         if self.is_ is None:
-            return e
-        want = [w if w.startswith(".") else "." + w
-                for w in _as_list(self.is_)]
-        return e in [w.lower() for w in want]
+            return got
+        return got in [_dotted(w) for w in _as_list(self.is_)]
 
 
 # ==========================================================================
 #  SINKS -- change the disk
 # ==========================================================================
 
-class MakeDir(Part):
-    """Create a folder, and any parent folders it needs."""
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx):
-        target = _pick(self.path, ctx)
-        os.makedirs(target, exist_ok=True)
-        return target
+class MakeDir(Pather):
+    """Create a folder, and any folders above it that it needs."""
+    def about(self, p):
+        os.makedirs(p, exist_ok=True)
+        return p
 
 
 class Write(Part):
@@ -210,104 +269,68 @@ class Write(Part):
         return ctx.value
 
 
-class Copy(Part):
-    """Copy whatever comes down the chain into a folder.
-
-    Takes a single path or a whole list of them. Passes the new paths on.
-    """
-    def __init__(self, into): self.into = into
-    def step(self, ctx):
-        dest = _p(self.into)
-        os.makedirs(dest, exist_ok=True)
-        made = []
-        for src in _as_list(ctx.value):
-            src = _p(src)
-            try:
-                if os.path.isdir(src):
-                    out = os.path.join(dest, os.path.basename(src))
-                    shutil.copytree(src, out, dirs_exist_ok=True)
-                else:
-                    out = shutil.copy2(src, dest)
-                made.append(out)
-            except (OSError, shutil.Error):
-                pass
-        return made if isinstance(ctx.value, (list, tuple, set)) else \
-            (made[0] if made else None)
+class Copy(Changer):
+    """Copy whatever comes down the chain into a folder, originals intact."""
+    def change(self, path, ctx):
+        into = _dest(self.into)
+        if os.path.isdir(path):
+            out = os.path.join(into, os.path.basename(path))
+            shutil.copytree(path, out, dirs_exist_ok=True)
+            return out
+        return shutil.copy2(path, into)
 
 
-class Move(Part):
-    """Move whatever comes down the chain into a folder."""
-    def __init__(self, into): self.into = into
-    def step(self, ctx):
-        dest = _p(self.into)
-        os.makedirs(dest, exist_ok=True)
-        made = []
-        for src in _as_list(ctx.value):
-            try:
-                made.append(shutil.move(_p(src), dest))
-            except (OSError, shutil.Error):
-                pass
-        return made if isinstance(ctx.value, (list, tuple, set)) else \
-            (made[0] if made else None)
+class Move(Changer):
+    """Move whatever comes down the chain into a folder, leaving nothing."""
+    def change(self, path, ctx):
+        return shutil.move(path, _dest(self.into))
 
 
-class Rename(Part):
-    """Rename in place. `to` may use {name} {ext} {n}."""
-    def __init__(self, to): self.to = to
-    def step(self, ctx):
-        made = []
-        for n, src in enumerate(_as_list(ctx.value), 1):
-            src = _p(src)
-            base = os.path.basename(src)
-            stem, ext = os.path.splitext(base)
-            new = self.to.format(name=stem, ext=ext, n=n)
-            out = os.path.join(os.path.dirname(src), new)
-            try:
-                os.rename(src, out)
-                made.append(out)
-            except OSError:
-                pass
-        return made if isinstance(ctx.value, (list, tuple, set)) else \
-            (made[0] if made else None)
+class Rename(Changer):
+    """Rename in place. The new name may use {name}, {ext} and {n}."""
+    def __init__(self, to): self.to, self.into, self.n = to, None, 0
+    def change(self, path, ctx):
+        self.n += 1
+        stem, ext = os.path.splitext(os.path.basename(path))
+        out = os.path.join(os.path.dirname(path),
+                           self.to.format(name=stem, ext=ext, n=self.n))
+        os.rename(path, out)
+        return out
 
 
-class Remove(Part):
+class Remove(Changer):
     """Delete. Guarded on purpose.
 
-    Files go quietly. A FOLDER is only removed when you pass folders=True,
-    because deleting a tree by accident is the one mistake you cannot undo.
+    Files go quietly. A FOLDER is only removed when you pass
+    folders=true, because deleting a tree by accident is the one mistake
+    you cannot undo.
     """
-    def __init__(self, folders=False): self.folders = folders
+    def __init__(self, folders=False): self.folders, self.into = folders, None
     def step(self, ctx):
-        gone = []
-        for src in _as_list(ctx.value):
-            src = _p(src)
-            try:
-                if os.path.isdir(src):
-                    if not self.folders:
-                        continue
-                    shutil.rmtree(src)
-                else:
-                    os.remove(src)
-                gone.append(src)
-            except OSError:
-                pass
-        return gone
+        # always a list, even for one path -- you want to see what went
+        got = Changer.step(self, ctx)
+        return got if isinstance(got, list) else ([got] if got else [])
+    def change(self, path, ctx):
+        if os.path.isdir(path):
+            if not self.folders:
+                return None
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
+        return path
 
 
-class Make(Part):
-    """Create an empty file if it isn't there; otherwise mark it changed now.
+class Make(Pather):
+    """Create an empty file, or mark an existing one as changed now.
 
-    (MakeDir is the folder version. Named Make, not Touch, because
-    space.Touch already means "is something overlapping me".)
+    MakeDir is the folder version. Named Make and not Touch, because
+    space.Touch already means "is something overlapping me".
     """
-    def __init__(self, path=None): self.path = path
-    def step(self, ctx):
-        target = _pick(self.path, ctx)
-        os.makedirs(os.path.dirname(target) or ".", exist_ok=True)
-        with open(target, "a"):
-            os.utime(target, None)
-        return target
+    def about(self, p):
+        os.makedirs(os.path.dirname(p) or ".", exist_ok=True)
+        with open(p, "a"):
+            os.utime(p, None)
+        return p
 
 
 CATALOGUE = {
