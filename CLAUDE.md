@@ -91,6 +91,8 @@ nothing. Do not reach for `--force` on his behalf; ask.
 
 | Folder | What it is |
 |---|---|
+| `get.sh` | The one that makes the rest available: off github with Termux alone. Safe to run again — it pulls |
+| `wakeup.py` | The front door. `wakeup`, then pick a number. It starts the others and does no work of its own |
 | `sparkblocks/` | A language of interchangeable blocks. See `sparkblocks/README.md` |
 | `house/` | Multiplayer ASCII house builder, over a shared GitHub repo |
 | `ttt/` | Tic-tac-toe between two phones, over a shared GitHub repo |
@@ -127,6 +129,23 @@ python3 -m sparkblocks json --html
 explains the three steps for adding a block, and the one rule worth
 knowing: never store a setting called `step`, because it shadows the
 method every block must have.
+
+### Blocks somebody else wrote
+
+They come in through `sparkblocks/outside.py`, from `~/.sparkblocks/`,
+`$SPARKBLOCKS_PATH` or `./sparkblocks-extra/`. **Making the folder is
+the consent** — nothing else is searched, and nothing is ever
+downloaded.
+
+A name this folder already uses is **refused, loudly, and never quietly
+swapped in.** Do not soften that into a warning: a program that meant
+different things on different machines is the exact fault this project
+exists to avoid.
+
+The catalogue the panels read leaves outside blocks out unless asked
+(`json --outside`), so the committed file says the same thing on every
+machine. Never bake one machine's own outside blocks into
+`panel/panel.html`.
 
 ## The rule everything here follows
 

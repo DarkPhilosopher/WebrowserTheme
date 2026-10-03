@@ -4,7 +4,69 @@ Which steps you need depends on which machine. Find yours.
 
 ---
 
-## The A33 or the A17 — an Android phone
+## Straight off github, with Termux and nothing else
+
+This is the short way, and the one to use on a phone. It needs no zip,
+no file manager, and no cable.
+
+**One line, if the phone has curl:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/DarkPhilosopher/WebrowserTheme/refs/heads/claude/new-session-y0nuxy/get.sh | sh
+```
+
+**Three lines, if it does not** — Termux ships without curl, so this is
+the usual case:
+
+```bash
+pkg install git -y
+```
+```bash
+git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup
+```
+```bash
+sh ~/wakeup/get.sh
+```
+
+`get.sh` is the one that makes the rest available. It installs git and
+python, puts the folder in `~/wakeup`, makes `import sparkblocks` work
+from any folder, and makes **`wakeup`** a word you can type. Then:
+
+```bash
+wakeup
+```
+
+That is the front door: eight choices, pick a number, the last one
+always goes back. Blocks, the numbered builder, the touch pad, both
+panels, and running a program are all behind it.
+
+Run `get.sh` again whenever you like — it pulls instead of cloning and
+changes nothing it has already done, so there is no way to run it twice
+and make a mess.
+
+### Where the files are, and why not in Download
+
+The working copy goes in `~/wakeup`, inside Termux. Shared storage
+cannot hold file permissions, so git goes strange on `/sdcard` — which
+is why the clone does not go there.
+
+To see the folder in the phone's own Files app, or to send it to a
+computer, take the copy: `wakeup` → **more** → **save a copy to
+storage**. That puts it in `Download/wakeup`. Keep working in the
+Termux one.
+
+Shared storage needs letting in, once:
+
+```bash
+termux-setup-storage
+```
+
+---
+
+## The A33 or the A17 — an Android phone, from a zip
+
+Use this when you already have the zip. Off github is shorter — see
+above.
 
 **1. Termux, from F-Droid.** Not the Play Store — that build is
 abandoned and `npm` fails on it oddly.
@@ -133,10 +195,29 @@ panels, `tfind`. Use claude.ai in the browser for Claude itself.
 python3 -m sparkblocks check
 ```
 
-718 checks. If you add or rename a block, it will also tell you to
+855 checks. If you add or rename a block, it will also tell you to
 rebuild the catalogue the panels read:
 
 ```bash
 python3 -m sparkblocks json panel/catalogue.json
 python3 -m sparkblocks json --html
 ```
+
+## Blocks somebody else wrote
+
+A block from anywhere works the same as one that shipped here. Make the
+folder — making it is the consent, and nothing else is searched:
+
+```bash
+mkdir -p ~/.sparkblocks
+```
+
+Put a `.py` file in it with a `Part` in it, then:
+
+```bash
+python3 -m sparkblocks outside
+```
+
+It says what it found and where from, and names anything that would not
+load. See **[sparkblocks/README.md](sparkblocks/README.md)** for how to
+write one.

@@ -54,10 +54,12 @@ if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     import sparkblocks as _parts
     from sparkblocks import connect as _connect
+    from sparkblocks import outside as _outside
     from sparkblocks.core import Chain, Ctx, Fan, Part, run
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
+    from . import outside as _outside
     from .core import Chain, Ctx, Fan, Part, run
 
 
@@ -193,7 +195,14 @@ def _nest(lines):
 # ==========================================================================
 
 def _registry():
-    """Every block in the language, by its lower-case name."""
+    """Every block this machine can use, by its lower-case name.
+
+    The ones that shipped here, connect's own four, and anything in
+    your outside folders -- see `sparkblocks/outside.py`. A block from
+    somewhere else is looked up exactly like one that shipped, which is
+    the whole point: a part fails for what it is, never for where it
+    was plugged in.
+    """
     out = {}
     for name in _parts.blocks():
         block = getattr(_parts, name, None)
@@ -204,6 +213,11 @@ def _registry():
         block = getattr(_connect, extra, None)
         if block is not None:
             out[extra.lower()] = block
+    # blocks from somewhere else. A name already used above is refused
+    # inside load(), not quietly replaced here.
+    found, _trouble = _outside.load()
+    for low, cls in found.items():
+        out.setdefault(low, cls)
     return out
 
 
@@ -250,9 +264,15 @@ def _build(ln, known):
 
     if name not in known:
         near = _near(name, known)
-        raise ScriptError("line %d: there is no block called %r.%s"
+        # If an outside file would not load, the block it holds is
+        # missing for a reason worth saying out loud -- otherwise this
+        # reads as a typo and you hunt for the wrong thing.
+        _found, trouble = _outside.load()
+        raise ScriptError("line %d: there is no block called %r.%s%s"
                           % (ln.n, name,
-                             ("\n  Did you mean: " + ", ".join(near)) if near else ""))
+                             ("\n  Did you mean: " + ", ".join(near)) if near else "",
+                             ("\n  Also, outside blocks had trouble:\n    "
+                              + "\n    ".join(trouble)) if trouble else ""))
 
     cls = known[name]
     loose, named = _settings(ln.args, ln.n)
@@ -367,12 +387,27 @@ def main(argv):
         if str(e):
             print(str(e))
         return 0
-    # A program that ends in `say` has already spoken for itself.
+    if _already_spoke(chain):
+        return 0
     if answer is not None and not isinstance(answer, (list, tuple)):
         print(answer)
     elif isinstance(answer, (list, tuple)) and "--quiet" not in argv:
         print("%d item%s" % (len(answer), "" if len(answer) == 1 else "s"))
     return 0
+
+
+def _already_spoke(chain):
+    """Did the program's last block already print, so we should not repeat it?
+
+    A program ending in `say` has spoken for itself. Printing the
+    answer again on top of it made `say` look broken.
+    """
+    from .tool import Row, Table
+    from .core import Chain as _Chain, Put, Say
+    last = chain
+    while isinstance(last, _Chain) and last.parts:
+        last = last.parts[-1]
+    return isinstance(last, (Say, Put, Row, Table))
 
 
 def _loop(chain, argv):

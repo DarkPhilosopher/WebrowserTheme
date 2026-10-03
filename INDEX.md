@@ -15,6 +15,8 @@ the zip, and everything is accounted for.
 |---|---|---|---|---|
 | `claude-ready.py` | root | Names the **first** thing missing before Claude will run, then offers to install it by number | The machine itself | A phone or PC with Python |
 | `whereami.py` | root | Says which of your machines this is, from the signs it carries. Holds the register of all of them | `~/.whereami` if named; otherwise system, architecture, hostname | Anything with Python |
+| `get.sh` | root | **The one that makes the rest available.** Off github with Termux and nothing else: installs git and python, clones, makes `import sparkblocks` work anywhere, makes `wakeup` a word you can type. Safe to run again — it pulls | A network, and git | `/bin/sh`: Termux, Linux, mac |
+| `wakeup.py` | root | The front door. Eight choices, the last always back; starts everything else and does no work of its own | — | Any terminal with Python |
 | `SETUP.md` | root | The steps, split by device, because they genuinely differ | — | Read anywhere |
 | `CLAUDE.md` | root | What a future Claude session must know first — above all, *ask which machine* | — | Read by Claude |
 
@@ -33,8 +35,9 @@ the zip, and everything is accounted for.
 | `sparkblocks/menu.py` | `sparkblocks/` | Build a program with numbers only | — | Any terminal |
 | `sparkblocks/connect.py` | `sparkblocks/` | Find what touches a thing, by ten routes at once | Files, and git history if there is any | Any machine; `git` for one route |
 | `sparkblocks/book.py` | `sparkblocks/` | Writes the whole language out as JSON for the panels | — | Any machine |
-| `sparkblocks/check.py` | `sparkblocks/` | 718 checks that the language still hangs together | — | Any machine |
+| `sparkblocks/check.py` | `sparkblocks/` | 855 checks that the language still hangs together | — | Any machine |
 | `sparkblocks/install.py` | `sparkblocks/` | Makes `import sparkblocks` work from any folder, for good | A writable site-packages | Any machine |
+| `sparkblocks/outside.py` | `sparkblocks/` | The adapter: blocks somebody else wrote, used exactly like the ones that shipped. Making the folder is the consent; a name already taken is refused loudly, never quietly swapped | `~/.sparkblocks/`, `$SPARKBLOCKS_PATH`, `./sparkblocks-extra/` | Any machine |
 | `sparkblocks/examples/*.parts` | `sparkblocks/examples/` | Ten working programs to copy and change | Varies by program | Varies |
 
 ## 3. The control panels
@@ -113,6 +116,7 @@ insides — what it is made of and how the pieces connect.
 
 | Program | Manual |
 |---|---|
+| `get.sh` and `wakeup.py` | [`SETUP.md`](SETUP.md) |
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |
 | the block language | [`sparkblocks/README.md`](sparkblocks/README.md) |
@@ -130,6 +134,24 @@ python3 <anything>.py --help     what that program does
 ```
 
 ## 9. Using this as storage
+
+Everything, onto a phone, with Termux and nothing else:
+
+```bash
+pkg install git -y
+```
+```bash
+git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup
+```
+```bash
+sh ~/wakeup/get.sh
+```
+
+Then `wakeup` and pick a number. To take it off the phone again, or to
+see it in the Files app: `wakeup` → **more** → **save a copy to
+storage**, which puts it in `Download/wakeup`.
+
+Just the files, nothing set up:
 
 ```bash
 git clone https://github.com/DarkPhilosopher/WebrowserTheme.git

@@ -386,6 +386,47 @@ def every_block_has_a_datasheet(r):
             r.fault("%s.%s" % (mod, name), "`waits` is not true or false")
 
 
+def outside_blocks_fit_too(r):
+    """Blocks from somewhere else are held to the same rules.
+
+    This is the point of the whole arrangement: a block you wrote on
+    the bus is checked exactly like one that shipped here -- the same
+    contract, the same sentence saying what it does, the same
+    datasheet. Nothing is let off for being yours.
+
+    With no outside folders this check has nothing to look at and
+    passes, which is the usual case and not a problem.
+    """
+    from .book import fits_of
+    from . import outside as _outside
+
+    found, trouble = _outside.load()
+    for line in trouble:
+        r.looked()
+        r.fault("outside", line)
+
+    for low, cls in sorted(found.items()):
+        where = "outside.%s" % cls.__name__
+        r.looked(4)
+        if not callable(getattr(cls, "step", None)):
+            r.fault(where, "has no step() -- it is not a block")
+            continue
+        if "step" in cls.__dict__ and not callable(cls.__dict__["step"]):
+            r.fault(where, "stores a setting called `step`, which hides the "
+                           "method every block must have. Call it something else")
+        if not (cls.__doc__ or "").strip():
+            r.fault(where, "has no sentence saying what it does")
+        try:
+            fits = fits_of(cls, "outside")
+        except Exception as e:
+            r.fault(where, "has no readable datasheet: %s" % e)
+            continue
+        if fits["changes"] not in ("nothing", "vars", "files", "DELETES",
+                                   "world", "screen", "network", "anything"):
+            r.fault(where, "says it changes %r, which is not a word the "
+                           "holders know" % fits["changes"])
+
+
 def the_panels_agree(r):
     """The panels read a catalogue, not the Python. It must still match.
 
@@ -453,6 +494,7 @@ CHECKS = [
     ("things actually work",    things_actually_work),
     ("the awkward cases",       awkward_cases),
     ("every block has a datasheet", every_block_has_a_datasheet),
+    ("outside blocks fit too",  outside_blocks_fit_too),
     ("the panels agree",        the_panels_agree),
 ]
 

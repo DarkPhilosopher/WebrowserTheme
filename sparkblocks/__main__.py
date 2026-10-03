@@ -9,6 +9,7 @@
     python3 -m sparkblocks run prog.parts     run a plain-text program
     python3 -m sparkblocks menu               build one with numbers only
     python3 -m sparkblocks pad                build one by pressing squares
+    python3 -m sparkblocks outside           blocks from somewhere else, and where from
     python3 -m sparkblocks check              make sure it all still hangs together
     python3 -m sparkblocks json <file>        write the language out as JSON
 """
@@ -43,6 +44,10 @@ def main(argv):
 
     if argv and argv[0] == "pad":
         from .pad import main as go
+        return go(argv[1:])
+
+    if argv and argv[0] in ("outside", "extra"):
+        from .outside import main as go
         return go(argv[1:])
 
     if argv and argv[0] == "menu":

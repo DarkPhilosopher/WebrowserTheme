@@ -25,13 +25,20 @@ FOUR MODULES, ONE TONGUE
     pad     the window as eight squares you press
     tool    what a program needs to be a tool: ask, run, show a table
 
+BLOCKS FROM SOMEWHERE ELSE
+--------------------------
+A block someone else wrote works the same as one that shipped here.
+Put a `.py` file in `~/.sparkblocks/` and `python3 -m sparkblocks outside`
+will say it is there. Making the folder is the consent -- nothing is
+searched that you did not make on purpose, and nothing is downloaded.
+
 Import the lot with `from sparkblocks import *`, or take one module at a time
 with `from sparkblocks.files import Walk, Copy` when you want to be exact.
 
 Standard library only. No installs, no threads, no 64-bit requirement.
 """
 
-from . import core, files, net, pad, screen, space, tool
+from . import core, files, net, outside, pad, screen, space, tool
 
 from .core import (  # noqa: F401
     # the contract
@@ -97,7 +104,12 @@ CATALOGUE = {
 
 
 def blocks():
-    """Every block in the language, as a flat sorted list of names."""
+    """Every block that SHIPPED here, as a flat sorted list of names.
+
+    Blocks from somewhere else are deliberately not in this list, so
+    that `blocks()` says the same thing on every machine. Ask
+    `sparkblocks.outside.names()` for those.
+    """
     out = set()
     for mod in CATALOGUE.values():
         for group in mod.values():
@@ -105,10 +117,27 @@ def blocks():
     return sorted(out)
 
 
+def everything():
+    """Every block this machine can use: the ones here, plus the outside ones.
+
+    Returns {lower-case name: class}. Use this when you are looking a
+    typed name up; use `blocks()` when you are describing the language.
+    """
+    out = {}
+    for name in blocks():
+        cls = globals().get(name)
+        if cls is not None:
+            out[name.lower()] = cls
+    found, _trouble = outside.load()
+    for low, cls in found.items():
+        out.setdefault(low, cls)
+    return out
+
+
 def describe(name=None):
     """Print the catalogue, or one block's own documentation."""
     if name:
-        cls = globals().get(name)
+        cls = globals().get(name) or everything().get(str(name).lower())
         if cls is None:
             print("no block called %r" % name)
             return

@@ -223,7 +223,7 @@ parts/
 │                  main()  run · --show · --loop · --fps
 │
 ├─ book.py       writes the language out as JSON, for the panels
-├─ check.py      718 checks; the only thing that catches drift
+├─ check.py      855 checks; the only thing that catches drift
 │
 ├─ files.py      Pather (one path) · Changer (many paths)
 ├─ net.py        Reaching (nothing may raise)
@@ -235,6 +235,10 @@ parts/
 ├─ menu.py       build with numbers
 ├─ connect.py    ten routes, one vote each
 ├─ install.py    the .pth that makes `import sparkblocks` work anywhere
+├─ outside.py    the adapter: blocks somebody else wrote, used the same
+│                  places()  the three folders, in the order searched
+│                  load()    (blocks, trouble) — a bad file is skipped
+│                  a name already taken is REFUSED, never swapped in
 │
 └─ examples/     ten working programs
 ```
@@ -256,12 +260,16 @@ parts/
 **Where a block can be reached from**, all from one definition:
 
 ```
-          a block class
-         ╱      │      ╲
+   a block class ─────────── or one in ~/.sparkblocks/
+         ╱      │      ╲      (outside.py pulls it in here)
    Python    .parts    the catalogue (JSON)
     import    file          ╱        ╲
                       panel.py    panel.html
 ```
+
+Outside blocks reach the first two for nothing. The catalogue leaves
+them out unless asked (`json --outside`), so the file in the repository
+says the same thing on every machine.
 
 ## Changing it later
 
@@ -345,6 +353,92 @@ would shadow the `step()` method and the block would break at run time
 rather than when you wrote it. `Box` takes `gap` and `Ray` takes `step`
 but keeps it as `self.stride` for exactly this reason.
 
+### Adding a block without touching this folder
+
+The three steps above are for a block that belongs here. A block that
+is *yours* — or a friend's, or one you wrote on the bus — does not have
+to come in here at all, and nothing has to be edited to let it in.
+
+Make the folder. **Making it is the consent**; nothing else is
+searched, and nothing is ever downloaded:
+
+```bash
+mkdir -p ~/.sparkblocks
+```
+
+Put a file in it:
+
+```python
+# ~/.sparkblocks/mine.py
+from sparkblocks import Part
+
+
+class Shout(Part):
+    """Make the text loud and excited."""
+    fits = {"changes": "nothing"}
+
+    def step(self, ctx):
+        return str(ctx.value).upper() + "!"
+```
+
+`shout` is now a block, in a `.spark` file like any other:
+
+```
+const "hello there"
+shout
+say
+```
+
+```bash
+python3 -m sparkblocks run hello.spark
+HELLO THERE!
+```
+
+Three places are searched, in this order:
+
+| | |
+|---|---|
+| `~/.sparkblocks/` | yours, on this machine |
+| `$SPARKBLOCKS_PATH` | folders you name, separated by `:` |
+| `./sparkblocks-extra/` | beside whatever you are running |
+
+```bash
+python3 -m sparkblocks outside
+```
+
+says what was found and where from, and names anything that would not
+load.
+
+**Two blocks cannot share a name.** The text format looks a block up by
+one, so an outside block taking a name this folder already uses is
+refused, loudly, and told what to call instead. It is never quietly
+swapped in — a program that meant different things on different
+machines is the exact fault this project exists to avoid.
+
+A bad file is reported and skipped rather than stopping anything.
+One broken file must never lock you out of the editor you would fix it
+in.
+
+`check` holds outside blocks to the same rules as these ones — the
+contract, a sentence saying what it does, a datasheet. Nothing is let
+off for being yours:
+
+```bash
+python3 -m sparkblocks check
+ok   outside blocks fit too         4 checked
+```
+
+The panels read a written catalogue rather than the Python, so they do
+not see outside blocks unless you ask for them. Ask when you are
+building a panel for *your* machine:
+
+```bash
+python3 -m sparkblocks json --outside panel/catalogue.json
+```
+
+Left out by default on purpose, so the file in the repository says the
+same thing on every machine.
+
 ## The command line
 
 ```bash
@@ -355,6 +449,7 @@ python3 -m sparkblocks install          # make import work anywhere
 python3 -m sparkblocks run prog.parts   # run a plain-text program
 python3 -m sparkblocks menu             # build one with numbers only
 python3 -m sparkblocks pad              # build one by pressing squares
+python3 -m sparkblocks outside          # blocks from somewhere else, and where from
 python3 -m sparkblocks check            # make sure it all still hangs together
 ```
 

@@ -71,10 +71,18 @@ def whole_doc(cls):
     return "\n".join(line.strip() for line in doc.split("\n")[1:]).strip()
 
 
-def book():
-    """The whole language, as plain data."""
+def book(with_outside=False):
+    """The whole language, as plain data.
+
+    Outside blocks are left out unless you ask for them, so that the
+    file this writes is the same on every machine. Ask for them when
+    you are building a panel for YOUR machine:
+
+        python3 -m sparkblocks json --outside panel/catalogue.json
+    """
     from . import CATALOGUE, blocks
     from . import connect as _connect
+    from . import outside as _outside
     from .script import FANWAYS, HOLDERS
 
     out = {
@@ -86,7 +94,7 @@ def book():
         "count": 0,
     }
 
-    def add(mod, kind, cls):
+    def add(mod, kind, cls, came_from=None):
         name = cls.__name__
         out["blocks"][name.lower()] = {
             "name": name,
@@ -97,6 +105,7 @@ def book():
             "holds": name.lower() in HOLDERS,
             "fits": fits_of(cls, mod),
             "settings": settings_of(cls),
+            "from": came_from,
         }
         out["modules"].setdefault(mod, {}).setdefault(kind, []).append(
             name.lower())
@@ -109,6 +118,11 @@ def book():
         cls = getattr(_connect, name, None)
         if cls is not None:
             add("connect", "compare", cls)
+    if with_outside:
+        for folder, group in sorted(_outside.catalogue().items()):
+            for cls in group:
+                add(folder, "outside", cls,
+                    getattr(cls, "came_from", None))
 
     out["count"] = len(out["blocks"])
     # which blocks a place can run, worked out from what they need --
@@ -155,8 +169,12 @@ def into_html(path, text):
 
 def main(argv=()):
     argv = list(argv)
-    text = json.dumps(book(), indent=1, sort_keys=True)
-    count = book()["count"]
+    extra = "--outside" in argv
+    if extra:
+        argv.remove("--outside")
+    made = book(with_outside=extra)
+    text = json.dumps(made, indent=1, sort_keys=True)
+    count = made["count"]
 
     if "--html" in argv:
         argv.remove("--html")

@@ -12,9 +12,30 @@ not built yet and where they would go.
 
 ## Start here
 
+On a phone, straight off github — three lines, no zip and no cable:
+
 ```bash
-pkg install python -y          # Termux
-python3 claude-ready.py
+pkg install git -y
+```
+```bash
+git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup
+```
+```bash
+sh ~/wakeup/get.sh
+```
+
+Then one word, and pick a number:
+
+```bash
+wakeup
+```
+
+`wakeup` is the front door — eight choices, the last always back.
+Everything below is behind it, and everything below still works on its
+own. Full instructions per machine are in **[SETUP.md](SETUP.md)**.
+
+```bash
+python3 claude-ready.py        # is this phone ready for Claude itself
 ```
 
 | | |
