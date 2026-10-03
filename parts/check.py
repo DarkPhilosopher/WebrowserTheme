@@ -15,7 +15,8 @@ quietly:
   * every block the text format offers can actually be built
   * every example program still parses
   * a handful of things actually do what they claim
-  * and the awkward cases answer sensibly rather than lying
+  * the awkward cases answer sensibly rather than lying
+  * and the panels still describe the blocks that actually exist
 
 That last one is the only check that can catch a block which keeps every
 rule perfectly and is still wrong. An empty list handed to First, limits
@@ -349,6 +350,63 @@ def awkward_cases(r):
     gives("Threshold below is below", Chain([Const(1), Threshold(5)]), 0.0)
 
 
+def the_panels_agree(r):
+    """The panels read a catalogue, not the Python. It must still match.
+
+    panel/panel.py reads catalogue.json; panel/panel.html has the same
+    JSON baked inside it, because Chrome will not let a file:// page
+    fetch its own folder. Both are written by `python3 -m parts json`,
+    and either can be left behind by a change to the blocks.
+    """
+    import json
+    import re
+    from .book import book
+
+    live = book()
+    root = os.path.dirname(HERE)
+
+    def same_as_live(what, got):
+        r.looked()
+        if got is None:
+            return
+        if got.get("count") != live["count"]:
+            r.fault(what, "has %s blocks, the language has %s -- rerun "
+                          "`python3 -m parts json`"
+                    % (got.get("count"), live["count"]))
+            return
+        missing = sorted(set(live["blocks"]) - set(got.get("blocks", {})))
+        extra   = sorted(set(got.get("blocks", {})) - set(live["blocks"]))
+        if missing:
+            r.fault(what, "is missing %s" % ", ".join(missing[:6]))
+        if extra:
+            r.fault(what, "still lists %s, which no longer exist"
+                    % ", ".join(extra[:6]))
+
+    path = os.path.join(root, "panel", "catalogue.json")
+    if os.path.exists(path):
+        try:
+            same_as_live("panel/catalogue.json", json.load(open(path)))
+        except ValueError as e:
+            r.looked()
+            r.fault("panel/catalogue.json", "is not readable JSON: %s" % e)
+
+    page = os.path.join(root, "panel", "panel.html")
+    if os.path.exists(page):
+        text = open(page).read()
+        m = re.search(r'<script id="catalogue" type="application/json">'
+                      r'(.*?)</script>', text, re.S)
+        if not m:
+            r.looked()
+            r.fault("panel/panel.html", "has no baked catalogue in it")
+        else:
+            try:
+                same_as_live("panel/panel.html (baked)", json.loads(m.group(1)))
+            except ValueError as e:
+                r.looked()
+                r.fault("panel/panel.html", "its baked catalogue is not "
+                        "readable JSON: %s" % e)
+
+
 CHECKS = [
     ("the one contract",        keeps_the_contract),
     ("names do not clash",      names_do_not_clash),
@@ -358,6 +416,7 @@ CHECKS = [
     ("the examples still parse", examples_parse),
     ("things actually work",    things_actually_work),
     ("the awkward cases",       awkward_cases),
+    ("the panels agree",        the_panels_agree),
 ]
 
 

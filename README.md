@@ -18,6 +18,28 @@ python3 claude-ready.py
 | **`claude-ready.py`** | Checks everything Claude Code needs on a phone, in the order you hit it, and names the first thing you are stuck on. What is missing becomes a numbered menu — pick a number, nothing to type. It will tell you plainly when a phone **cannot** run Claude Code, rather than walking you through an install that was never going to work |
 | **`whereami.py`** | Which machine is this? Claude has no memory between sessions and cannot see your screen, so it reads the signs a machine carries and matches them against a register. Two phones can look identical to every sign a program can read, so each one can also be named on itself: `whereami.py --name "A33"` |
 
+## The control panels
+
+Three ways in, so a broken one never blocks you.
+
+```bash
+python3 panel/panel.py          # Windows cmd, PowerShell, Termux, anything
+```
+Nothing but `print` and `input` — no colours, no mouse, no curses. Where
+the fancier menus will not run, this will. Without the Python package it
+still reads the catalogue, still builds and saves, and says plainly that
+it cannot run anything here.
+
+**`panel/panel.html`** — open it in Chrome. No server, no install. Eight
+squares to press, or a terminal to type in, switchable at any time; and
+it **runs the drawing blocks in the page**, so a cube really does spin.
+Blocks that touch files or the network are marked and refuse by name.
+
+All three read one catalogue written out of the Python, and
+`python3 -m parts check` catches it if any copy falls behind.
+
+See **[panel/README.md](panel/README.md)**.
+
 ## The block language
 
 ```bash

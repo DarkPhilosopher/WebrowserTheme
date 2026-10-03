@@ -1,0 +1,2337 @@
+{
+ "blocks": {
+  "abs": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Abs",
+   "says": "Distance from zero. Turns a difference into a gap.",
+   "settings": []
+  },
+  "address": {
+   "holds": false,
+   "kind": "ask",
+   "module": "net",
+   "more": "",
+   "name": "Address",
+   "says": "Look a name up in DNS. Unknown names give \"\".",
+   "settings": [
+    {
+     "default": null,
+     "name": "host",
+     "needed": false
+    }
+   ]
+  },
+  "age": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "Age",
+   "says": "Days since it was last changed.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "among": {
+   "holds": false,
+   "kind": "compare",
+   "module": "connect",
+   "more": "",
+   "name": "Among",
+   "says": "True when the signal is one of a stashed collection.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    }
+   ]
+  },
+  "ball": {
+   "holds": false,
+   "kind": "shapes",
+   "module": "screen",
+   "more": "",
+   "name": "Ball",
+   "says": "Points spread over the surface of a ball.",
+   "settings": [
+    {
+     "default": 1.5,
+     "name": "r",
+     "needed": false
+    },
+    {
+     "default": 9,
+     "name": "rings",
+     "needed": false
+    }
+   ]
+  },
+  "banner": {
+   "holds": false,
+   "kind": "pad",
+   "module": "pad",
+   "more": "",
+   "name": "Banner",
+   "says": "Write into the strip across the top. A list becomes one line each.",
+   "settings": [
+    {
+     "default": null,
+     "name": "text",
+     "needed": false
+    },
+    {
+     "default": 0,
+     "name": "line",
+     "needed": false
+    }
+   ]
+  },
+  "bearing": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Bearing",
+   "says": "Angle from where you look to where the target is. 0 is dead ahead.",
+   "settings": [
+    {
+     "default": null,
+     "name": "tag",
+     "needed": true
+    },
+    {
+     "default": 50.0,
+     "name": "radius",
+     "needed": false
+    }
+   ]
+  },
+  "bias": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Bias",
+   "says": "Add a constant to the number.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "k",
+     "needed": false
+    }
+   ]
+  },
+  "box": {
+   "holds": false,
+   "kind": "shapes",
+   "module": "screen",
+   "more": "",
+   "name": "Box",
+   "says": "The twelve edges of a box, as points.",
+   "settings": [
+    {
+     "default": 2.0,
+     "name": "w",
+     "needed": false
+    },
+    {
+     "default": 2.0,
+     "name": "h",
+     "needed": false
+    },
+    {
+     "default": 2.0,
+     "name": "d",
+     "needed": false
+    },
+    {
+     "default": 0.25,
+     "name": "gap",
+     "needed": false
+    }
+   ]
+  },
+  "button": {
+   "holds": false,
+   "kind": "pad",
+   "module": "pad",
+   "more": "`button 3 \"find files\"` -- and `button 3 \"\" on=true` fills it in, so a\nsquare can show something being on as well as being pressable.",
+   "name": "Button",
+   "says": "Draw one square, with words in it.",
+   "settings": [
+    {
+     "default": null,
+     "name": "n",
+     "needed": true
+    },
+    {
+     "default": "",
+     "name": "label",
+     "needed": false
+    },
+    {
+     "default": false,
+     "name": "on",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "tag",
+     "needed": false
+    }
+   ]
+  },
+  "chain": {
+   "holds": false,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Chain",
+   "says": "Parts in series. Each one's answer feeds the next.",
+   "settings": [
+    {
+     "default": null,
+     "name": "parts",
+     "needed": true
+    }
+   ]
+  },
+  "clamp": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "Given them the wrong way round -- `clamp 10 0` for \"between 0 and 10\"\n-- it swaps them, rather than silently answering 10 to everything.",
+   "name": "Clamp",
+   "says": "Hold the number between two limits.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "lo",
+     "needed": false
+    },
+    {
+     "default": 1.0,
+     "name": "hi",
+     "needed": false
+    }
+   ]
+  },
+  "clear": {
+   "holds": false,
+   "kind": "screen",
+   "module": "screen",
+   "more": "",
+   "name": "Clear",
+   "says": "Turn every pixel off.",
+   "settings": []
+  },
+  "clock": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Clock",
+   "says": "Seconds since the world began.",
+   "settings": []
+  },
+  "const": {
+   "holds": false,
+   "kind": "source",
+   "module": "core",
+   "more": "",
+   "name": "Const",
+   "says": "A fixed value. Works for numbers, text, paths, lists.",
+   "settings": [
+    {
+     "default": 1,
+     "name": "value",
+     "needed": false
+    }
+   ]
+  },
+  "contains": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "`text` may be a literal, or another part -- `Contains(Var(\"name\"))`\ntests against whatever was stashed under that name earlier in the run.",
+   "name": "Contains",
+   "says": "True when the text is in the value. Case-insensitive by default.",
+   "settings": [
+    {
+     "default": null,
+     "name": "text",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "fold",
+     "needed": false
+    }
+   ]
+  },
+  "copy": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "Takes a single path or a whole list of them. Passes the new paths on.",
+   "name": "Copy",
+   "says": "Copy whatever comes down the chain into a folder.",
+   "settings": [
+    {
+     "default": null,
+     "name": "into",
+     "needed": true
+    }
+   ]
+  },
+  "count": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "",
+   "name": "Count",
+   "says": "How many things are in the list.",
+   "settings": []
+  },
+  "dark": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "",
+   "name": "Dark",
+   "says": "The other way round: on when the number is UNDER the line.",
+   "settings": [
+    {
+     "default": null,
+     "name": "x",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "y",
+     "needed": true
+    },
+    {
+     "default": 0.5,
+     "name": "at",
+     "needed": false
+    }
+   ]
+  },
+  "delay": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "Until it has seen n things it hands on None, which every Number block\npasses through untouched.",
+   "name": "Delay",
+   "says": "What came in n steps ago. Reaction time.",
+   "settings": [
+    {
+     "default": 1,
+     "name": "steps",
+     "needed": false
+    }
+   ]
+  },
+  "derive": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Derive",
+   "says": "How fast the number is changing. Distance becomes speed.",
+   "settings": []
+  },
+  "die": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Die",
+   "says": "Remove the body the moment the signal goes up.",
+   "settings": []
+  },
+  "do": {
+   "holds": false,
+   "kind": "sink",
+   "module": "core",
+   "more": "",
+   "name": "Do",
+   "says": "Escape hatch: call your own function with the value.",
+   "settings": [
+    {
+     "default": null,
+     "name": "fn",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "keep",
+     "needed": false
+    }
+   ]
+  },
+  "dot": {
+   "holds": false,
+   "kind": "shapes",
+   "module": "screen",
+   "more": "",
+   "name": "Dot",
+   "says": "One point in space. The start of a shape.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "x",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "y",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "z",
+     "needed": false
+    }
+   ]
+  },
+  "download": {
+   "holds": false,
+   "kind": "put",
+   "module": "net",
+   "more": "Passes the saved paths on, so you can chain straight into Say or Move.",
+   "name": "Download",
+   "says": "Pull whatever URLs come down the chain into a folder.",
+   "settings": [
+    {
+     "default": ".",
+     "name": "into",
+     "needed": false
+    },
+    {
+     "default": 60,
+     "name": "timeout",
+     "needed": false
+    }
+   ]
+  },
+  "drain": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Drain",
+   "says": "Spend a named number over time. Fuel, charge, health.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": 1.0,
+     "name": "per_second",
+     "needed": false
+    }
+   ]
+  },
+  "draw": {
+   "holds": false,
+   "kind": "screen",
+   "module": "screen",
+   "more": "Each pixel is drawn two characters wide, because a character is\ntaller than it is wide -- two of them side by side come out square.",
+   "name": "Draw",
+   "says": "Show the grid.",
+   "settings": [
+    {
+     "default": "##",
+     "name": "on",
+     "needed": false
+    },
+    {
+     "default": "..",
+     "name": "off",
+     "needed": false
+    },
+    {
+     "default": true,
+     "name": "wide",
+     "needed": false
+    },
+    {
+     "default": true,
+     "name": "top",
+     "needed": false
+    }
+   ]
+  },
+  "drop": {
+   "holds": true,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Drop",
+   "says": "The opposite of Keep -- throw away the items that match.",
+   "settings": [
+    {
+     "default": null,
+     "name": "test",
+     "needed": true
+    }
+   ]
+  },
+  "each": {
+   "holds": true,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Each",
+   "says": "Apply a part to every item of an incoming list. Returns a new list.",
+   "settings": [
+    {
+     "default": null,
+     "name": "part",
+     "needed": true
+    }
+   ]
+  },
+  "exists": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "Exists",
+   "says": "Is there anything at this path -- a file or a folder?",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "expire": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Expire",
+   "says": "Die once the signal has been up for `after` seconds.",
+   "settings": [
+    {
+     "default": 2.0,
+     "name": "after",
+     "needed": false
+    }
+   ]
+  },
+  "ext": {
+   "holds": false,
+   "kind": "where",
+   "module": "files",
+   "more": "",
+   "name": "Ext",
+   "says": "With no argument: the extension. With one: True when it matches.",
+   "settings": [
+    {
+     "default": null,
+     "name": "is_",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "fan": {
+   "holds": false,
+   "kind": "link",
+   "module": "core",
+   "more": "how = \"sum\" | \"max\" | \"min\" | \"mul\" | \"all\" | \"any\" | \"list\" | \"first\"",
+   "name": "Fan",
+   "says": "Run several chains on the same input, then combine.",
+   "settings": [
+    {
+     "default": null,
+     "name": "branches",
+     "needed": true
+    },
+    {
+     "default": "sum",
+     "name": "how",
+     "needed": false
+    }
+   ]
+  },
+  "fetch": {
+   "holds": false,
+   "kind": "ask",
+   "module": "net",
+   "more": "",
+   "name": "Fetch",
+   "says": "The text at a URL. Anything that goes wrong gives \"\" rather than a crash.",
+   "settings": [
+    {
+     "default": null,
+     "name": "url",
+     "needed": false
+    },
+    {
+     "default": 15,
+     "name": "timeout",
+     "needed": false
+    },
+    {
+     "default": 5000000,
+     "name": "limit",
+     "needed": false
+    }
+   ]
+  },
+  "field": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "",
+   "name": "Field",
+   "says": "Pull one named field out of a dict (or attribute off an object).",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "default",
+     "needed": false
+    }
+   ]
+  },
+  "fill": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "",
+   "name": "Fill",
+   "says": "Every pixel at once, on or off, from one number.",
+   "settings": [
+    {
+     "default": 0.5,
+     "name": "at",
+     "needed": false
+    }
+   ]
+  },
+  "first": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "An empty list answers None, the same as Last does.",
+   "name": "First",
+   "says": "The first thing in the list, or the first few.",
+   "settings": [
+    {
+     "default": 1,
+     "name": "n",
+     "needed": false
+    }
+   ]
+  },
+  "flat": {
+   "holds": false,
+   "kind": "matrix",
+   "module": "screen",
+   "more": "`near` decides how much closer things look bigger. Set it to 0 for a\nflat, engineering-drawing look with no perspective at all.",
+   "name": "Flat",
+   "says": "Drop the shape from XYZ onto the grid: 3D becomes 2D.",
+   "settings": [
+    {
+     "default": null,
+     "name": "zoom",
+     "needed": false
+    },
+    {
+     "default": 6.0,
+     "name": "near",
+     "needed": false
+    }
+   ]
+  },
+  "flatten": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "",
+   "name": "Flatten",
+   "says": "A list of lists becomes one list.",
+   "settings": []
+  },
+  "gain": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Gain",
+   "says": "Multiply the number. The volume knob of the language.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "k",
+     "needed": false
+    }
+   ]
+  },
+  "gate": {
+   "holds": true,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Gate",
+   "says": "Pass the signal through only while `control` is truthy, else None.",
+   "settings": [
+    {
+     "default": null,
+     "name": "control",
+     "needed": true
+    }
+   ]
+  },
+  "glob": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "Glob",
+   "says": "Files underneath a folder whose NAME matches a pattern: *.pdf, note*",
+   "settings": [
+    {
+     "default": null,
+     "name": "pattern",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "skip",
+     "needed": false
+    }
+   ]
+  },
+  "grab": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Grab",
+   "says": "Pull every regex match out of the value. Text -> list.",
+   "settings": [
+    {
+     "default": null,
+     "name": "pattern",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "fold",
+     "needed": false
+    }
+   ]
+  },
+  "grow": {
+   "holds": false,
+   "kind": "matrix",
+   "module": "screen",
+   "more": "",
+   "name": "Grow",
+   "says": "Make it bigger or smaller. The scaling matrix.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "k",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "y",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "z",
+     "needed": false
+    }
+   ]
+  },
+  "heading": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Heading",
+   "says": "Which way it is facing, as an angle.",
+   "settings": []
+  },
+  "height": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Height",
+   "says": "How high above the ground this body is.",
+   "settings": []
+  },
+  "here": {
+   "holds": false,
+   "kind": "where",
+   "module": "files",
+   "more": "",
+   "name": "Here",
+   "says": "The folder the program is running in.",
+   "settings": []
+  },
+  "home": {
+   "holds": false,
+   "kind": "where",
+   "module": "files",
+   "more": "",
+   "name": "Home",
+   "says": "Your home folder.",
+   "settings": []
+  },
+  "host": {
+   "holds": false,
+   "kind": "read",
+   "module": "net",
+   "more": "",
+   "name": "Host",
+   "says": "Pull the machine name out of a URL.",
+   "settings": [
+    {
+     "default": null,
+     "name": "url",
+     "needed": false
+    }
+   ]
+  },
+  "integrate": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Integrate",
+   "says": "Add the number up over time. Speed becomes distance.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "start",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "limit",
+     "needed": false
+    }
+   ]
+  },
+  "invert": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Invert",
+   "says": "Flip the sign: 3 becomes -3, and -3 becomes 3.",
+   "settings": []
+  },
+  "is": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Is",
+   "says": "True when the signal equals this. Literal or another part.",
+   "settings": [
+    {
+     "default": null,
+     "name": "other",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "fold",
+     "needed": false
+    }
+   ]
+  },
+  "isdir": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "IsDir",
+   "says": "Is this path a folder?",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "isfile": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "IsFile",
+   "says": "Is this path a file, rather than a folder?",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "join": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Join",
+   "says": "List -> one piece of text.",
+   "settings": [
+    {
+     "default": ", ",
+     "name": "with_",
+     "needed": false
+    }
+   ]
+  },
+  "json": {
+   "holds": false,
+   "kind": "read",
+   "module": "net",
+   "more": "",
+   "name": "Json",
+   "says": "Parse the signal as JSON. Bad JSON gives None.",
+   "settings": []
+  },
+  "keep": {
+   "holds": true,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Keep",
+   "says": "Keep only the items for which `test` comes back truthy.",
+   "settings": [
+    {
+     "default": null,
+     "name": "test",
+     "needed": true
+    }
+   ]
+  },
+  "last": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "",
+   "name": "Last",
+   "says": "The last thing in the list, or the last few.",
+   "settings": [
+    {
+     "default": 1,
+     "name": "n",
+     "needed": false
+    }
+   ]
+  },
+  "level": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Level",
+   "says": "Read a named number off the body -- fuel, hp, ammo.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": 0.0,
+     "name": "default",
+     "needed": false
+    }
+   ]
+  },
+  "lift": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Lift",
+   "says": "Push it straight up, whatever way it is facing.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "power",
+     "needed": false
+    }
+   ]
+  },
+  "light": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "var hot\nlight 3 4 at=0.5\n\nThe number keeps travelling, so several lights can share one number.",
+   "name": "Light",
+   "says": "Turn one pixel on when the number is over the line, off when under.",
+   "settings": [
+    {
+     "default": null,
+     "name": "x",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "y",
+     "needed": true
+    },
+    {
+     "default": 0.5,
+     "name": "at",
+     "needed": false
+    }
+   ]
+  },
+  "lights": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "",
+   "name": "Lights",
+   "says": "How many pixels are on.",
+   "settings": []
+  },
+  "lines": {
+   "holds": false,
+   "kind": "read",
+   "module": "files",
+   "more": "",
+   "name": "Lines",
+   "says": "The lines of a file, as a list.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "links": {
+   "holds": false,
+   "kind": "read",
+   "module": "net",
+   "more": "Pass the page's own address as `base` to turn relative links absolute.",
+   "name": "Links",
+   "says": "Every href and src in a page of HTML. Text -> list of URLs.",
+   "settings": [
+    {
+     "default": null,
+     "name": "base",
+     "needed": false
+    }
+   ]
+  },
+  "lit": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "",
+   "name": "Lit",
+   "says": "Is that pixel on? A source, for asking the grid questions.",
+   "settings": [
+    {
+     "default": null,
+     "name": "x",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "y",
+     "needed": true
+    }
+   ]
+  },
+  "lower": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Lower",
+   "says": "Make every letter small. HELLO becomes hello.",
+   "settings": []
+  },
+  "ls": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "Ls",
+   "says": "Everything directly inside a folder. One level, no recursion.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    },
+    {
+     "default": true,
+     "name": "folders",
+     "needed": false
+    },
+    {
+     "default": true,
+     "name": "files",
+     "needed": false
+    }
+   ]
+  },
+  "make": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "(MakeDir is the folder version. Named Make, not Touch, because\nspace.Touch already means \"is something overlapping me\".)",
+   "name": "Make",
+   "says": "Create an empty file if it isn't there; otherwise mark it changed now.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "makedir": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "",
+   "name": "MakeDir",
+   "says": "Create a folder, and any parent folders it needs.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "match": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "`pattern` may be a literal or another part, same as Contains.",
+   "name": "Match",
+   "says": "True when the value matches this regular expression.",
+   "settings": [
+    {
+     "default": null,
+     "name": "pattern",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "fold",
+     "needed": false
+    }
+   ]
+  },
+  "meter": {
+   "holds": false,
+   "kind": "pixels",
+   "module": "screen",
+   "more": "var loud\nmeter 0 7 10 most=100",
+   "name": "Meter",
+   "says": "A row of pixels that fills up as the number grows.",
+   "settings": [
+    {
+     "default": null,
+     "name": "x",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "y",
+     "needed": true
+    },
+    {
+     "default": 10,
+     "name": "length",
+     "needed": false
+    },
+    {
+     "default": 1.0,
+     "name": "most",
+     "needed": false
+    }
+   ]
+  },
+  "mine": {
+   "holds": false,
+   "kind": "ask",
+   "module": "net",
+   "more": "",
+   "name": "Mine",
+   "says": "This machine's own name and address on the network.",
+   "settings": []
+  },
+  "minus": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Minus",
+   "says": "Subtract. `other` may be a literal or another part.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "other",
+     "needed": false
+    }
+   ]
+  },
+  "move": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "",
+   "name": "Move",
+   "says": "Move whatever comes down the chain into a folder.",
+   "settings": [
+    {
+     "default": null,
+     "name": "into",
+     "needed": true
+    }
+   ]
+  },
+  "name": {
+   "holds": false,
+   "kind": "where",
+   "module": "files",
+   "more": "",
+   "name": "Name",
+   "says": "Just the file's own name, no folders.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "near": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Near",
+   "says": "Distance to the nearest other body in range, else `miss`.",
+   "settings": [
+    {
+     "default": 10.0,
+     "name": "radius",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "tag",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "miss",
+     "needed": false
+    }
+   ]
+  },
+  "osc": {
+   "holds": false,
+   "kind": "source",
+   "module": "core",
+   "more": "",
+   "name": "Osc",
+   "says": "A wave over time. Needs a world for its clock.",
+   "settings": [
+    {
+     "default": 2.0,
+     "name": "period",
+     "needed": false
+    },
+    {
+     "default": -1.0,
+     "name": "low",
+     "needed": false
+    },
+    {
+     "default": 1.0,
+     "name": "high",
+     "needed": false
+    }
+   ]
+  },
+  "pack": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "Fan combines its branches into one answer; Pack keeps them apart under\nnames, so later blocks can pick with Field.\n\nPack({\"name\": Name(), \"text\": Read(), \"size\": Size()})",
+   "name": "Pack",
+   "says": "Run several parts on the same input and collect them into a record.",
+   "settings": [
+    {
+     "default": null,
+     "name": "fields",
+     "needed": true
+    }
+   ]
+  },
+  "pad": {
+   "holds": false,
+   "kind": "pad",
+   "module": "pad",
+   "more": "`pad` alone gives two across and four down, with a strip one square\ntall joined across the top -- eight buttons, which is the most a\nmenu here ever shows.",
+   "name": "Pad",
+   "says": "Lay the window out in squares and clear it.",
+   "settings": [
+    {
+     "default": 2,
+     "name": "cols",
+     "needed": false
+    },
+    {
+     "default": 4,
+     "name": "rows",
+     "needed": false
+    },
+    {
+     "default": 1,
+     "name": "strip",
+     "needed": false
+    }
+   ]
+  },
+  "parent": {
+   "holds": false,
+   "kind": "where",
+   "module": "files",
+   "more": "",
+   "name": "Parent",
+   "says": "The folder a path sits in.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "pid": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "PID",
+   "says": "Steer the number toward zero. The whole of control, in one block.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "p",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "i",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "d",
+     "needed": false
+    }
+   ]
+  },
+  "plot": {
+   "holds": false,
+   "kind": "matrix",
+   "module": "screen",
+   "more": "",
+   "name": "Plot",
+   "says": "Light every pixel the flattened points land on.",
+   "settings": []
+  },
+  "press": {
+   "holds": false,
+   "kind": "pad",
+   "module": "pad",
+   "more": "A typed digit counts too, so it still works where touch does not.",
+   "name": "Press",
+   "says": "Wait for a square to be pressed. Answers its number, or None.",
+   "settings": [
+    {
+     "default": null,
+     "name": "seconds",
+     "needed": false
+    }
+   ]
+  },
+  "put": {
+   "holds": false,
+   "kind": "sink",
+   "module": "core",
+   "more": "With no value it saves whatever is coming down the chain; with one it\nsaves that instead, so `put hot 0.8` sets a variable outright.",
+   "name": "Put",
+   "says": "Save a value into the run's scratch space under a name.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "value",
+     "needed": false
+    }
+   ]
+  },
+  "ray": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Ray",
+   "says": "Distance to the first solid thing straight ahead. The rangefinder.",
+   "settings": [
+    {
+     "default": 20.0,
+     "name": "reach",
+     "needed": false
+    },
+    {
+     "default": 0.5,
+     "name": "step",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "tag",
+     "needed": false
+    }
+   ]
+  },
+  "reach": {
+   "holds": false,
+   "kind": "ask",
+   "module": "net",
+   "more": "",
+   "name": "Reach",
+   "says": "True if a TCP connection opens. Works on bare hosts, not just URLs.",
+   "settings": [
+    {
+     "default": null,
+     "name": "host",
+     "needed": false
+    },
+    {
+     "default": 443,
+     "name": "port",
+     "needed": false
+    },
+    {
+     "default": 5,
+     "name": "timeout",
+     "needed": false
+    }
+   ]
+  },
+  "read": {
+   "holds": false,
+   "kind": "read",
+   "module": "files",
+   "more": "",
+   "name": "Read",
+   "says": "The text inside a file. Unreadable or binary gives \"\".",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    },
+    {
+     "default": 2000000,
+     "name": "limit",
+     "needed": false
+    }
+   ]
+  },
+  "remove": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "Files go quietly. A FOLDER is only removed when you pass folders=True,\nbecause deleting a tree by accident is the one mistake you cannot undo.",
+   "name": "Remove",
+   "says": "Delete. Guarded on purpose.",
+   "settings": [
+    {
+     "default": false,
+     "name": "folders",
+     "needed": false
+    }
+   ]
+  },
+  "rename": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "",
+   "name": "Rename",
+   "says": "Rename in place. `to` may use {name} {ext} {n}.",
+   "settings": [
+    {
+     "default": null,
+     "name": "to",
+     "needed": true
+    }
+   ]
+  },
+  "replace": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Replace",
+   "says": "Swap one piece of text for another, everywhere it appears.",
+   "settings": [
+    {
+     "default": null,
+     "name": "old",
+     "needed": true
+    },
+    {
+     "default": "",
+     "name": "new",
+     "needed": false
+    }
+   ]
+  },
+  "say": {
+   "holds": false,
+   "kind": "sink",
+   "module": "core",
+   "more": "",
+   "name": "Say",
+   "says": "Print it. The debugger of this language.",
+   "settings": [
+    {
+     "default": null,
+     "name": "label",
+     "needed": false
+    }
+   ]
+  },
+  "screen": {
+   "holds": false,
+   "kind": "screen",
+   "module": "screen",
+   "more": "",
+   "name": "Screen",
+   "says": "Make the grid. `screen 16 16`, or `screen fit` for the whole window.",
+   "settings": [
+    {
+     "default": "fit",
+     "name": "w",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "h",
+     "needed": false
+    }
+   ]
+  },
+  "send": {
+   "holds": false,
+   "kind": "put",
+   "module": "net",
+   "more": "",
+   "name": "Send",
+   "says": "POST the signal to a URL. Returns what comes back, as text.",
+   "settings": [
+    {
+     "default": null,
+     "name": "url",
+     "needed": true
+    },
+    {
+     "default": true,
+     "name": "as_json",
+     "needed": false
+    },
+    {
+     "default": 20,
+     "name": "timeout",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "headers",
+     "needed": false
+    }
+   ]
+  },
+  "shared": {
+   "holds": false,
+   "kind": "compare",
+   "module": "connect",
+   "more": "",
+   "name": "Shared",
+   "says": "True when the signal has `least` items in common with a stashed list.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": 1,
+     "name": "least",
+     "needed": false
+    }
+   ]
+  },
+  "shift": {
+   "holds": false,
+   "kind": "matrix",
+   "module": "screen",
+   "more": "",
+   "name": "Shift",
+   "says": "Shift the shape. The translation matrix.",
+   "settings": [
+    {
+     "default": 0.0,
+     "name": "x",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "y",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "z",
+     "needed": false
+    }
+   ]
+  },
+  "size": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "",
+   "name": "Size",
+   "says": "Bytes. A missing file is 0.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    }
+   ]
+  },
+  "smooth": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Smooth",
+   "says": "Low-pass filter. Lets change through slowly, so jitter dies down.",
+   "settings": [
+    {
+     "default": 0.2,
+     "name": "rate",
+     "needed": false
+    }
+   ]
+  },
+  "sort": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "`sort by=size` orders by a named field. Anything without that field\nsorts as if it were empty, rather than stopping the program.",
+   "name": "Sort",
+   "says": "Put the list in order. `down=true` turns it around.",
+   "settings": [
+    {
+     "default": null,
+     "name": "by",
+     "needed": false
+    },
+    {
+     "default": false,
+     "name": "down",
+     "needed": false
+    }
+   ]
+  },
+  "spawn": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "Fires along body.forward() and inherits the shooter's velocity, so a\nshot from something moving leads correctly without extra work.",
+   "name": "Spawn",
+   "says": "Emit a new body while the signal is up. The gun.",
+   "settings": [
+    {
+     "default": null,
+     "name": "make",
+     "needed": true
+    },
+    {
+     "default": 1.0,
+     "name": "ahead",
+     "needed": false
+    },
+    {
+     "default": 10.0,
+     "name": "speed",
+     "needed": false
+    },
+    {
+     "default": 0.25,
+     "name": "cooldown",
+     "needed": false
+    }
+   ]
+  },
+  "speed": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Speed",
+   "says": "How fast it is going, whichever way it is going.",
+   "settings": []
+  },
+  "spin": {
+   "holds": false,
+   "kind": "matrix",
+   "module": "screen",
+   "more": "This is the rotation matrix, written out. Spins add up, so `spin y 40`\nthen `spin x 20` leans it over after turning it.\n\n`spin y var=angle` takes the angle from a variable instead, so a\n`tick angle by=10` earlier in the program makes it turn by itself.",
+   "name": "Spin",
+   "says": "Turn the shape around an axis. `spin y 40` is forty degrees.",
+   "settings": [
+    {
+     "default": "y",
+     "name": "axis",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "degrees",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "var",
+     "needed": false
+    }
+   ]
+  },
+  "split": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Split",
+   "says": "Text -> list of pieces.",
+   "settings": [
+    {
+     "default": null,
+     "name": "on",
+     "needed": false
+    }
+   ]
+  },
+  "spot": {
+   "holds": false,
+   "kind": "touch",
+   "module": "screen",
+   "more": "Put it straight after `tap` and touching the screen paints on it.\n`spot on=false` rubs out instead.",
+   "name": "Spot",
+   "says": "Light the pixel the signal names -- {\"x\": .., \"y\": ..} or (x, y).",
+   "settings": [
+    {
+     "default": true,
+     "name": "on",
+     "needed": false
+    }
+   ]
+  },
+  "status": {
+   "holds": false,
+   "kind": "ask",
+   "module": "net",
+   "more": "",
+   "name": "Status",
+   "says": "The HTTP number a URL answers with. 0 means it could not be reached.",
+   "settings": [
+    {
+     "default": null,
+     "name": "url",
+     "needed": false
+    },
+    {
+     "default": 10,
+     "name": "timeout",
+     "needed": false
+    }
+   ]
+  },
+  "store": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Store",
+   "says": "Write the signal into a named number on the body.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    }
+   ]
+  },
+  "strip": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Strip",
+   "says": "Trim the blank space off both ends of some text.",
+   "settings": []
+  },
+  "tap": {
+   "holds": false,
+   "kind": "touch",
+   "module": "screen",
+   "more": "Needs a real terminal. Anywhere else -- a pipe, a test -- it answers\nNone straight away rather than hanging.",
+   "name": "Tap",
+   "says": "Wait for a touch and answer with the pixel touched: {\"x\":.., \"y\":..}.",
+   "settings": [
+    {
+     "default": null,
+     "name": "seconds",
+     "needed": false
+    }
+   ]
+  },
+  "text": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Text",
+   "says": "Render the value into a template. {} is the value itself.",
+   "settings": [
+    {
+     "default": "{}",
+     "name": "template",
+     "needed": false
+    }
+   ]
+  },
+  "threshold": {
+   "holds": false,
+   "kind": "number",
+   "module": "core",
+   "more": "",
+   "name": "Threshold",
+   "says": "Above the line or not. Turns a measurement into a yes or no.",
+   "settings": [
+    {
+     "default": 0.5,
+     "name": "at",
+     "needed": false
+    },
+    {
+     "default": 1.0,
+     "name": "above",
+     "needed": false
+    },
+    {
+     "default": 0.0,
+     "name": "below",
+     "needed": false
+    }
+   ]
+  },
+  "thrust": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Thrust",
+   "says": "Push along the way the body faces. The engine.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "power",
+     "needed": false
+    }
+   ]
+  },
+  "tick": {
+   "holds": false,
+   "kind": "sink",
+   "module": "core",
+   "more": "The way a program makes something move: `tick angle by=10` adds ten\nto `angle` every pass, and anything reading `angle` follows along.",
+   "name": "Tick",
+   "says": "Count up in a named variable, a step each time this is reached.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": 1,
+     "name": "by",
+     "needed": false
+    },
+    {
+     "default": 0,
+     "name": "start",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "wrap",
+     "needed": false
+    }
+   ]
+  },
+  "tilt": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Tilt",
+   "says": "Point its nose up or down.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "rate",
+     "needed": false
+    },
+    {
+     "default": 1.4,
+     "name": "limit",
+     "needed": false
+    }
+   ]
+  },
+  "touch": {
+   "holds": false,
+   "kind": "sensor",
+   "module": "space",
+   "more": "",
+   "name": "Touch",
+   "says": "1.0 if something is overlapping this body.",
+   "settings": [
+    {
+     "default": null,
+     "name": "tag",
+     "needed": false
+    }
+   ]
+  },
+  "try": {
+   "holds": true,
+   "kind": "link",
+   "module": "core",
+   "more": "",
+   "name": "Try",
+   "says": "Run a part; if it raises, return `otherwise` instead of crashing.",
+   "settings": [
+    {
+     "default": null,
+     "name": "part",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "otherwise",
+     "needed": false
+    }
+   ]
+  },
+  "turn": {
+   "holds": false,
+   "kind": "motor",
+   "module": "space",
+   "more": "",
+   "name": "Turn",
+   "says": "Set how fast it swings left or right. The rudder.",
+   "settings": [
+    {
+     "default": 1.0,
+     "name": "rate",
+     "needed": false
+    }
+   ]
+  },
+  "uniq": {
+   "holds": false,
+   "kind": "list",
+   "module": "core",
+   "more": "",
+   "name": "Uniq",
+   "says": "Throw away anything that appears more than once.",
+   "settings": []
+  },
+  "upper": {
+   "holds": false,
+   "kind": "text",
+   "module": "core",
+   "more": "",
+   "name": "Upper",
+   "says": "Make every letter big. hello becomes HELLO.",
+   "settings": []
+  },
+  "urls": {
+   "holds": false,
+   "kind": "compare",
+   "module": "connect",
+   "more": "",
+   "name": "Urls",
+   "says": "Every web address and absolute path in a piece of text, as a set.",
+   "settings": []
+  },
+  "var": {
+   "holds": false,
+   "kind": "source",
+   "module": "core",
+   "more": "",
+   "name": "Var",
+   "says": "Read a named value out of the run's scratch space.",
+   "settings": [
+    {
+     "default": null,
+     "name": "key",
+     "needed": true
+    },
+    {
+     "default": null,
+     "name": "default",
+     "needed": false
+    }
+   ]
+  },
+  "walk": {
+   "holds": false,
+   "kind": "look",
+   "module": "files",
+   "more": "skip: folder names never descended into.",
+   "name": "Walk",
+   "says": "Every file underneath a folder, all the way down.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": false
+    },
+    {
+     "default": false,
+     "name": "folders",
+     "needed": false
+    },
+    {
+     "default": true,
+     "name": "files",
+     "needed": false
+    },
+    {
+     "default": null,
+     "name": "skip",
+     "needed": false
+    },
+    {
+     "default": 200000,
+     "name": "limit",
+     "needed": false
+    }
+   ]
+  },
+  "wipe": {
+   "holds": false,
+   "kind": "screen",
+   "module": "screen",
+   "more": "",
+   "name": "Wipe",
+   "says": "Blank the whole terminal. Use once before a moving picture.",
+   "settings": []
+  },
+  "words": {
+   "holds": false,
+   "kind": "compare",
+   "module": "connect",
+   "more": "",
+   "name": "Words",
+   "says": "The uncommon words in a piece of text, as a set.",
+   "settings": []
+  },
+  "write": {
+   "holds": false,
+   "kind": "change",
+   "module": "files",
+   "more": "",
+   "name": "Write",
+   "says": "Write the signal into a file. Creates parent folders.",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": true
+    },
+    {
+     "default": false,
+     "name": "append",
+     "needed": false
+    }
+   ]
+  }
+ },
+ "count": 123,
+ "fanways": [
+  "sum",
+  "max",
+  "min",
+  "mul",
+  "all",
+  "any",
+  "list",
+  "first"
+ ],
+ "holders": [
+  "drop",
+  "each",
+  "gate",
+  "keep",
+  "try"
+ ],
+ "modules": {
+  "connect": {
+   "compare": [
+    "words",
+    "urls",
+    "shared",
+    "among"
+   ]
+  },
+  "core": {
+   "link": [
+    "chain",
+    "fan",
+    "each",
+    "keep",
+    "drop",
+    "gate",
+    "try"
+   ],
+   "list": [
+    "count",
+    "first",
+    "last",
+    "sort",
+    "uniq",
+    "flatten",
+    "field",
+    "pack"
+   ],
+   "number": [
+    "gain",
+    "bias",
+    "invert",
+    "minus",
+    "abs",
+    "is",
+    "clamp",
+    "threshold",
+    "smooth",
+    "delay",
+    "integrate",
+    "derive",
+    "pid"
+   ],
+   "sink": [
+    "say",
+    "put",
+    "tick",
+    "do"
+   ],
+   "source": [
+    "const",
+    "var",
+    "osc"
+   ],
+   "text": [
+    "lower",
+    "upper",
+    "strip",
+    "split",
+    "join",
+    "replace",
+    "contains",
+    "match",
+    "grab",
+    "text"
+   ]
+  },
+  "files": {
+   "change": [
+    "makedir",
+    "make",
+    "write",
+    "copy",
+    "move",
+    "rename",
+    "remove"
+   ],
+   "look": [
+    "ls",
+    "walk",
+    "glob",
+    "exists",
+    "isdir",
+    "isfile",
+    "size",
+    "age"
+   ],
+   "read": [
+    "read",
+    "lines"
+   ],
+   "where": [
+    "here",
+    "home",
+    "parent",
+    "name",
+    "ext"
+   ]
+  },
+  "net": {
+   "ask": [
+    "fetch",
+    "status",
+    "reach",
+    "address",
+    "mine"
+   ],
+   "put": [
+    "send",
+    "download"
+   ],
+   "read": [
+    "json",
+    "links",
+    "host"
+   ]
+  },
+  "pad": {
+   "pad": [
+    "pad",
+    "button",
+    "banner",
+    "press"
+   ]
+  },
+  "screen": {
+   "matrix": [
+    "spin",
+    "shift",
+    "grow",
+    "flat",
+    "plot"
+   ],
+   "pixels": [
+    "light",
+    "dark",
+    "meter",
+    "fill",
+    "lit",
+    "lights"
+   ],
+   "screen": [
+    "screen",
+    "draw",
+    "clear",
+    "wipe"
+   ],
+   "shapes": [
+    "dot",
+    "box",
+    "ball"
+   ],
+   "touch": [
+    "tap",
+    "spot"
+   ]
+  },
+  "space": {
+   "motor": [
+    "thrust",
+    "lift",
+    "turn",
+    "tilt",
+    "store",
+    "drain",
+    "spawn",
+    "expire",
+    "die"
+   ],
+   "sensor": [
+    "clock",
+    "height",
+    "speed",
+    "heading",
+    "level",
+    "near",
+    "touch",
+    "ray",
+    "bearing"
+   ]
+  }
+ },
+ "what": "Claude WakUp -- the parts language"
+}

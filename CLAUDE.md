@@ -97,6 +97,7 @@ nothing. Do not reach for `--force` on his behalf; ask.
 | `whereami.py` | Which machine am I on |
 | `claude-ready.py` | Is this phone ready to run Claude in Termux, and if not, why |
 | `tfind.md` | Documentation for `tfind.sh` — it used to be the root README |
+| `panel/` | Three control panels: plain terminal, browser, and the fancier ones in `parts` |
 
 Gabriel also has `DarkPhilosopher/spark` (a game engine, `when`/`do`
 rules) and `DarkPhilosopher/ASC` (a 16×16 ASCII grid). **`spark` and
@@ -111,7 +112,15 @@ Run this after any change:
 python3 -m parts check
 ```
 
-It checks the rules the language quietly depends on. `parts/README.md`
+It checks the rules the language quietly depends on — including that
+`panel/catalogue.json` and the copy baked into `panel/panel.html` still
+match the blocks. **After adding or renaming a block, rerun both:**
+
+```bash
+python3 -m parts json panel/catalogue.json
+python3 -m parts json --html
+```
+ `parts/README.md`
 explains the three steps for adding a block, and the one rule worth
 knowing: never store a setting called `step`, because it shadows the
 method every block must have.
