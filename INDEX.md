@@ -22,20 +22,20 @@ the zip, and everything is accounted for.
 
 | Thing | Belongs | What it is for | Data it needs | Runs on |
 |---|---|---|---|---|
-| `parts/core.py` | `parts/` | The one contract, and blocks for any value: links, numbers, text, lists | Whatever runs through it | Anything with Python |
-| `parts/files.py` | `parts/` | Folders and files: look, read, copy, move, rename, remove | A filesystem | Any machine |
-| `parts/net.py` | `parts/` | Other machines: fetch, reach, download | A network | Any machine online |
-| `parts/space.py` | `parts/` | A 3D world: bodies, sensors, motors | Nothing outside itself | Any machine |
-| `parts/screen.py` | `parts/` | Pixels, XYZ shapes, and touch | A terminal; touch needs a real one | A terminal, ideally Termux |
-| `parts/pad.py` | `parts/` | The window as eight squares you press | Terminal size, touch reporting | **Termux, or any real terminal** |
-| `parts/tool.py` | `parts/` | What a program needs to *be* a tool: ask, run, show a table | Your answers; the shell | Any machine with a prompt |
-| `parts/script.py` | `parts/` | Reads a `.parts` text file and builds the chain | A `.parts` file | Any machine |
-| `parts/menu.py` | `parts/` | Build a program with numbers only | — | Any terminal |
-| `parts/connect.py` | `parts/` | Find what touches a thing, by ten routes at once | Files, and git history if there is any | Any machine; `git` for one route |
-| `parts/book.py` | `parts/` | Writes the whole language out as JSON for the panels | — | Any machine |
-| `parts/check.py` | `parts/` | 718 checks that the language still hangs together | — | Any machine |
-| `parts/install.py` | `parts/` | Makes `import parts` work from any folder, for good | A writable site-packages | Any machine |
-| `parts/examples/*.parts` | `parts/examples/` | Ten working programs to copy and change | Varies by program | Varies |
+| `sparkblocks/core.py` | `sparkblocks/` | The one contract, and blocks for any value: links, numbers, text, lists | Whatever runs through it | Anything with Python |
+| `sparkblocks/files.py` | `sparkblocks/` | Folders and files: look, read, copy, move, rename, remove | A filesystem | Any machine |
+| `sparkblocks/net.py` | `sparkblocks/` | Other machines: fetch, reach, download | A network | Any machine online |
+| `sparkblocks/space.py` | `sparkblocks/` | A 3D world: bodies, sensors, motors | Nothing outside itself | Any machine |
+| `sparkblocks/screen.py` | `sparkblocks/` | Pixels, XYZ shapes, and touch | A terminal; touch needs a real one | A terminal, ideally Termux |
+| `sparkblocks/pad.py` | `sparkblocks/` | The window as eight squares you press | Terminal size, touch reporting | **Termux, or any real terminal** |
+| `sparkblocks/tool.py` | `sparkblocks/` | What a program needs to *be* a tool: ask, run, show a table | Your answers; the shell | Any machine with a prompt |
+| `sparkblocks/script.py` | `sparkblocks/` | Reads a `.parts` text file and builds the chain | A `.parts` file | Any machine |
+| `sparkblocks/menu.py` | `sparkblocks/` | Build a program with numbers only | — | Any terminal |
+| `sparkblocks/connect.py` | `sparkblocks/` | Find what touches a thing, by ten routes at once | Files, and git history if there is any | Any machine; `git` for one route |
+| `sparkblocks/book.py` | `sparkblocks/` | Writes the whole language out as JSON for the panels | — | Any machine |
+| `sparkblocks/check.py` | `sparkblocks/` | 718 checks that the language still hangs together | — | Any machine |
+| `sparkblocks/install.py` | `sparkblocks/` | Makes `import sparkblocks` work from any folder, for good | A writable site-packages | Any machine |
+| `sparkblocks/examples/*.parts` | `sparkblocks/examples/` | Ten working programs to copy and change | Varies by program | Varies |
 
 ## 3. The control panels
 
@@ -57,7 +57,7 @@ the zip, and everything is accounted for.
 
 > **`rustbuild` is yours, not mine** — it was in the repository before
 > this work and I have not touched it. Listed so the index is complete.
-> It overlaps `house/` (both build things in ASCII) and `parts/screen.py`
+> It overlaps `house/` (both build things in ASCII) and `sparkblocks/screen.py`
 > (both do isometric 3D), and nothing connects the three. That is a
 > decision waiting to be made, not a problem.
 
@@ -75,12 +75,12 @@ the zip, and everything is accounted for.
 
 | Thing | Where it would go | What it would be for | What it needs |
 |---|---|---|---|
-| **Run-time errors naming the line** | `parts/script.py` | Today a parse error says `line 3:` but a failure *while running* gives a raw Python traceback. A child cannot act on that | A wrapper that catches and reports which line was running |
-| **`use myprogram`** | `parts/script.py` | Make a saved `.parts` file usable as a block, so your own programs become Lego beside the built-in ones | A block that loads and runs another file |
-| **An index for `connect`** | `parts/connect.py` | It rescans every file every run. Writing down what it learned once would make a phone-wide search fast | A file of filenames, sizes, dates and words; a way to tell when it is stale |
+| **Run-time errors naming the line** | `sparkblocks/script.py` | Today a parse error says `line 3:` but a failure *while running* gives a raw Python traceback. A child cannot act on that | A wrapper that catches and reports which line was running |
+| **`use myprogram`** | `sparkblocks/script.py` | Make a saved `.parts` file usable as a block, so your own programs become Lego beside the built-in ones | A block that loads and runs another file |
+| **An index for `connect`** | `sparkblocks/connect.py` | It rescans every file every run. Writing down what it learned once would make a phone-wide search fast | A file of filenames, sizes, dates and words; a way to tell when it is stale |
 | **Mega sync** | `sync/mega.py` or a `.parts` program | Back things up to Mega | **There is no Mega connector** — it has to be a script on your machine, with your own credentials |
 | **Google Drive sync** | `sync/drive.py` | Push and pull files from Drive | A connector exists, on `xzg4b3xz@gmail.com`. It can read, create, rename, move, copy, trash — **it cannot permanently delete, and cannot edit a file's contents** |
-| **Undo in the menus** | `parts/menu.py`, `parts/pad.py` | Delete is final today, and a child will delete something | A stack of past programs |
+| **Undo in the menus** | `sparkblocks/menu.py`, `sparkblocks/pad.py` | Delete is final today, and a child will delete something | A stack of past programs |
 
 ---
 
@@ -115,7 +115,7 @@ insides — what it is made of and how the pieces connect.
 |---|---|
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |
-| the block language | [`parts/README.md`](parts/README.md) |
+| the block language | [`sparkblocks/README.md`](sparkblocks/README.md) |
 | the control panels | [`panel/README.md`](panel/README.md) |
 | `house.sh` | [`house/README.md`](house/README.md) |
 | `ttt.sh` | [`ttt/README.md`](ttt/README.md) |
@@ -125,7 +125,7 @@ insides — what it is made of and how the pieces connect.
 Short of a manual, every file also answers for itself:
 
 ```bash
-python3 -m parts <BlockName>     what one block does
+python3 -m sparkblocks <BlockName>     what one block does
 python3 <anything>.py --help     what that program does
 ```
 

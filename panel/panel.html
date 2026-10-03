@@ -16,9 +16,9 @@
   spin. Blocks that touch files or the network cannot run in a browser;
   those are marked, and the program still saves for the terminal to run.
 
-  The catalogue below is written out by:  python3 -m parts json
+  The catalogue below is written out by:  python3 -m sparkblocks json
   Do not edit it by hand -- it would drift from the blocks it describes,
-  and `python3 -m parts check` would catch you.
+  and `python3 -m sparkblocks check` would catch you.
 -->
 
 <style>
@@ -3628,7 +3628,7 @@ aside{
    ]
   }
  },
- "what": "Wakeup -- the parts language",
+ "what": "Wakeup -- Spark blocks",
  "where": {
   "browser": [
    "abs",
@@ -3958,7 +3958,7 @@ aside{
 // ==========================================================================
 //  THE CATALOGUE
 //  Baked in, because Chrome will not let a file:// page fetch its own
-//  folder. Rewritten by `python3 -m parts json --html`, never by hand.
+//  folder. Rewritten by `python3 -m sparkblocks json --html`, never by hand.
 // ==========================================================================
 const BOOK = JSON.parse(document.getElementById("catalogue").textContent);
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """menu -- see and connect the blocks from a phone, with numbers only.
 
-    python3 -m parts menu
+    python3 -m sparkblocks menu
 
 Eight options on the screen, never more. The last one always goes back.
 Nothing to type but a number, except when a block wants a setting.
@@ -17,10 +17,10 @@ import sys
 
 if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    import parts as _parts
-    from parts import connect as _connect
-    from parts.core import run
-    from parts.script import HOLDERS, FANWAYS, ScriptError, parse, show
+    import sparkblocks as _parts
+    from sparkblocks import connect as _connect
+    from sparkblocks.core import run
+    from sparkblocks.script import HOLDERS, FANWAYS, ScriptError, parse, show
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
@@ -355,8 +355,8 @@ def do_save(program):
     said = ask("file name (blank to stop)")
     if not said:
         return
-    if not said.endswith(".parts"):
-        said += ".parts"
+    if not said.endswith((".spark", ".parts")):
+        said += ".spark"
     path = os.path.abspath(os.path.expanduser(said))
     try:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
@@ -379,8 +379,8 @@ def do_open(program):
     if not said:
         return program
     path = os.path.abspath(os.path.expanduser(said))
-    if not os.path.exists(path) and not path.endswith(".parts"):
-        path += ".parts"
+    if not os.path.exists(path) and not path.endswith((".spark", ".parts")):
+        path += ".spark"
     try:
         with open(path) as fh:
             lines = [l.rstrip() for l in fh if l.strip()]

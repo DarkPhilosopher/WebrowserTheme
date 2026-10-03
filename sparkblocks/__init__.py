@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """parts -- one small language of interchangeable blocks.
 
-    from parts import *
+    from sparkblocks import *
 
 THE ONE CONTRACT
 ----------------
@@ -25,8 +25,8 @@ FOUR MODULES, ONE TONGUE
     pad     the window as eight squares you press
     tool    what a program needs to be a tool: ask, run, show a table
 
-Import the lot with `from parts import *`, or take one module at a time
-with `from parts.files import Walk, Copy` when you want to be exact.
+Import the lot with `from sparkblocks import *`, or take one module at a time
+with `from sparkblocks.files import Walk, Copy` when you want to be exact.
 
 Standard library only. No installs, no threads, no 64-bit requirement.
 """

@@ -41,7 +41,7 @@ def load_book():
         pass
     try:
         sys.path.insert(0, os.path.dirname(HERE))
-        from parts.book import book
+        from sparkblocks.book import book
         return book(), "the parts package"
     except Exception:
         return None, None
@@ -51,7 +51,7 @@ def have_parts():
     """Can we actually run a program here, or only write one?"""
     try:
         sys.path.insert(0, os.path.dirname(HERE))
-        import parts                                   # noqa: F401
+        import sparkblocks                                   # noqa: F401
         return True
     except Exception:
         return False
@@ -273,8 +273,8 @@ def save(program):
     said = ask("file name (blank to stop)")
     if not said:
         return
-    if not said.endswith(".parts"):
-        said += ".parts"
+    if not said.endswith((".spark", ".parts")):
+        said += ".spark"
     path = os.path.abspath(os.path.expanduser(said))
     try:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
@@ -293,8 +293,8 @@ def open_file(program):
     if not said:
         return program
     path = os.path.abspath(os.path.expanduser(said))
-    if not os.path.exists(path) and not path.endswith(".parts"):
-        path += ".parts"
+    if not os.path.exists(path) and not path.endswith((".spark", ".parts")):
+        path += ".spark"
     try:
         with open(path) as fh:
             lines = [l.rstrip() for l in fh if l.strip()]
@@ -318,13 +318,13 @@ def run_it(program, runnable):
         print(" importable from here. Save it and run it somewhere that")
         print(" has Python with parts installed:")
         print()
-        print("     python3 -m parts run yourfile.parts")
+        print("     python3 -m sparkblocks run yourfile.parts")
         pause()
         return
     print()
     try:
-        from parts.core import run
-        from parts.script import ScriptError, parse
+        from sparkblocks.core import run
+        from sparkblocks.script import ScriptError, parse
         answer = run(parse("\n".join(program)))
         if isinstance(answer, (list, tuple)):
             print("\n %d item%s" % (len(answer), "" if len(answer) == 1 else "s"))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check -- make sure the language still hangs together.
 
-    python3 -m parts check
+    python3 -m sparkblocks check
 
 Run this after changing anything. It is not a test of clever behaviour;
 it is a check of the rules the language depends on, the ones that break
@@ -35,9 +35,9 @@ import sys
 
 if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    import parts as _parts
-    from parts import connect as _connect
-    from parts.core import Chain, Const, Count, Delay, First, Gain, Gate, Bias, Minus, Invert, Threshold, Clamp, Ctx, Last, Part, Sort
+    import sparkblocks as _parts
+    from sparkblocks import connect as _connect
+    from sparkblocks.core import Chain, Const, Count, Delay, First, Gain, Gate, Bias, Minus, Invert, Threshold, Clamp, Ctx, Last, Part, Sort
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
@@ -194,7 +194,7 @@ def examples_parse(r):
     if not os.path.isdir(folder):
         return
     for name in sorted(os.listdir(folder)):
-        if not name.endswith(".parts"):
+        if not name.endswith((".spark", ".parts")):
             continue
         r.looked()
         try:
@@ -391,7 +391,7 @@ def the_panels_agree(r):
 
     panel/panel.py reads catalogue.json; panel/panel.html has the same
     JSON baked inside it, because Chrome will not let a file:// page
-    fetch its own folder. Both are written by `python3 -m parts json`,
+    fetch its own folder. Both are written by `python3 -m sparkblocks json`,
     and either can be left behind by a change to the blocks.
     """
     import json
@@ -407,7 +407,7 @@ def the_panels_agree(r):
             return
         if got.get("count") != live["count"]:
             r.fault(what, "has %s blocks, the language has %s -- rerun "
-                          "`python3 -m parts json`"
+                          "`python3 -m sparkblocks json`"
                     % (got.get("count"), live["count"]))
             return
         missing = sorted(set(live["blocks"]) - set(got.get("blocks", {})))

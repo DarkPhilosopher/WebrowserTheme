@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """install -- teach Python where this folder is, once, forever.
 
-    python3 /wherever/parts/install.py
+    python3 /wherever/sparkblocks/install.py
 
-After that, `import parts` works from any folder, in any script, without
+After that, `import sparkblocks` works from any folder, in any script, without
 PYTHONPATH and without copying anything. Move the folder later and just
 run it again.
 
-    python3 /wherever/parts/install.py --remove     # undo it
-    python3 /wherever/parts/install.py --where      # say what is installed
+    python3 /wherever/sparkblocks/install.py --remove     # undo it
+    python3 /wherever/sparkblocks/install.py --where      # say what is installed
 
 HOW IT WORKS
 ------------
@@ -23,7 +23,7 @@ import site
 import subprocess
 import sys
 
-NAME = "parts.pth"
+NAME = "sparkblocks.pth"
 
 
 def home_of_parts():
@@ -71,21 +71,40 @@ def installed():
 
 
 def works_from_elsewhere():
-    """Start a fresh Python somewhere else and see if it can import parts."""
+    """Start a fresh Python somewhere else and see if it can import sparkblocks."""
     where = os.path.expanduser("~")
     if where == home_of_parts():
         where = "/"
     try:
         out = subprocess.run(
             [sys.executable, "-c",
-             "import parts; print(parts.__file__)"],
+             "import sparkblocks; print(sparkblocks.__file__)"],
             cwd=where, capture_output=True, text=True, timeout=30)
         return out.returncode == 0, (out.stdout or out.stderr).strip()
     except Exception as e:
         return False, str(e)
 
 
+OLD = "parts.pth"       # what this was called before the rename
+
+
+def clear_old():
+    """Take away the .pth from when this was called `parts`."""
+    gone = []
+    for folder in candidates():
+        path = os.path.join(folder, OLD)
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+                gone.append(path)
+            except OSError:
+                pass
+    return gone
+
+
 def install():
+    for path in clear_old():
+        print("  removed the old %s" % path)
     line = home_of_parts()
     for folder in candidates():
         try:
@@ -102,7 +121,7 @@ def install():
             print("  wrote  %s" % path)
             print("  naming %s" % line)
             print("  proved %s" % said)
-            print("\n`import parts` now works from any folder.")
+            print("\n`import sparkblocks` now works from any folder.")
             return 0
         # written but not picked up -- clean it up and try the next place
         try:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""net -- reaching other machines, as parts.
+"""net -- reaching other machines, as blocks.
 
 Same one contract: `step(ctx) -> value`.
 

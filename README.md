@@ -40,15 +40,15 @@ it **runs the drawing blocks in the page**, so a cube really does spin.
 Blocks that touch files or the network are marked and refuse by name.
 
 All three read one catalogue written out of the Python, and
-`python3 -m parts check` catches it if any copy falls behind.
+`python3 -m sparkblocks check` catches it if any copy falls behind.
 
 See **[panel/README.md](panel/README.md)**.
 
 ## The block language
 
 ```bash
-python3 parts/install.py       # so `import parts` works from anywhere
-python3 -m parts               # every block there is
+python3 sparkblocks/install.py       # so `import sparkblocks` works from anywhere
+python3 -m sparkblocks               # every block there is
 ```
 
 A signal running down a chain, the way a wire runs from a sensor,
@@ -75,18 +75,18 @@ say found
 ```
 
 ```bash
-python3 -m parts run find-notes.parts   # run it
-python3 -m parts menu                   # build one with numbers
-python3 -m parts pad                    # build one by pressing squares
-python3 -m parts check                  # is it all still sound
+python3 -m sparkblocks run find-notes.parts   # run it
+python3 -m sparkblocks menu                   # build one with numbers
+python3 -m sparkblocks pad                    # build one by pressing squares
+python3 -m sparkblocks check                  # is it all still sound
 ```
 
-See **[parts/README.md](parts/README.md)** for the whole of it.
+See **[sparkblocks/README.md](sparkblocks/README.md)** for the whole of it.
 
 ### What touches what
 
 ```bash
-python3 -m parts connect spark /sdcard
+python3 -m sparkblocks connect spark /sdcard
 ```
 
 Asks the same question of every file along ten routes at once — name,

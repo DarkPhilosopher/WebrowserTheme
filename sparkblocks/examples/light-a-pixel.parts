@@ -1,6 +1,6 @@
 # ONE PIXEL, TURNED ON BY A NUMBER.
 #
-#   python3 -m parts run light-a-pixel.parts
+#   python3 -m sparkblocks run light-a-pixel.parts
 #
 # Change 0.8 to 0.3 and run it again. The dot goes out, and the
 # bar gets shorter. That is the whole idea: a number decides.

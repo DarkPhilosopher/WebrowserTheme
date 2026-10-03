@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""files -- folders, files, and moving them about, as parts.
+"""files -- folders, files, and moving them about, as blocks.
 
 Same one contract as core: every part is `step(ctx) -> value`.
 

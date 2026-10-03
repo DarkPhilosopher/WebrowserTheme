@@ -1,6 +1,6 @@
 # IS THIS PHONE READY TO RUN CLAUDE?
 #
-#   python3 -m parts run claude-ready.parts
+#   python3 -m sparkblocks run claude-ready.parts
 #
 # The same job claude-ready.py does, written in blocks instead.
 # Every line is a piece you can move, change or throw away.

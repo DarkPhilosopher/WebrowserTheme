@@ -1,6 +1,6 @@
 # A CUBE THAT TURNS BY ITSELF.
 #
-#   python3 -m parts run spin-a-cube.parts --loop
+#   python3 -m sparkblocks run spin-a-cube.parts --loop
 #
 # Press ctrl-c to stop it.
 # Try: change `by=12` to `by=3` to slow it down,

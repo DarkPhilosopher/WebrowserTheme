@@ -12,8 +12,11 @@ No brackets, no commas, no Python. Each line names a block and gives it
 its settings. The lines run top to bottom, the answer of each feeding the
 next -- exactly like a Chain, because that is what it builds.
 
-    python3 -m parts run find-notes.parts
-    python3 -m parts run find-notes.parts --show     # print it, run nothing
+    python3 -m sparkblocks run find-notes.spark
+    python3 -m sparkblocks run find-notes.spark --show     # print it, run nothing
+
+A program file may end `.spark` or `.parts`. Both are read, so nothing
+you have already saved stops working.
 
 THE RULES, ALL OF THEM
 ----------------------
@@ -39,7 +42,7 @@ THE RULES, ALL OF THEM
 6. `name=value` sets a setting by name: `copy into=~/out`.
 
 Every block in the language is available, under its own name in lower
-case. `python3 -m parts` lists them; `python3 -m parts Walk` explains one.
+case. `python3 -m sparkblocks` lists them; `python3 -m sparkblocks Walk` explains one.
 """
 
 import os
@@ -49,9 +52,9 @@ import sys
 
 if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    import parts as _parts
-    from parts import connect as _connect
-    from parts.core import Chain, Ctx, Fan, Part, run
+    import sparkblocks as _parts
+    from sparkblocks import connect as _connect
+    from sparkblocks.core import Chain, Ctx, Fan, Part, run
 else:
     _parts = sys.modules[__package__]
     from . import connect as _connect
@@ -276,7 +279,7 @@ def _build(ln, known):
         return cls(*loose, **named)
     except TypeError as e:
         raise ScriptError("line %d: %s does not take those settings (%s).\n"
-                          "  Try: python3 -m parts %s"
+                          "  Try: python3 -m sparkblocks %s"
                           % (ln.n, name, e, cls.__name__))
 
 

@@ -91,28 +91,28 @@ nothing. Do not reach for `--force` on his behalf; ask.
 
 | Folder | What it is |
 |---|---|
-| `parts/` | A language of interchangeable blocks. See `parts/README.md` |
+| `sparkblocks/` | A language of interchangeable blocks. See `sparkblocks/README.md` |
 | `house/` | Multiplayer ASCII house builder, over a shared GitHub repo |
 | `ttt/` | Tic-tac-toe between two phones, over a shared GitHub repo |
 | `tfind.sh` | File search for Termux on Android |
 | `whereami.py` | Which machine am I on |
 | `claude-ready.py` | Is this phone ready to run Claude in Termux, and if not, why |
 | `tfind.md` | Documentation for `tfind.sh` — it used to be the root README |
-| `panel/` | Three control panels: plain terminal, browser, and the fancier ones in `parts` |
+| `panel/` | Three control panels: plain terminal, browser, and the fancier ones in `sparkblocks` |
 | `INDEX.md` | Every piece: where it belongs, what it is for, what it runs on, and what is not built yet |
 | `rustbuild/` | **Gabriel's, not mine.** A Rust-style ASCII construction editor, here before this work |
 
 Gabriel also has `DarkPhilosopher/spark` (a game engine, `when`/`do`
 rules) and `DarkPhilosopher/ASC` (a 16×16 ASCII grid). **`spark` and
-`parts` are deliberately separate languages.** He has said so directly.
+**Spark blocks** are deliberately separate from it.** He has said so directly.
 Do not propose bridging them.
 
-## Working on `parts/`
+## Working on `sparkblocks/`
 
 Run this after any change:
 
 ```bash
-python3 -m parts check
+python3 -m sparkblocks check
 ```
 
 It checks the rules the language quietly depends on — including that
@@ -120,10 +120,10 @@ It checks the rules the language quietly depends on — including that
 match the blocks. **After adding or renaming a block, rerun both:**
 
 ```bash
-python3 -m parts json panel/catalogue.json
-python3 -m parts json --html
+python3 -m sparkblocks json panel/catalogue.json
+python3 -m sparkblocks json --html
 ```
- `parts/README.md`
+ `sparkblocks/README.md`
 explains the three steps for adding a block, and the one rule worth
 knowing: never store a setting called `step`, because it shadows the
 method every block must have.
@@ -173,7 +173,7 @@ which a browser does not have* versus *this page has not learnt it yet*.
 5. Is it in **`INDEX.md`** and boxed in **`BOXES.md`** — and if it is
    missing, is there an **empty box** saying where it belongs?
 
-`python3 -m parts check` enforces 1, 2 and 3. You have to do 4 and 5.
+`python3 -m sparkblocks check` enforces 1, 2 and 3. You have to do 4 and 5.
 
 ## How he wants programs built
 
@@ -214,7 +214,7 @@ so a session asks rather than stalling quietly. Full detail in
 | **Make the repo private** | `ABOUT.md` and `wakeup-notes/` both wait on it |
 | **Name each phone** — `whereami.py --name "A33"` | `whereami.py` cannot tell the A33 from the A17 |
 | **Run `whereami.py --facts` on the A17** | Its entry says `sure: False` until then |
-| **Run `python3 -m parts pad` on a real phone** | Touch has never been tried. The whole pad rests on it |
+| **Run `python3 -m sparkblocks pad` on a real phone** | Touch has never been tried. The whole pad rests on it |
 | **Decide about the three 3D engines** | Two of the three are his and predate this work |
 | **Name his fourth public repository** | GitHub says 4; only 3 are known |
 
@@ -230,7 +230,7 @@ offer to help turn the maps into a diagram when he comes to it.
 
 ## Notes worth keeping
 
-- **`spark` and `parts` stay separate languages.** He has said so
+- **The `spark` repo and Spark blocks stay separate.** He has said so
   twice. Do not propose bridging them.
 - **He was right and I was wrong about the 32-bit build.** The answer
   was in the npm package metadata, not in memory. When he pushes back

@@ -75,7 +75,7 @@ is why `del` can take a floor out and leave its walls standing.
 | | Also does |
 |---|---|
 | `house/house.sh` | Builds in ASCII, with a 3D wireframe, shared over GitHub |
-| `parts/screen.py` | XYZ shapes, rotation matrices, projection to a grid |
+| `sparkblocks/screen.py` | XYZ shapes, rotation matrices, projection to a grid |
 
 Three separate pieces of isometric-3D code in one repository. That is a
 decision waiting to be made, not a fault — but it is worth knowing

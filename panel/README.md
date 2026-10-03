@@ -6,7 +6,7 @@ Three ways in, so a broken one never blocks you.
 |---|---|---|
 | **`panel.py`** | Windows `cmd.exe`, PowerShell, Termux, anywhere a prompt is | Python, nothing else |
 | **`panel.html`** | Chrome, by opening the file | A browser. No server, no install |
-| **`python3 -m parts menu` / `pad`** | A terminal with colour and touch | Python + the package |
+| **`python3 -m sparkblocks menu` / `pad`** | A terminal with colour and touch | Python + the package |
 
 All three build the same `.parts` program. Save in one, open in another.
 
@@ -15,8 +15,8 @@ All three build the same `.parts` program. Save in one, open in another.
 They read **one catalogue**, written out of the Python:
 
 ```bash
-python3 -m parts json panel/catalogue.json   # for panel.py
-python3 -m parts json --html                 # baked into panel.html
+python3 -m sparkblocks json panel/catalogue.json   # for panel.py
+python3 -m sparkblocks json --html                 # baked into panel.html
 ```
 
 `panel.html` has it baked inside the page because **Chrome will not let
@@ -24,13 +24,13 @@ a `file://` page fetch its own folder** — so a copy has to live in the
 HTML. Nothing else writes it.
 
 Either copy can be left behind when the blocks change, so
-`python3 -m parts check` compares both against the live language and
+`python3 -m sparkblocks check` compares both against the live language and
 says which to rerun:
 
 ```
 FAIL the panels agree               2 checked
        panel/catalogue.json: has 122 blocks, the language has 123
-       -- rerun `python3 -m parts json`
+       -- rerun `python3 -m sparkblocks json`
 ```
 
 ## `panel.py` — the one that always works

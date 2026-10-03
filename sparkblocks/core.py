@@ -63,7 +63,7 @@ class Part:
         waits    true if it stops and waits for a person or a machine
 
     A block states only what is unusual for its module; the module
-    supplies the rest. See parts/book.py.
+    supplies the rest. See sparkblocks/book.py.
     """
     fits = {}
 

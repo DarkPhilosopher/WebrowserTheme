@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """pad -- the screen as eight squares you press, and a strip that talks.
 
-    python3 -m parts pad
+    python3 -m sparkblocks pad
 
 The window is divided into a grid two squares across and five down:
 
@@ -449,8 +449,8 @@ def _file(lay, program, saving):
         return program
     if not said:
         return program
-    if not said.endswith(".parts"):
-        said += ".parts"
+    if not said.endswith((".spark", ".parts")):
+        said += ".spark"
     path = os.path.abspath(os.path.expanduser(said))
     try:
         if saving:

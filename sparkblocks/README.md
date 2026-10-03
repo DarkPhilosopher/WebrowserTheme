@@ -4,7 +4,7 @@ Not `when X do Y`. This is the other way: a **signal running down a chain**,
 the way a wire runs from a sensor, through some electronics, into a motor.
 
 ```python
-from parts import *
+from sparkblocks import *
 
 Chain([Walk("~/notes"), Keep(Ext(".md")), Count(), Say()])
 ```
@@ -38,8 +38,8 @@ A `Chain` is itself a block, so chains nest without limit.
 ## Four modules, one tongue
 
 ```python
-from parts import *                      # everything
-from parts.files import Walk, Copy       # or be exact
+from sparkblocks import *                      # everything
+from sparkblocks.files import Walk, Copy       # or be exact
 ```
 
 | Module | Covers |
@@ -52,7 +52,7 @@ from parts.files import Walk, Copy       # or be exact
 | `pad` | The window as eight squares you press |
 | `tool` | What a program needs to be a tool: ask, run, show a table |
 
-**133 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+**133 blocks.** `sparkblocks.describe()` prints them all; `sparkblocks.describe("Ray")`
 explains one.
 
 ---
@@ -186,25 +186,25 @@ Keep the folder wherever you like — Downloads, a memory card, anywhere —
 and run this once:
 
 ```bash
-python3 /wherever/parts/install.py
+python3 /wherever/sparkblocks/install.py
 ```
 
-`import parts` then works from **any folder, in any script**, with nothing
+`import sparkblocks` then works from **any folder, in any script**, with nothing
 copied and no `PYTHONPATH` to remember. It writes a one-line `.pth` file
 into Python's site-packages naming the folder; Python reads those at
 startup. Move the folder later and run it again.
 
 ```bash
-python3 -m parts where      # is it installed, and pointing where?
-python3 -m parts install    # same as install.py
-python3 /wherever/parts/install.py --remove
+python3 -m sparkblocks where      # is it installed, and pointing where?
+python3 -m sparkblocks install    # same as install.py
+python3 /wherever/sparkblocks/install.py --remove
 ```
 
 Without installing, these still work:
 
 ```bash
-python3 /wherever/parts/connect.py spark /sdcard   # point at the file
-cd /the/folder/holding/parts && python3 -m parts connect spark
+python3 /wherever/sparkblocks/connect.py spark /sdcard   # point at the file
+cd /the/folder/holding/parts && python3 -m sparkblocks connect spark
 ```
 
 ## Layout
@@ -234,7 +234,7 @@ parts/
 │
 ├─ menu.py       build with numbers
 ├─ connect.py    ten routes, one vote each
-├─ install.py    the .pth that makes `import parts` work anywhere
+├─ install.py    the .pth that makes `import sparkblocks` work anywhere
 │
 └─ examples/     ten working programs
 ```
@@ -268,7 +268,7 @@ parts/
 Run this after changing anything:
 
 ```bash
-python3 -m parts check
+python3 -m sparkblocks check
 ```
 
 ```
@@ -334,7 +334,7 @@ class Newer(Part):
 Then three things, and `check` will tell you if you miss one:
 
 1. Add it to its module's `CATALOGUE`, under a kind.
-2. Export it from `parts/__init__.py`.
+2. Export it from `sparkblocks/__init__.py`.
 3. Make sure its name is not already taken.
 
 It is then usable everywhere every other block is — in Python, in a
@@ -348,20 +348,20 @@ but keeps it as `self.stride` for exactly this reason.
 ## The command line
 
 ```bash
-python3 -m parts                  # every block, by module and kind
-python3 -m parts Ray              # explain one block
-python3 -m parts connect <thing>  # find what touches a thing
-python3 -m parts install          # make import work anywhere
-python3 -m parts run prog.parts   # run a plain-text program
-python3 -m parts menu             # build one with numbers only
-python3 -m parts pad              # build one by pressing squares
-python3 -m parts check            # make sure it all still hangs together
+python3 -m sparkblocks                  # every block, by module and kind
+python3 -m sparkblocks Ray              # explain one block
+python3 -m sparkblocks connect <thing>  # find what touches a thing
+python3 -m sparkblocks install          # make import work anywhere
+python3 -m sparkblocks run prog.parts   # run a plain-text program
+python3 -m sparkblocks menu             # build one with numbers only
+python3 -m sparkblocks pad              # build one by pressing squares
+python3 -m sparkblocks check            # make sure it all still hangs together
 ```
 
 ## pad — the window as eight squares you press
 
 ```bash
-python3 -m parts pad
+python3 -m sparkblocks pad
 ```
 
 The window is divided into a strip across the top and eight squares
@@ -533,8 +533,8 @@ draw
 ```
 
 ```bash
-python3 -m parts run spin-a-cube.parts --loop
-python3 -m parts run spin-a-cube.parts --loop 50 --fps 20
+python3 -m sparkblocks run spin-a-cube.parts --loop
+python3 -m sparkblocks run spin-a-cube.parts --loop 50 --fps 20
 ```
 
 One run of the loop remembers the last, so `tick`, `smooth`, `delay` and
@@ -575,8 +575,8 @@ the area either way.
 For a phone, where typing is the hard part:
 
 ```bash
-python3 -m parts menu
-python3 -m parts menu mine.parts     # start from a file
+python3 -m sparkblocks menu
+python3 -m sparkblocks menu mine.parts     # start from a file
 ```
 
 ```
@@ -625,8 +625,8 @@ saves as an ordinary `.parts` file, which you can then edit by hand, run
 from the command line, and open in the menu again:
 
 ```bash
-python3 -m parts menu              # build it with numbers
-python3 -m parts run mine.parts    # run what it saved
+python3 -m sparkblocks menu              # build it with numbers
+python3 -m sparkblocks run mine.parts    # run what it saved
 ```
 
 Two things the menu will not do, because one line cannot say them: a
@@ -649,8 +649,8 @@ say found
 ```
 
 ```bash
-python3 -m parts run find-notes.parts
-python3 -m parts run find-notes.parts --show    # print the shape, run nothing
+python3 -m sparkblocks run find-notes.parts
+python3 -m sparkblocks run find-notes.parts --show    # print the shape, run nothing
 ```
 
 ### The rules, all of them
@@ -698,12 +698,12 @@ line 2: keep needs a block to hold, either after it or indented under it
 
 line 2: threshold does not take those settings (takes from 1 to 4
   positional arguments but 6 were given).
-  Try: python3 -m parts Threshold
+  Try: python3 -m sparkblocks Threshold
 ```
 
 ### Examples to start from
 
-`parts/examples/` holds six working programs — copy one and change the
+`sparkblocks/examples/` holds six working programs — copy one and change the
 paths:
 
 | File | Does |
@@ -825,11 +825,11 @@ drive the engine, the rudder and the fuel gauge at once.
 ## connect — a script written in this language
 
 ```bash
-python3 -m parts.connect spark                # a word
-python3 -m parts.connect ~/notes/plan.md      # a file
-python3 -m parts.connect spark /sdcard        # say where to look
-python3 -m parts.connect spark ~ --strict     # only 2+ routes agreeing
-python3 -m parts.connect --help               # list the routes
+python3 -m sparkblocks.connect spark                # a word
+python3 -m sparkblocks.connect ~/notes/plan.md      # a file
+python3 -m sparkblocks.connect spark /sdcard        # say where to look
+python3 -m sparkblocks.connect spark ~ --strict     # only 2+ routes agreeing
+python3 -m sparkblocks.connect --help               # list the routes
 ```
 
 Give it a thing. It walks every folder below `where` and asks the same
@@ -876,7 +876,7 @@ apiece on nothing but `kind` and `when`. Pass `common=1.0` to let every
 route vote regardless.
 
 ```
-connections to 'parts/files.py' (file), looking under ~/WebrowserTheme
+connections to 'sparkblocks/files.py' (file), looking under ~/WebrowserTheme
 
   5  README.md    mentions backlink sibling when git (words) (addresses)
   5  __init__.py  mentions sibling kind when git (words) (addresses)
@@ -904,7 +904,7 @@ joins the vote — nothing else in the file has to know it exists. Or pass
 your own list in:
 
 ```python
-from parts.connect import connect, ROUTES
+from sparkblocks.connect import connect, ROUTES
 only = [r for r in ROUTES if r[0] in ("name", "addresses")]
 connect("spark", "~/notes", routes=only)
 ```

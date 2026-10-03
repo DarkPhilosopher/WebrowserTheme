@@ -32,21 +32,21 @@ plugged in.
 ## Full boxes — here, documented, working
 
 ```
-┌─ parts/ ───────────────────────────────────────────────────┐
+┌─ sparkblocks/ ─────────────────────────────────────────────┐
 │ what    133 blocks. One contract: part.step(ctx) -> value  │
-│ manual  parts/README.md                                    │
-│ map     parts/README.md § Layout                           │
+│ manual  sparkblocks/README.md                                    │
+│ map     sparkblocks/README.md § Layout                           │
 │ needs   Python. Nothing else, ever                         │
 │ joins   EVERYTHING. This is the blood supply               │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ panel/ ───────────────────────────────────────────────────┐
 │ what    Three ways in: plain terminal, Chrome, and the     │
-│         fancier menus in parts                             │
+│         fancier menus in sparkblocks                       │
 │ manual  panel/README.md                                    │
 │ map     panel/README.md § Layout                           │
 │ needs   catalogue.json · a prompt or a browser             │
-│ joins   parts, through the catalogue — never by import     │
+│ joins   the blocks, through the catalogue, never by import │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ claude-ready.py ──────────────────────────────────────────┐
@@ -55,7 +55,7 @@ plugged in.
 │ map     claude-ready.md § Layout                           │
 │ needs   the machine itself · Python                        │
 │ joins   whereami (which machine) · SETUP.md (by hand)      │
-│ also as parts/examples/claude-ready.parts, in blocks       │
+│ also as sparkblocks/examples/claude-ready.parts, in blocks       │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ whereami.py ──────────────────────────────────────────────┐
@@ -85,7 +85,7 @@ plugged in.
 │ what    Search every file on the phone                     │
 │ manual  tfind.md   map  § Layout                           │
 │ needs   shared storage · Termux · ripgrep makes it fast    │
-│ joins   nothing — and parts/files.py now does most of it   │
+│ joins   nothing — and sparkblocks/files.py now does most of it   │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ rustbuild/ ───────────────────────────────────────────────┐
@@ -162,7 +162,7 @@ held back, or nothing, which is its own kind of answer.
 │          Python traceback                      │
 │ how      Wrap the step loop, catch, report     │
 │          which line was running                │
-│ waited   parts/script.py. Every program a      │
+│ waited   sparkblocks/script.py. Every program a      │
 │          child runs is held back by this       │
 │ size     small                                 │
 └────────────────────────────────────────────────┘
@@ -170,7 +170,7 @@ held back, or nothing, which is its own kind of answer.
 ┌─ undo in the menus ────────────────── CERTAIN ─┐
 │ what     Delete is final. A child will delete  │
 │ how      A stack of past programs              │
-│ waited   parts/menu.py · parts/pad.py          │
+│ waited   sparkblocks/menu.py · sparkblocks/pad.py          │
 │ size     small                                 │
 └────────────────────────────────────────────────┘
 
@@ -209,7 +209,7 @@ held back, or nothing, which is its own kind of answer.
 │ doubt    What is its datasheet? A program's    │
 │          needs are the union of its blocks' —  │
 │          workable, but it has to be worked out │
-│ waited   parts/script.py                       │
+│ waited   sparkblocks/script.py                       │
 └────────────────────────────────────────────────┘
 
 ┌─ an index for connect ──────────────── MAYBE ──┐
@@ -217,7 +217,7 @@ held back, or nothing, which is its own kind of answer.
 │ for      A phone-wide search in a moment       │
 │ doubt    An index is stale the instant a file  │
 │          changes. Needs a staleness answer     │
-│ waited   parts/connect.py                      │
+│ waited   sparkblocks/connect.py                      │
 └────────────────────────────────────────────────┘
 
 ┌─ joining the three 3D engines ──────── MAYBE ──┐
@@ -277,10 +277,10 @@ held back, or nothing, which is its own kind of answer.
 └────────────────────────────────────────────────┘
 
 ┌─ does touch work in Termux ────────── LONGING ─┐
-│ what     parts/pad.py reads the terminal's own │
+│ what     sparkblocks/pad.py reads the terminal's own │
 │          touch reporting. NEVER TRIED on a     │
 │          real phone — only reasoned about      │
-│ how      python3 -m parts pad   on the A33     │
+│ how      python3 -m sparkblocks pad   on the A33     │
 │ waited   the whole pad idea rests on it        │
 │ YOURS    ten minutes, and only you can do it   │
 └────────────────────────────────────────────────┘
@@ -292,7 +292,7 @@ held back, or nothing, which is its own kind of answer.
 ┌─ THREE 3D ENGINES, NOTHING JOINING THEM ───────────────────┐
 │                                                            │
 │   house/house.sh      wireframe house, maths in awk        │
-│   parts/screen.py     XYZ points, matrices, projection     │
+│   sparkblocks/screen.py     XYZ points, matrices, projection     │
 │   rustbuild/*.py      isometric building, its own maths    │
 │                                                            │
 │ Three separate pieces of isometric-3D code, in one         │
@@ -302,7 +302,7 @@ held back, or nothing, which is its own kind of answer.
 │ prevent, and it is already here.                           │
 │                                                            │
 │ to fill  Decide. Either                                    │
-│          (a) parts/screen.py is the one, and the other     │
+│          (a) sparkblocks/screen.py is the one, and the other     │
 │              two call it — house loses its awk, rustbuild  │
 │              loses its projection, both keep their look    │
 │          (b) they stay apart and this box says why         │

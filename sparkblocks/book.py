@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """book -- write the whole language out as JSON, for other panels to read.
 
-    python3 -m parts json > panel/catalogue.json
+    python3 -m sparkblocks json > panel/catalogue.json
 
 There are three ways into this project and they must never disagree
 about what the blocks are:
 
     the terminal panel      panel/panel.py     Windows, Termux, anywhere
     the browser panel       panel/panel.html   Chrome, no server
-    Python itself           import parts
+    Python itself           import sparkblocks
 
 Two of those cannot import Python modules, so the truth is written out
 here in a form anything can read. One file, one source, and `python3 -m
@@ -47,7 +47,7 @@ def fits_of(cls, module):
     fail for what it is, never for where it was plugged in.
     """
     import sys as _sys
-    mod = _sys.modules.get("parts." + module)
+    mod = _sys.modules.get("sparkblocks." + module)
     base = dict(getattr(mod, "FITS", None) or
                 {"needs": [], "changes": "nothing", "waits": False})
     # a shape may declare for everything built on it
@@ -78,7 +78,7 @@ def book():
     from .script import FANWAYS, HOLDERS
 
     out = {
-        "what": "Wakeup -- the parts language",
+        "what": "Wakeup -- Spark blocks",
         "blocks": {},
         "modules": {},
         "holders": sorted(HOLDERS),

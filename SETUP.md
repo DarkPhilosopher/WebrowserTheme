@@ -37,24 +37,24 @@ python3 whereami.py --name "A33"
 **5. Make the blocks reachable from anywhere:**
 
 ```bash
-python3 parts/install.py
+python3 sparkblocks/install.py
 ```
 
-Now `import parts` works in any folder, with the folder staying where
+Now `import sparkblocks` works in any folder, with the folder staying where
 it is. Check it took:
 
 ```bash
-python3 -m parts where
+python3 -m sparkblocks where
 ```
 
 ### Then, on the phone
 
 ```bash
-python3 -m parts                    every block there is
-python3 -m parts menu               build a program with numbers
-python3 -m parts pad                build one by pressing squares
-python3 -m parts run prog.parts     run one
-python3 -m parts connect spark /sdcard    what touches what
+python3 -m sparkblocks                    every block there is
+python3 -m sparkblocks menu               build a program with numbers
+python3 -m sparkblocks pad                build one by pressing squares
+python3 -m sparkblocks run prog.parts     run one
+python3 -m sparkblocks connect spark /sdcard    what touches what
 ```
 
 ---
@@ -84,7 +84,7 @@ build and save them.
 **4. Make the blocks reachable:**
 
 ```
-python parts\install.py
+python sparkblocks\install.py
 ```
 
 ### Claude Code on Windows
@@ -130,13 +130,13 @@ panels, `tfind`. Use claude.ai in the browser for Claude itself.
 ## When you change anything
 
 ```bash
-python3 -m parts check
+python3 -m sparkblocks check
 ```
 
 718 checks. If you add or rename a block, it will also tell you to
 rebuild the catalogue the panels read:
 
 ```bash
-python3 -m parts json panel/catalogue.json
-python3 -m parts json --html
+python3 -m sparkblocks json panel/catalogue.json
+python3 -m sparkblocks json --html
 ```

@@ -93,6 +93,6 @@ missing when there is no Ubuntu — it is **not yet askable**.
 
 ## Related
 
-- The same job in blocks: `parts/examples/claude-ready.parts`
+- The same job in blocks: `sparkblocks/examples/claude-ready.parts`
 - Which machine this is: `whereami.py`
 - The steps by hand: `SETUP.md`

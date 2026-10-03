@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """connect -- find everything that touches a thing, by every means available.
 
-    python3 -m parts.connect spark                 # a word
-    python3 -m parts.connect ~/notes/plan.md       # a file
-    python3 -m parts.connect spark /sdcard         # say where to look
-    python3 -m parts.connect spark ~ --strict      # only 2+ routes agreeing
+    python3 -m sparkblocks.connect spark                 # a word
+    python3 -m sparkblocks.connect ~/notes/plan.md       # a file
+    python3 -m sparkblocks.connect spark /sdcard         # say where to look
+    python3 -m sparkblocks.connect spark ~ --strict      # only 2+ routes agreeing
 
 Give it a thing. It walks every folder below `where` and asks the same
 question of each file along several different routes at once -- name,
@@ -26,15 +26,15 @@ import os
 import re
 import sys
 
-# Run as a module (python3 -m parts.connect) the relative imports below are
-# right. Run as a plain file (python3 parts/connect.py) there is no package
+# Run as a module (python3 -m sparkblocks.connect) the relative imports below are
+# right. Run as a plain file (python3 sparkblocks/connect.py) there is no package
 # around them, so put this file's parent folder on the path and import by
 # name instead. Both ways work, from any folder, with no setup.
 if __package__ in (None, ""):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from parts.core import (Abs, Chain, Contains, Each, Field, Gate, Is,
+    from sparkblocks.core import (Abs, Chain, Contains, Each, Field, Gate, Is,
                             Minus, Pack, Part, Threshold, Var, run, _as_list)
-    from parts.files import Age, Ext, Name, Parent, Read, Size, Walk
+    from sparkblocks.files import Age, Ext, Name, Parent, Read, Size, Walk
 else:
     from .core import (Abs, Chain, Contains, Each, Field, Gate, Is, Minus,
                        Pack, Part, Threshold, Var, run, _as_list)

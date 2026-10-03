@@ -1,6 +1,6 @@
 # YOUR OWN BUTTONS.
 #
-#   python3 -m parts run my-buttons.parts
+#   python3 -m sparkblocks run my-buttons.parts
 #
 # The window becomes a strip across the top and eight squares.
 # Press one and it tells you which. Change the words in quotes

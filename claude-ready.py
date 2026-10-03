@@ -108,8 +108,8 @@ def look():
         "fixtell": None if can_run else (
             "No 32-bit build of Claude Code exists -- the package ships\n"
             "binaries for 64-bit only, so proot and Ubuntu do not help.\n"
-            "Everything else below still works, and so does the parts\n"
-            "language. Use claude.ai in the browser on this phone."),
+            "Everything else below still works, and so do the Spark\n"
+            "blocks. Use claude.ai in the browser on this phone."),
     })
 
     out.append({

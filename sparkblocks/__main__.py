@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """The package's own command line.
 
-    python3 -m parts                    list every block
-    python3 -m parts Ray                explain one block
-    python3 -m parts install            make `import parts` work anywhere
-    python3 -m parts where              say whether that is done
-    python3 -m parts connect <thing>    find what touches a thing
-    python3 -m parts run prog.parts     run a plain-text program
-    python3 -m parts menu               build one with numbers only
-    python3 -m parts pad                build one by pressing squares
-    python3 -m parts check              make sure it all still hangs together
-    python3 -m parts json <file>        write the language out as JSON
+    python3 -m sparkblocks                    list every block
+    python3 -m sparkblocks Ray                explain one block
+    python3 -m sparkblocks install            make `import sparkblocks` work anywhere
+    python3 -m sparkblocks where              say whether that is done
+    python3 -m sparkblocks connect <thing>    find what touches a thing
+    python3 -m sparkblocks run prog.parts     run a plain-text program
+    python3 -m sparkblocks menu               build one with numbers only
+    python3 -m sparkblocks pad                build one by pressing squares
+    python3 -m sparkblocks check              make sure it all still hangs together
+    python3 -m sparkblocks json <file>        write the language out as JSON
 """
 
 import sys
@@ -55,8 +55,8 @@ def main(argv):
         return 0
 
     describe()
-    print("\n%d blocks. python3 -m parts <Name> explains one." % len(blocks()))
-    print("python3 -m parts install   makes `import parts` work from anywhere.")
+    print("\n%d blocks. python3 -m sparkblocks <Name> explains one." % len(blocks()))
+    print("python3 -m sparkblocks install   makes `import sparkblocks` work from anywhere.")
     return 0
 
 
