@@ -108,6 +108,50 @@ is always a way back.
 
 Broken code is caught and shown in red rather than stopping the page.
 
+## Layout
+
+```
+panel/
+│
+├─ catalogue.json    the language as data — written, never hand-edited
+│
+├─ panel.py          THE PLAIN ONE. print and input, nothing else
+│   ├─ load_book()     catalogue.json, or the package, or nothing
+│   ├─ have_parts()    can we RUN things here, or only build them
+│   ├─ choose()        eight, the last always back
+│   ├─ pick_block()    module → kind → block
+│   ├─ type_settings() the one place you type
+│   └─ main()          add · edit · run · save · open · explain · browser
+│
+└─ panel.html        THE BROWSER ONE. one file, no server
+    ├─ <script id=catalogue>   the baked copy, because file:// cannot fetch
+    ├─ BUTTONS   topScreen → modScreen → kindScreen → pickBlock
+    ├─ TERMINAL  terminalLine()   help · run · list · undo · blocks · name?
+    ├─ ADVANCED  applyCode()      js runs · css is added · html replaces
+    │            panel.order/move/side/hide/wide   rearrange the page
+    └─ RUNNING   step()  a small reading of the same language, enough to draw
+```
+
+**The page's own parts**, which the advanced pane can rearrange by name:
+
+```
+  ┌─────────────────────────────┬───────────┐
+  │ strip    the question       │ program   │
+  ├─────────────────────────────┤ the lines │
+  │ pad      eight squares      │ you built │
+  │ terminal type instead       │           │
+  │ code     the advanced pane  │ as a      │
+  ├─────────────────────────────┤ .parts    │
+  │ draw     the depiction      │ file      │
+  └─────────────────────────────┴───────────┘
+```
+
+```js
+panel.order('draw', 'strip', 'pad')
+panel.side('draw')
+panel.wide()
+```
+
 ### It agrees with the Python
 
 The page carries a small reading of the same language. Run the same

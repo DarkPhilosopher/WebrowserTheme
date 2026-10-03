@@ -106,7 +106,30 @@ oversight and "fix" it.
 
 ---
 
-## 8. Using this as storage
+## 8. Where the manual for each thing is
+
+Every program has one, and every manual has a **layout map** of its
+insides — what it is made of and how the pieces connect.
+
+| Program | Manual |
+|---|---|
+| `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
+| `whereami.py` | [`whereami.md`](whereami.md) |
+| the block language | [`parts/README.md`](parts/README.md) |
+| the control panels | [`panel/README.md`](panel/README.md) |
+| `house.sh` | [`house/README.md`](house/README.md) |
+| `ttt.sh` | [`ttt/README.md`](ttt/README.md) |
+| `tfind.sh` | [`tfind.md`](tfind.md) |
+| `rustbuild.py` | [`rustbuild/README.md`](rustbuild/README.md) |
+
+Short of a manual, every file also answers for itself:
+
+```bash
+python3 -m parts <BlockName>     what one block does
+python3 <anything>.py --help     what that program does
+```
+
+## 9. Using this as storage
 
 ```bash
 git clone https://github.com/DarkPhilosopher/WebrowserTheme.git

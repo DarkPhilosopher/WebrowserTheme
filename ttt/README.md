@@ -94,6 +94,24 @@ You can have several games going at once — just use different game ids.
 - Because it's strictly turn-based, only one side ever writes at a time, so
   there are no merge conflicts during normal play.
 
+## Layout
+
+```
+ttt.sh
+│
+├─ games/<id>.ttt    four lines: the board, whose turn,
+│                    the status, the winner
+│
+├─ YOUR TURN         write the file → git commit → git push
+├─ WAITING           git pull --rebase every few seconds
+│
+└─ new · play · show
+```
+
+**Why it needs no locking.** Strictly turn-based means only one side
+ever writes, so there is never a conflict to resolve. The whole network
+is a file in a repo.
+
 ## Troubleshooting
 
 - **"run this inside your shared game repo"** — you're not inside the cloned

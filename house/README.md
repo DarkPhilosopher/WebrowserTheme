@@ -194,6 +194,36 @@ for checking it looks right in your Termux window.
 - A per-player `houses/<id>/feed/<name>.log` records who changed what; the
   builder shows a short **build feed** so you can see the room's activity.
 
+## Layout
+
+```
+house.sh
+│
+├─ THE CHANNEL           a shared GitHub repo is the whole network
+│   ├─ pull()              fetch, merge taking ours on a clash
+│   └─ push()              commit, push, and retry by pulling first
+│
+├─ ONE FILE PER PART     houses/<id>/roof · walls · door · windows ·
+│   ├─ read_attr()        chimney · ground
+│   ├─ set_attr()        this is why two people never collide: they
+│   └─ feed_lines()      are writing to different files
+│
+├─ DRAWING
+│   ├─ build_lines()     the flat picture
+│   ├─ build_3d()        a rotatable wireframe, the maths in awk
+│   ├─ colorize()        ANSI, skipped when piped, so `save` stays plain
+│   └─ render()          header, art, build feed
+│
+└─ COMMANDS             new · join · watch · solo
+    └─ do_cmd()          one typed word; a build word with no value
+                         CYCLES to the next option
+```
+
+**Why a part per file.** The whole design turns on it. Git merges two
+people editing *different* files without a word; it cannot merge two
+people editing the same one. So the house is six files, and six people
+can build at once.
+
 ## Troubleshooting
 
 - **"run inside your shared game repo"** — `cd` into the cloned repo first.

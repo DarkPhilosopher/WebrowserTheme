@@ -207,6 +207,62 @@ python3 /wherever/parts/connect.py spark /sdcard   # point at the file
 cd /the/folder/holding/parts && python3 -m parts connect spark
 ```
 
+## Layout
+
+```
+parts/
+│
+├─ core.py       THE CONTRACT, and blocks for any value
+│                  Part · Ctx · run()        the whole of it
+│                  Chain Fan Each Keep ...   links
+│                  Number                    the shape most numbers share
+│
+├─ script.py     reads a .parts text file and builds the chain
+│                  _read_line → _nest → _build        text to blocks
+│                  _registry()  every block, by lower-case name
+│                  main()  run · --show · --loop · --fps
+│
+├─ book.py       writes the language out as JSON, for the panels
+├─ check.py      718 checks; the only thing that catches drift
+│
+├─ files.py      Pather (one path) · Changer (many paths)
+├─ net.py        Reaching (nothing may raise)
+├─ space.py      Sense (read the body) · Motor (move it, pass the number on)
+├─ screen.py     Pixel (a number touches the grid) · Shape · Moves
+├─ pad.py        Layout (where each square is) · the four pad blocks
+├─ tool.py       Test · Doing · Asking — what a program needs to BE a tool
+│
+├─ menu.py       build with numbers
+├─ connect.py    ten routes, one vote each
+├─ install.py    the .pth that makes `import parts` work anywhere
+│
+└─ examples/     ten working programs
+```
+
+**How a program gets from text to running:**
+
+```
+  a .parts file
+        │  script._read_line     one line → name + settings
+        │  script._nest          indentation → a tree
+        │  script._build         each line → a block
+        ▼
+     a Chain                     which is itself a block
+        │  core.run              hands it a Ctx and steps it
+        ▼
+   ctx.value travels down it, every block changing or using it
+```
+
+**Where a block can be reached from**, all from one definition:
+
+```
+          a block class
+         ╱      │      ╲
+   Python    .parts    the catalogue (JSON)
+    import    file          ╱        ╲
+                      panel.py    panel.html
+```
+
 ## Changing it later
 
 Run this after changing anything:

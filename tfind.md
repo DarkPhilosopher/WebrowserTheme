@@ -44,6 +44,25 @@ tfind recent 30                            # what changed in the last month
 tfind --in ~/storage/shared/Download name "*.apk"   # APKs in Downloads only
 ```
 
+## Layout
+
+```
+tfind.sh
+│
+├─ ROOTS        $HOME  and  ~/storage/shared  (that is /sdcard)
+│               — set by termux-setup-storage, so it is checked
+│
+├─ name    find -iname
+├─ type    find -iname, one pass per extension
+├─ big     find -size, sorted
+├─ recent  find -mtime
+├─ all     find
+└─ text    ripgrep when it is installed, grep when it is not
+```
+
+Permission-denied paths are swallowed, because `/sdcard` is full of
+them and an error per folder would bury the answers.
+
 ## Notes
 
 - **Default search roots** are your Termux home (`$HOME`) and shared storage
