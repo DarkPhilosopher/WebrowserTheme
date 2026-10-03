@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 """whereami -- say which of Gabriel's machines this is, from the files on it.
 
-    python3 whereami.py              name this machine
-    python3 whereami.py --facts      show the raw signs, matched or not
-    python3 whereami.py --all        show every machine on the register
+    python3 whereami.py                     name this machine
+    python3 whereami.py --facts             show the signs, matched or not
+    python3 whereami.py --all               show the whole register
+    python3 whereami.py --name "Revvl 7"    tell this machine what it is
+
+There is more than one Android phone, and two of them can look alike in
+every sign a program can read. The only cure is to name each one, once:
+
+    python3 whereami.py --name "Revvl 7"
+
+That writes ~/.whereami, and a written name beats every guess. Renaming
+a machine that already has a name needs --force, on purpose.
 
 Claude has no memory between sessions and cannot see your screen. It has
 been told, more than once in one conversation, that it was on a machine
@@ -51,22 +60,13 @@ REGISTER = [
     },
     {
         "name": "Dell laptop (Windows)",
-        "note": "Windows user `sauve`. Has an S: drive as well as C:. "
-                "Claude Desktop was downloaded to its Downloads folder.",
-        "sure": False,
+        "note": "Two profiles on the one machine: `sauve` and `xzg4b`. "
+                "Confirmed by Gabriel as the same Dell. Has an S: drive "
+                "as well as C:.",
+        "sure": True,
         "signs": [
             ("fact", "system", "Windows"),
-            ("fact", "user", "sauve"),
-        ],
-    },
-    {
-        "name": "Windows machine of user xzg4b",
-        "note": "Seen once, in a path. May be the Dell under another "
-                "profile, or a different machine entirely -- unresolved.",
-        "sure": False,
-        "signs": [
-            ("fact", "system", "Windows"),
-            ("fact", "user", "xzg4b"),
+            ("anyfact", "user", ("sauve", "xzg4b")),
         ],
     },
     {
@@ -80,17 +80,19 @@ REGISTER = [
         ],
     },
     {
-        "name": "phone, 64-bit (Termux)",
-        "note": "An aarch64 Android phone. Claude Code can run here, "
-                "through proot-distro ubuntu -- not in Termux directly.",
-        "sure": False,
+        "name": "a 64-bit phone (Termux)",
+        "note": "aarch64. Claude Code runs here, but only inside "
+                "proot-distro ubuntu -- not in Termux directly. "
+                "THERE IS MORE THAN ONE PHONE: this entry cannot tell "
+                "them apart. Run `whereami.py --name` on each.",
+        "sure": True,
         "signs": [
             ("file", "/data/data/com.termux"),
             ("fact", "machine", "aarch64"),
         ],
     },
     {
-        "name": "phone, 32-bit (Termux)",
+        "name": "a 32-bit phone (Termux)",
         "note": "armv7l. Claude Code CANNOT run here at all -- the package "
                 "ships no 32-bit build, so proot and Ubuntu do not help. "
                 "Python, git and the parts language all work fine.",
@@ -101,6 +103,43 @@ REGISTER = [
         ],
     },
 ]
+
+
+# ==========================================================================
+#  THE NAME FILE
+#
+#  Gabriel has three or more Android phones. Two of them can be the same
+#  architecture, carry Termux, and look identical to every sign above --
+#  so the signs alone cannot tell them apart, and never will.
+#
+#  The only thing that can is a name written on the machine itself:
+#
+#      python3 whereami.py --name "Revvl 7"
+#
+#  That writes ~/.whereami, and from then on this machine says what it
+#  is rather than being guessed at. A name beats every other sign.
+# ==========================================================================
+
+NAMEFILE = os.path.join(os.path.expanduser("~"), ".whereami")
+
+
+def written_name():
+    """The name this machine was given, if it was given one."""
+    try:
+        with open(NAMEFILE) as fh:
+            return fh.read().strip() or None
+    except OSError:
+        return None
+
+
+def write_name(name, force=False):
+    """Name this machine. Refuses to rename one without being told twice."""
+    already = written_name()
+    if already and already != name and not force:
+        return False, already
+    with open(NAMEFILE, "w") as fh:
+        fh.write(name.strip() + "\n")
+    return True, already
 
 
 # ==========================================================================
@@ -146,7 +185,16 @@ def matches(entry, now):
     hits, misses = 0, []
     for sign in entry["signs"]:
         kind = sign[0]
-        if kind == "fact":
+        if kind == "anyfact":
+            _, name, wants = sign
+            got = str(now.get(name, "")).lower()
+            if got in [str(w).lower() for w in wants]:
+                hits += 1
+            elif got == "":
+                pass
+            else:
+                misses.append("%s is %r, none of %r" % (name, now.get(name), wants))
+        elif kind == "fact":
             _, name, want = sign
             if str(now.get(name, "")).lower() == str(want).lower():
                 hits += 1
@@ -168,8 +216,21 @@ def matches(entry, now):
 
 
 def identify(now=None):
-    """The best match, or None. Returns (entry, hits, total)."""
+    """The best match, or None. Returns (entry, hits, total).
+
+    A name written on the machine wins outright -- it is the only sign
+    that can tell two identical phones apart.
+    """
     now = now or facts()
+    named = written_name()
+    if named:
+        for entry in REGISTER:
+            if entry["name"].lower() == named.lower():
+                return (entry, len(entry["signs"]), len(entry["signs"]))
+        return ({"name": named, "sure": True,
+                 "note": "named on the machine itself, in ~/.whereami. "
+                         "Not on the register -- add it if it should be.",
+                 "signs": []}, 1, 1)
     best = None
     for entry in REGISTER:
         hits, misses = matches(entry, now)
@@ -194,6 +255,33 @@ def show_facts(now):
 def main(argv):
     now = facts()
 
+    if "--name" in argv:
+        i = argv.index("--name")
+        if i + 1 >= len(argv):
+            print("say what to call it:  whereami.py --name \"Revvl 7\"")
+            return 2
+        want  = argv[i + 1]
+        force = "--force" in argv
+        done, already = write_name(want, force)
+        if not done:
+            print("This machine is already named %r." % already)
+            print()
+            print("Renaming it to %r would make every earlier note about" % want)
+            print("%r point at nothing. If that is what you want:" % already)
+            print()
+            print('    python3 whereami.py --name "%s" --force' % want)
+            return 1
+        if already:
+            print("Renamed from %r to %r." % (already, want))
+        else:
+            print("This machine is now %r." % want)
+        print("  written to %s" % NAMEFILE)
+        if not any(e["name"].lower() == want.lower() for e in REGISTER):
+            print()
+            print("That name is not on the register in whereami.py.")
+            print("Add it there so other machines know what it is.")
+        return 0
+
     if "--all" in argv:
         print("the register (edit whereami.py to change it):\n")
         for e in REGISTER:
@@ -217,6 +305,15 @@ def main(argv):
         return 2
 
     entry, hits, total = got
+    named = written_name()
+    if named:
+        print("This machine says it is: %s" % named)
+        print("  (from %s -- a written name, not a guess)" % NAMEFILE)
+        print("  %s" % entry["note"])
+        print()
+        print("Ask Gabriel to confirm before doing anything that depends on it.")
+        return 0
+
     print("This looks like: %s" % entry["name"])
     print("  %s" % entry["note"])
     print("  matched %d of %d signs" % (hits, total))

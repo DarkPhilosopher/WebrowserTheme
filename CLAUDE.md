@@ -21,12 +21,36 @@ agree.** Not as a formality — the answer changes what is possible:
 | Machine | What changes |
 |---|---|
 | cloud container | No reach to any of his machines. Say so plainly rather than offering workarounds |
-| Dell laptop | Windows paths, `C:\Users\sauve`, also has an `S:` drive |
-| phone, 64-bit | Claude Code runs, but only inside `proot-distro ubuntu` |
-| phone, 32-bit | Claude Code **cannot run at all**. No build exists. Do not suggest proot |
+| Dell laptop | Windows paths. Two profiles, `sauve` and `xzg4b`, on the one machine. Also has an `S:` drive |
+| a 64-bit phone | Claude Code runs, but only inside `proot-distro ubuntu` |
+| a 32-bit phone | Claude Code **cannot run at all**. No build exists. Do not suggest proot |
 
 If `whereami.py` says the machine is not on the register, **ask**. Do
 not pick the closest one and carry on.
+
+### There is more than one phone
+
+Gabriel has **three or more** Android devices. Two of them can be the
+same architecture, both carry Termux, and look identical in every sign
+a program can read — so the register alone will never tell them apart.
+
+The cure is a name written on each machine, once:
+
+```bash
+python3 whereami.py --name "Revvl 7"
+```
+
+That writes `~/.whereami`, and **a written name beats every other
+sign**. When a machine has one, `whereami.py` reports it as fact rather
+than as a guess. When a phone has no name yet, offer to name it.
+
+### The session and the person are two different machines
+
+The session usually runs in the cloud container. Gabriel is typing from
+something else — a phone, or the Dell. `whereami.py` can only ever see
+the first. **Which machine he is at is something only he can tell you,
+so ask.** Most of the confusion in the earlier conversation came from
+treating those two as one.
 
 ## Confirming before writing to the register
 
@@ -39,8 +63,13 @@ entry, what it says now, and what you want it to say. Adding a new
 entry for a machine that matched nothing is fine to offer, but Gabriel
 confirms the name before it is written.
 
-When an entry is confirmed by actually running `whereami.py` on that
-machine, set `"sure": True` and say that you did.
+`"sure": True` means Gabriel has confirmed that entry himself. Do not
+set it because the entry looks right.
+
+The same guard applies to `~/.whereami`. Renaming a machine that
+already has a name requires `--force`, and the tool refuses without it
+and says why — every earlier note about the old name would point at
+nothing. Do not reach for `--force` on his behalf; ask.
 
 ## What is in this repository
 
