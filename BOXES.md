@@ -98,112 +98,193 @@ plugged in.
 
 ---
 
-## Empty boxes — the thing is missing, the box is not
+## Empty boxes, by how sure we are
 
-### Elsewhere, and known
-
-```
-┌─ ABOUT.md ─────────────────────────── EMPTY ───┐
-│ what     Who Gabriel is; which machines        │
-│ where    In your hands, and in wakeup-notes    │
-│ why out  A classifier refused date of birth    │
-│          and birthplace in a PUBLIC repo       │
-│ to fill  Make the repo private, then commit it │
-│ belongs  the root, beside CLAUDE.md            │
-└────────────────────────────────────────────────┘
-
-┌─ wakeup-notes/ ────────────────────── EMPTY ───┐
-│ what     Decisions, bugs, what cannot be done  │
-│ where    A zip in your downloads               │
-│ why out  Built as a download, never offered    │
-│ to fill  Unzip into notes/ and commit, once    │
-│          the repo is private                   │
-│ belongs  notes/                                │
-└────────────────────────────────────────────────┘
-
-┌─ spark · ASC ──────────────────────── EMPTY ───┐
-│ what     Your other two repositories           │
-│ where    github.com/DarkPhilosopher            │
-│ why out  SEPARATE ON PURPOSE. You said twice   │
-│          that spark and parts stay apart       │
-│ to fill  Do not. This box stays empty          │
-└────────────────────────────────────────────────┘
-```
-
-### Unknown — nobody has looked
-
-```
-┌─ the A17's architecture ───────────── EMPTY ───┐
-│ what     64-bit or 32-bit? It decides whether  │
-│          Claude Code can run on it at all      │
-│ where    unknown                               │
-│ to fill  python3 whereami.py --facts   on it   │
-│ belongs  whereami.py REGISTER, entry "A17"     │
-└────────────────────────────────────────────────┘
-
-┌─ ~/.whereami, on each phone ───────── EMPTY ───┐
-│ what     The name a phone calls itself         │
-│ where    NOWHERE YET. No phone has been named  │
-│ why      Until then, no session can tell your  │
-│          two phones apart — the signs cannot   │
-│ to fill  python3 whereami.py --name "A33"      │
-│ belongs  ~/.whereami, one per phone            │
-└────────────────────────────────────────────────┘
-
-┌─ your fourth public repository ────── EMPTY ───┐
-│ what     unknown                               │
-│ where    GitHub says you have 4 public repos.  │
-│          I can see spark, ASC, WebrowserTheme  │
-│ to fill  Tell me its name, or list them        │
-│ belongs  INDEX.md, and a box here              │
-└────────────────────────────────────────────────┘
-
-┌─ does touch actually work in Termux ─ EMPTY ───┐
-│ what     parts/pad.py reads the terminal's own │
-│          touch reporting. Never tried on a     │
-│          real phone — only reasoned about      │
-│ where    unknown                               │
-│ to fill  python3 -m parts pad   on the A33     │
-│ belongs  a line in parts/README.md either way  │
-└────────────────────────────────────────────────┘
-```
-
-### Not built
-
-```
-┌─ sync/mega.py ─────────────────────── EMPTY ───┐
-│ what     Back things up to Mega                │
-│ needs    YOUR credentials, on YOUR machine     │
-│ why out  There is no Mega connector. It cannot │
-│          be done from a session — only written │
-│ belongs  sync/                                 │
-└────────────────────────────────────────────────┘
-
-┌─ sync/drive.py ────────────────────── EMPTY ───┐
-│ what     Push and pull files from Drive        │
-│ needs    the connector — xzg4b3xz@gmail.com    │
-│ limits   can read, create, rename, move, copy, │
-│          trash. CANNOT permanently delete, and │
-│          CANNOT edit a file's contents         │
-│ belongs  sync/                                 │
-└────────────────────────────────────────────────┘
-
-┌─ run-time errors naming their line ── EMPTY ───┐
-│ what     A parse error says `line 3:`. A       │
-│          failure WHILE RUNNING gives a raw     │
-│          Python traceback. A child is stuck    │
-│ belongs  parts/script.py                       │
-└────────────────────────────────────────────────┘
-
-┌─ use myprogram ────────────────────── EMPTY ───┐
-│ what     Make a saved .parts file usable AS a  │
-│          block — your programs become Lego     │
-│          beside the built-in ones              │
-│ belongs  parts/script.py                       │
-└────────────────────────────────────────────────┘
-```
+Five bands. Each box says **who is waiting on it** — which script is
+held back, or nothing, which is its own kind of answer.
 
 ---
+
+### NO WAY — settled, do not try again
+
+```
+┌─ a Mega connector ─────────────────── NO WAY ──┐
+│ what     Reach Mega from a Claude session      │
+│ why not  There is no Mega connector and none   │
+│          can be added from here                │
+│ instead  sync/mega.py, a script on YOUR machine│
+│          with YOUR credentials. I can write it;│
+│          I can never run it                    │
+│ waited   nothing. Nothing here depends on it   │
+└────────────────────────────────────────────────┘
+
+┌─ permanently deleting from Drive ──── NO WAY ──┐
+│ why not  trash_file only moves to trash. There │
+│          is no permanent delete tool at all    │
+│ silver   deletes are RECOVERABLE for 30 days,  │
+│          which makes automating them safe      │
+│ waited   nothing                               │
+└────────────────────────────────────────────────┘
+
+┌─ editing a Drive file's contents ──── NO WAY ──┐
+│ why not  update_file changes the title and the │
+│          parent folder only                    │
+│ instead  create a new file                     │
+│ waited   sync/drive.py would have to work this │
+│          way round                             │
+└────────────────────────────────────────────────┘
+
+┌─ a verbatim transcript ────────────── NO WAY ──┐
+│ why not  Two reasons, both standing. A         │
+│          classifier refused it; and I would be │
+│          RECONSTRUCTING, not copying           │
+│ instead  claude.ai → Settings → Privacy →      │
+│          Export data. The real one             │
+│ waited   nothing. wakeup-notes is what I can   │
+│          honestly give                         │
+└────────────────────────────────────────────────┘
+
+┌─ making the repo private from here ── NO WAY ──┐
+│ why not  403: repository settings writes are   │
+│          not permitted through this proxy      │
+│ instead  you, in a browser. Not the GitHub app │
+│ waited   ABOUT.md and wakeup-notes/ BOTH wait  │
+│          on this one                           │
+└────────────────────────────────────────────────┘
+```
+
+### CERTAINLY — will work, just not done
+
+```
+┌─ run-time errors naming their line ─ CERTAIN ──┐
+│ what     A parse error says `line 3:`. A       │
+│          failure WHILE RUNNING gives a raw     │
+│          Python traceback                      │
+│ how      Wrap the step loop, catch, report     │
+│          which line was running                │
+│ waited   parts/script.py. Every program a      │
+│          child runs is held back by this       │
+│ size     small                                 │
+└────────────────────────────────────────────────┘
+
+┌─ undo in the menus ────────────────── CERTAIN ─┐
+│ what     Delete is final. A child will delete  │
+│ how      A stack of past programs              │
+│ waited   parts/menu.py · parts/pad.py          │
+│ size     small                                 │
+└────────────────────────────────────────────────┘
+
+┌─ naming each phone ────────────────── CERTAIN ─┐
+│ what     ~/.whereami, one per phone            │
+│ how      python3 whereami.py --name "A33"      │
+│ waited   whereami.py cannot tell your two      │
+│          phones apart until you do it          │
+│ size     ten seconds, by you, on each phone    │
+└────────────────────────────────────────────────┘
+
+┌─ the A17's architecture ───────────── CERTAIN ─┐
+│ how      python3 whereami.py --facts   on it   │
+│ waited   whereami.py REGISTER, entry "A17",    │
+│          which says `sure: False` until then   │
+└────────────────────────────────────────────────┘
+
+┌─ the other 50 blocks in the browser ─ CERTAIN ─┐
+│ what     50 blocks need nothing a browser      │
+│          lacks and the page has not learnt     │
+│          them: sort, uniq, each, keep, fan...  │
+│ how      Add them to step() in panel.html      │
+│ waited   panel/panel.html says so itself now   │
+│ size     medium, and purely mechanical         │
+└────────────────────────────────────────────────┘
+```
+
+### MAYBE — worth doing, not obviously right
+
+```
+┌─ use myprogram ─────────────────────── MAYBE ──┐
+│ what     A saved .parts file usable AS a block │
+│ for      Your own programs become Lego beside  │
+│          the built-in ones. The real test of   │
+│          whether the language is strong enough │
+│ doubt    What is its datasheet? A program's    │
+│          needs are the union of its blocks' —  │
+│          workable, but it has to be worked out │
+│ waited   parts/script.py                       │
+└────────────────────────────────────────────────┘
+
+┌─ an index for connect ──────────────── MAYBE ──┐
+│ what     connect rescans every file every run  │
+│ for      A phone-wide search in a moment       │
+│ doubt    An index is stale the instant a file  │
+│          changes. Needs a staleness answer     │
+│ waited   parts/connect.py                      │
+└────────────────────────────────────────────────┘
+
+┌─ joining the three 3D engines ──────── MAYBE ──┐
+│ see      the box below. YOUR decision          │
+└────────────────────────────────────────────────┘
+```
+
+### RECENTLY — just done, still settling
+
+```
+┌─ datasheets on every block ───────── RECENT ───┐
+│ done     Every block says what it needs        │
+│ settling 50 browser-runnable blocks are now    │
+│          VISIBLY missing from the page         │
+└────────────────────────────────────────────────┘
+
+┌─ twelve shapes ───────────────────── RECENT ───┐
+│ done     66 blocks on a shared shape           │
+│ settling pad.py has 4 blocks on none. Is there │
+│          a shape there, or only four things?   │
+└────────────────────────────────────────────────┘
+
+┌─ a manual and map for everything ─── RECENT ───┐
+│ done     All nine programs                     │
+│ settling rustbuild's manual was written by     │
+│          reading it. You should check I have   │
+│          not described your own program wrong  │
+└────────────────────────────────────────────────┘
+```
+
+### LONGING — wanted, and the reason for the rest
+
+```
+┌─ charts and visual depictions ────── LONGING ──┐
+│ what     The concept drawn: the fundamentals,  │
+│          and what is interesting about them    │
+│ for      MAKING MACHINES WITH THE BEST         │
+│          SEARCHING ENGINES. This is the point  │
+│          the rest is building toward           │
+│ have     INDEX.md, BOXES.md and the layout     │
+│          maps are the material — written, not  │
+│          drawn                                 │
+│ waited   nothing yet. It wants a shape first   │
+│ YOURS    you said you want to make this        │
+└────────────────────────────────────────────────┘
+
+┌─ elsewhere and known ──────────────── LONGING ─┐
+│ ABOUT.md         waits on the repo going       │
+│                  private                       │
+│ wakeup-notes/    same                          │
+│ spark · ASC      SEPARATE ON PURPOSE. You have │
+│                  said so twice. This box stays │
+│                  empty unless you say otherwise│
+│ your 4th repo    GitHub says 4 public; I can   │
+│                  see 3. Name it and it gets a  │
+│                  box                           │
+└────────────────────────────────────────────────┘
+
+┌─ does touch work in Termux ────────── LONGING ─┐
+│ what     parts/pad.py reads the terminal's own │
+│          touch reporting. NEVER TRIED on a     │
+│          real phone — only reasoned about      │
+│ how      python3 -m parts pad   on the A33     │
+│ waited   the whole pad idea rests on it        │
+│ YOURS    ten minutes, and only you can do it   │
+└────────────────────────────────────────────────┘
+```
 
 ## The one real mess
 

@@ -203,6 +203,31 @@ practice **and why**. No dependencies, no pytest, nothing that raises,
 eight choices everywhere, the repo name not matching the project — all
 deliberate. Read it before "fixing" one of them.
 
+## Waiting on Gabriel
+
+Things only he can do, which other work is held back by. Written here
+so a session asks rather than stalling quietly. Full detail in
+`BOXES.md`.
+
+| | Blocks |
+|---|---|
+| **Make the repo private** | `ABOUT.md` and `wakeup-notes/` both wait on it |
+| **Name each phone** — `whereami.py --name "A33"` | `whereami.py` cannot tell the A33 from the A17 |
+| **Run `whereami.py --facts` on the A17** | Its entry says `sure: False` until then |
+| **Run `python3 -m parts pad` on a real phone** | Touch has never been tried. The whole pad rests on it |
+| **Decide about the three 3D engines** | Two of the three are his and predate this work |
+| **Name his fourth public repository** | GitHub says 4; only 3 are known |
+
+## He wants to draw this
+
+A chart and visual depictions of the whole idea — the fundamentals and
+what is interesting about them — **for making machines with the best
+searching engines.** That is what the rest is building toward.
+
+The written material is there already: `INDEX.md`, `BOXES.md`, and the
+layout map in every manual. Nothing is drawn yet. **Remind him**, and
+offer to help turn the maps into a diagram when he comes to it.
+
 ## Notes worth keeping
 
 - **`spark` and `parts` stay separate languages.** He has said so
