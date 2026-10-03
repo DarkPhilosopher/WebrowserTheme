@@ -40,8 +40,9 @@ The cure is a name written on each machine, once:
 python3 whereami.py --name "Revvl 7"
 ```
 
-That writes `~/.whereami`, and **a written name beats every other
-sign**. When a machine has one, `whereami.py` reports it as fact rather
+One phone is the **A33** (Samsung Galaxy A33, 64-bit), named by
+Gabriel. That writes `~/.whereami`, and **a written name beats every
+other sign**. When a machine has one, `whereami.py` reports it as fact rather
 than as a guess. When a phone has no name yet, offer to name it.
 
 ### The session and the person are two different machines
@@ -80,6 +81,7 @@ nothing. Do not reach for `--force` on his behalf; ask.
 | `ttt/` | Tic-tac-toe between two phones, over a shared GitHub repo |
 | `tfind.sh` | File search for Termux on Android |
 | `whereami.py` | Which machine am I on |
+| `claude-ready.py` | Is this phone ready to run Claude in Termux, and if not, why |
 
 Gabriel also has `DarkPhilosopher/spark` (a game engine, `when`/`do`
 rules) and `DarkPhilosopher/ASC` (a 16×16 ASCII grid). **`spark` and

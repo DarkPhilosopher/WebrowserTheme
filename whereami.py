@@ -80,11 +80,24 @@ REGISTER = [
         ],
     },
     {
+        "name": "A33",
+        "note": "Samsung Galaxy A33, Android, 64-bit. Gabriel named it "
+                "himself. Claude Code runs here, inside proot-distro "
+                "ubuntu. Run `whereami.py --name A33` on it so it says "
+                "so for itself rather than being guessed at.",
+        "sure": True,
+        "signs": [
+            ("file", "/data/data/com.termux"),
+            ("fact", "machine", "aarch64"),
+        ],
+    },
+    {
         "name": "a 64-bit phone (Termux)",
         "note": "aarch64. Claude Code runs here, but only inside "
                 "proot-distro ubuntu -- not in Termux directly. "
-                "THERE IS MORE THAN ONE PHONE: this entry cannot tell "
-                "them apart. Run `whereami.py --name` on each.",
+                "THERE IS MORE THAN ONE PHONE and this entry cannot tell "
+                "them apart -- it is what matches when a phone has not "
+                "been named. One of them is the A33. Name each one.",
         "sure": True,
         "signs": [
             ("file", "/data/data/com.termux"),
