@@ -273,6 +273,26 @@ aside{
     }
    ]
   },
+  "ask": {
+   "holds": false,
+   "kind": "ask",
+   "module": "tool",
+   "more": "",
+   "name": "Ask",
+   "says": "Ask the person something and hand on what they typed.",
+   "settings": [
+    {
+     "default": "",
+     "name": "about",
+     "needed": false
+    },
+    {
+     "default": "",
+     "name": "default",
+     "needed": false
+    }
+   ]
+  },
   "ball": {
    "holds": false,
    "kind": "shapes",
@@ -897,6 +917,15 @@ aside{
    "says": "A list of lists becomes one list.",
    "settings": []
   },
+  "forget": {
+   "holds": false,
+   "kind": "table",
+   "module": "tool",
+   "more": "",
+   "name": "Forget",
+   "says": "Throw the rows away and start the table again.",
+   "settings": []
+  },
   "gain": {
    "holds": false,
    "kind": "number",
@@ -997,6 +1026,21 @@ aside{
     }
    ]
   },
+  "have": {
+   "holds": false,
+   "kind": "look",
+   "module": "tool",
+   "more": "",
+   "name": "Have",
+   "says": "Is this program installed and runnable? `have git`",
+   "settings": [
+    {
+     "default": null,
+     "name": "program",
+     "needed": true
+    }
+   ]
+  },
   "heading": {
    "holds": false,
    "kind": "sensor",
@@ -1045,6 +1089,21 @@ aside{
      "default": null,
      "name": "url",
      "needed": false
+    }
+   ]
+  },
+  "inside": {
+   "holds": false,
+   "kind": "look",
+   "module": "tool",
+   "more": "",
+   "name": "Inside",
+   "says": "Is this folder there? `inside /data/data/com.termux`",
+   "settings": [
+    {
+     "default": null,
+     "name": "path",
+     "needed": true
     }
    ]
   },
@@ -1165,6 +1224,15 @@ aside{
      "needed": true
     }
    ]
+  },
+  "kind": {
+   "holds": false,
+   "kind": "look",
+   "module": "tool",
+   "more": "",
+   "name": "Kind",
+   "says": "What sort of machine is this -- aarch64, armv7l, x86_64, AMD64.",
+   "settings": []
   },
   "last": {
    "holds": false,
@@ -1438,6 +1506,15 @@ aside{
     }
    ]
   },
+  "missing": {
+   "holds": false,
+   "kind": "table",
+   "module": "tool",
+   "more": "",
+   "name": "Missing",
+   "says": "The names of the rows that said no. Nothing missing is an empty list.",
+   "settings": []
+  },
   "move": {
    "holds": false,
    "kind": "change",
@@ -1489,6 +1566,21 @@ aside{
     {
      "default": null,
      "name": "miss",
+     "needed": false
+    }
+   ]
+  },
+  "open": {
+   "holds": false,
+   "kind": "do",
+   "module": "tool",
+   "more": "`open panel/panel.html` puts the browser panel on the screen. On a\nphone it hands the job to Android.",
+   "name": "Open",
+   "says": "Open a file or an address with whatever usually opens it.",
+   "settings": [
+    {
+     "default": null,
+     "name": "what",
      "needed": false
     }
    ]
@@ -1572,6 +1664,15 @@ aside{
      "needed": false
     }
    ]
+  },
+  "pick": {
+   "holds": false,
+   "kind": "ask",
+   "module": "tool",
+   "more": "pick \"install git\" \"install curl\" \"do both\"\n\nHands on the words you picked, or None for back. The same rule the\nmenus and the pad keep, as a block you can put in a program.",
+   "name": "Pick",
+   "says": "Eight choices at most, the last always back, pick one by number.",
+   "settings": []
   },
   "pid": {
    "holds": false,
@@ -1761,6 +1862,35 @@ aside{
      "needed": false
     }
    ]
+  },
+  "row": {
+   "holds": false,
+   "kind": "table",
+   "module": "tool",
+   "more": "have git\nrow \"git\"\n\nTrue becomes `ok`, false becomes `--`. The answer carries on, so a\nrow never gets in the way of what follows.",
+   "name": "Row",
+   "says": "Remember what came in as a row of a table, under this name.",
+   "settings": [
+    {
+     "default": null,
+     "name": "name",
+     "needed": true
+    },
+    {
+     "default": "",
+     "name": "note",
+     "needed": false
+    }
+   ]
+  },
+  "run": {
+   "holds": false,
+   "kind": "do",
+   "module": "tool",
+   "more": "run pkg install git -y\n\nThe command is printed before it runs, so nothing happens unseen.\n`run quiet=true` keeps the output to itself; otherwise you watch it\nas it goes. Whether it worked is remembered for `worked`.",
+   "name": "Run",
+   "says": "Run a command and hand on what it said.",
+   "settings": []
   },
   "say": {
    "holds": false,
@@ -2036,6 +2166,21 @@ aside{
     }
    ]
   },
+  "stop": {
+   "holds": false,
+   "kind": "do",
+   "module": "tool",
+   "more": "",
+   "name": "Stop",
+   "says": "Give up here, quietly, when what came in is true.",
+   "settings": [
+    {
+     "default": "",
+     "name": "saying",
+     "needed": false
+    }
+   ]
+  },
   "store": {
    "holds": false,
    "kind": "motor",
@@ -2059,6 +2204,36 @@ aside{
    "name": "Strip",
    "says": "Trim the blank space off both ends of some text.",
    "settings": []
+  },
+  "sure": {
+   "holds": false,
+   "kind": "ask",
+   "module": "tool",
+   "more": "",
+   "name": "Sure",
+   "says": "Ask a yes-or-no question. Anything but yes counts as no.",
+   "settings": [
+    {
+     "default": "go on?",
+     "name": "about",
+     "needed": false
+    }
+   ]
+  },
+  "table": {
+   "holds": false,
+   "kind": "table",
+   "module": "tool",
+   "more": "",
+   "name": "Table",
+   "says": "Show every row gathered so far, and hand on the ones that failed.",
+   "settings": [
+    {
+     "default": "",
+     "name": "title",
+     "needed": false
+    }
+   ]
   },
   "tap": {
    "holds": false,
@@ -2330,6 +2505,15 @@ aside{
    "says": "The uncommon words in a piece of text, as a set.",
    "settings": []
   },
+  "worked": {
+   "holds": false,
+   "kind": "look",
+   "module": "tool",
+   "more": "",
+   "name": "Worked",
+   "says": "Did the last `run` work? Nothing run yet counts as no.",
+   "settings": []
+  },
   "write": {
    "holds": false,
    "kind": "change",
@@ -2351,7 +2535,7 @@ aside{
    ]
   }
  },
- "count": 123,
+ "count": 137,
  "fanways": [
   "sum",
   "max",
@@ -2549,6 +2733,30 @@ aside{
     "touch",
     "ray",
     "bearing"
+   ]
+  },
+  "tool": {
+   "ask": [
+    "ask",
+    "sure",
+    "pick"
+   ],
+   "do": [
+    "run",
+    "open",
+    "stop"
+   ],
+   "look": [
+    "have",
+    "inside",
+    "kind",
+    "worked"
+   ],
+   "table": [
+    "row",
+    "table",
+    "missing",
+    "forget"
    ]
   }
  },

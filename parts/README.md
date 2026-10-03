@@ -50,8 +50,9 @@ from parts.files import Walk, Copy       # or be exact
 | `net` | Other machines: fetching, reaching, downloading |
 | `screen` | A grid of pixels, shapes in 3D, and touch |
 | `pad` | The window as eight squares you press |
+| `tool` | What a program needs to be a tool: ask, run, show a table |
 
-**119 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
+**133 blocks.** `parts.describe()` prints them all; `parts.describe("Ray")`
 explains one.
 
 ---
@@ -657,6 +658,88 @@ paths:
 | `index.parts` | Write a list of your notes to a file |
 | `page-links.parts` | Pull every PDF linked from a web page |
 | `recent-work.parts` | Anything touched in the last two days |
+
+## tool — what a program needs to be a tool
+
+The blocks that let a `.parts` file *do* something, not just work
+something out: ask you a question, run a command, show you a table of
+what it found.
+
+| Group | Blocks |
+|---|---|
+| **look** | `Have` `Inside` `Kind` `Worked` |
+| **do** | `Run` `Open` `Stop` |
+| **ask** | `Ask` `Sure` `Pick` |
+| **table** | `Row` `Table` `Missing` `Forget` |
+
+`Run` prints the command before running it, so nothing happens unseen.
+`Pick` is the eight-choice menu as a block — last one always back. The
+asking blocks hand back `None` at once where nobody is there to answer,
+so a program never hangs in a pipe or a test.
+
+### The proof: a tool written in blocks
+
+`claude-ready.py` is 350 lines of Python. Here is the same job in
+blocks, and every line is a piece you can move or throw away:
+
+```
+inside /data/data/com.termux
+row Termux "the app itself"
+
+have git
+row git "for fetching your projects"
+
+have proot-distro
+row proot-distro "runs a small Ubuntu inside Termux"
+
+table "Is this phone ready for Claude?"
+
+missing
+count
+threshold 0.5 above=0 below=1
+stop "Everything is here. Type:  claude"
+
+missing
+pick back=quit
+```
+
+```
+==============================================
+ Is this phone ready for Claude?
+==============================================
+  --   Termux           the app itself
+  ok   git
+        for fetching your projects
+  --   proot-distro
+        runs a small Ubuntu inside Termux
+==============================================
+```
+
+Those four lines in the middle are how a chain decides to stop: count
+what is missing, turn *none missing* into a yes, and `stop` on a yes.
+Nothing after it runs.
+
+### The insides are blocks too
+
+Three shapes are written once at the top of `tool.py` — **`Test`**
+answers yes or no, **`Doing`** does a thing and says what came of it,
+**`Asking`** asks the person and never hangs. Every block is then the
+smallest difference from one of those: a name, a sentence, and one line
+of doing.
+
+```python
+class Have(Test):
+    """Is this program installed and runnable? `have git`"""
+    def __init__(self, program): self.program = program
+    def yes(self, ctx): return shutil.which(str(self.program)) is not None
+```
+
+`core.py` does the same with **`Number`**, whose `step` passes a `None`
+straight through so a shut gate never breaks the block behind it. Write
+`on` and you get that for free.
+
+This is the rule to keep when adding anything: **if two blocks share a
+shape, write the shape once and make each block the difference.**
 
 ## connect — a script written in this language
 

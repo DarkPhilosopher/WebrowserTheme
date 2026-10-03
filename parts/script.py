@@ -357,7 +357,13 @@ def main(argv):
     if "--loop" in argv:
         return _loop(chain, argv)
 
-    answer = run(chain)
+    from .tool import Stop
+    try:
+        answer = run(chain)
+    except Stop.Enough as e:
+        if str(e):
+            print(str(e))
+        return 0
     # A program that ends in `say` has already spoken for itself.
     if answer is not None and not isinstance(answer, (list, tuple)):
         print(answer)
@@ -380,6 +386,8 @@ def _loop(chain, argv):
     pause = _after("--fps", argv)
     pause = 1.0 / float(pause) if pause else 1 / 12.0
 
+    from .tool import Stop
+
     ctx = Ctx()
     sys.stdout.write("\033[2J\033[?25l")          # clear, hide the cursor
     n = 0
@@ -389,7 +397,7 @@ def _loop(chain, argv):
             chain.step(ctx)
             n += 1
             time.sleep(pause)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, Stop.Enough):
         pass
     finally:
         sys.stdout.write("\033[?25h\n")           # cursor back

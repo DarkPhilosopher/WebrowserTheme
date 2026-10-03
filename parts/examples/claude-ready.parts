@@ -1,0 +1,38 @@
+# IS THIS PHONE READY TO RUN CLAUDE?
+#
+#   python3 -m parts run claude-ready.parts
+#
+# The same job claude-ready.py does, written in blocks instead.
+# Every line is a piece you can move, change or throw away.
+
+# ---- what is here ----------------------------------------------------
+inside /data/data/com.termux
+row Termux "the app itself"
+
+have python3
+row python "the language all this is in"
+
+have git
+row git "for fetching your projects"
+
+have curl
+row curl "for fetching the Node installer"
+
+have proot-distro
+row proot-distro "runs a small Ubuntu inside Termux"
+
+inside ~/storage
+row storage "lets Termux see Downloads and DCIM"
+
+# ---- show it ---------------------------------------------------------
+table "Is this phone ready for Claude?"
+
+# ---- stop if there is nothing to do ----------------------------------
+missing
+count
+threshold 0.5 above=0 below=1
+stop "Everything is here. Type:  claude"
+
+# ---- otherwise offer what is missing ---------------------------------
+missing
+pick back=quit
