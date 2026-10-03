@@ -1,5 +1,8 @@
 # CLAUDE.md
 
+**This project is called Claude WakUp.** The repository it lives in
+is still named `WebrowserTheme`, from before it had a name.
+
 ## Before anything else: know which machine you are on
 
 **This is the highest-priority rule in this file.**
@@ -93,6 +96,7 @@ nothing. Do not reach for `--force` on his behalf; ask.
 | `tfind.sh` | File search for Termux on Android |
 | `whereami.py` | Which machine am I on |
 | `claude-ready.py` | Is this phone ready to run Claude in Termux, and if not, why |
+| `tfind.md` | Documentation for `tfind.sh` — it used to be the root README |
 
 Gabriel also has `DarkPhilosopher/spark` (a game engine, `when`/`do`
 rules) and `DarkPhilosopher/ASC` (a 16×16 ASCII grid). **`spark` and

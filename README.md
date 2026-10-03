@@ -1,54 +1,78 @@
-# tfind — file search for Termux on Android
+# Claude WakUp
 
-A single shell script to search **all the files on your phone** from Termux —
-your Termux home *and* shared storage (Downloads, DCIM/photos, Documents, …).
+Getting Claude running on your own machines, knowing which machine you
+are on, and a language of blocks that works even where Claude will not.
 
-## Setup (run once, inside Termux)
+Python standard library only. No installs, no 64-bit requirement — it
+runs on a phone.
 
-```bash
-pkg install ripgrep       # optional, but makes content search much faster
-termux-setup-storage      # grant access to /sdcard (photos, downloads, docs)
-git clone https://github.com/DarkPhilosopher/WebrowserTheme.git
-cd WebrowserTheme
-chmod +x tfind.sh
-```
-
-To use it from anywhere as `tfind`:
+## Start here
 
 ```bash
-mkdir -p ~/bin && cp tfind.sh ~/bin/tfind && chmod +x ~/bin/tfind
+pkg install python -y          # Termux
+python3 claude-ready.py
 ```
 
-## Usage
+| | |
+|---|---|
+| **`claude-ready.py`** | Checks everything Claude Code needs on a phone, in the order you hit it, and names the first thing you are stuck on. What is missing becomes a numbered menu — pick a number, nothing to type. It will tell you plainly when a phone **cannot** run Claude Code, rather than walking you through an install that was never going to work |
+| **`whereami.py`** | Which machine is this? Claude has no memory between sessions and cannot see your screen, so it reads the signs a machine carries and matches them against a register. Two phones can look identical to every sign a program can read, so each one can also be named on itself: `whereami.py --name "A33"` |
 
-```
-tfind name  <pattern>       Find files by NAME (case-insensitive glob), e.g. "*.pdf"
-tfind text  <pattern>       Search INSIDE text files for a word/phrase (regex ok)
-tfind type  <ext> [ext...]  Find files by extension, e.g. jpg png webp
-tfind big   [N]             Show the N largest files (default 20)
-tfind recent [DAYS]         Files modified in the last DAYS days (default 7)
-tfind all                   List every file under the search roots
-```
-
-Add `--in <dir>` (repeatable) to search a specific folder instead of the defaults.
-
-## Examples
+## The block language
 
 ```bash
-tfind name "*.pdf"                         # every PDF on the phone
-tfind name invoice                         # anything with "invoice" in the name
-tfind text "TODO"                          # find TODOs in your text files
-tfind type jpg png webp                    # all images of these types
-tfind big 10                               # 10 biggest space hogs
-tfind recent 30                            # what changed in the last month
-tfind --in ~/storage/shared/Download name "*.apk"   # APKs in Downloads only
+python3 parts/install.py       # so `import parts` works from anywhere
+python3 -m parts               # every block there is
 ```
 
-## Notes
+A signal running down a chain, the way a wire runs from a sensor,
+through some electronics, into a motor. Every block has the same shape,
+which is why any one fits any slot:
 
-- **Default search roots** are your Termux home (`$HOME`) and shared storage
-  (`~/storage/shared`, i.e. `/sdcard`). If shared storage isn't listed when you
-  run `tfind --help`, run `termux-setup-storage` first.
-- Content search (`text`) uses [ripgrep](https://github.com/BurntSushi/ripgrep)
-  when installed and falls back to `grep` otherwise.
-- Permission-denied paths (common under `/sdcard`) are skipped quietly.
+```python
+part.step(ctx) -> value
+```
+
+119 blocks, across six modules: numbers, text and lists; a 3D world;
+files and folders; the network; a screen of pixels; and the window as
+eight squares you press.
+
+A program can be plain text, one block a line, with no Python at all:
+
+```
+walk /sdcard
+keep ext .md
+keep
+    read
+    contains spark
+say found
+```
+
+```bash
+python3 -m parts run find-notes.parts   # run it
+python3 -m parts menu                   # build one with numbers
+python3 -m parts pad                    # build one by pressing squares
+python3 -m parts check                  # is it all still sound
+```
+
+See **[parts/README.md](parts/README.md)** for the whole of it.
+
+### What touches what
+
+```bash
+python3 -m parts connect spark /sdcard
+```
+
+Asks the same question of every file along ten routes at once — name,
+contents, backlinks, neighbours, kind, timing, shared words, shared
+addresses, and what git committed alongside it — then ranks by how many
+routes agreed. A route that matches nearly everything stops counting,
+because it is telling you nothing.
+
+## The rest
+
+| | |
+|---|---|
+| [`tfind.md`](tfind.md) | Search every file on the phone, from Termux |
+| [`house/`](house/README.md) | Build one ASCII house together, from many phones, over a shared GitHub repo |
+| [`ttt/`](ttt/README.md) | Tic-tac-toe between two phones, the same way |
