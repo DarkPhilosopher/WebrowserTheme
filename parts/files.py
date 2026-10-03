@@ -20,6 +20,9 @@ import fnmatch
 
 from .core import Part, _as_list
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["files"], "changes": "nothing", "waits": False}
+
 
 def _p(path):
     """Expand ~ and make it absolute."""
@@ -248,6 +251,7 @@ class Ext(Pather):
 
 class MakeDir(Pather):
     """Create a folder, and any folders above it that it needs."""
+    fits = {"changes": "files"}
     def about(self, p):
         os.makedirs(p, exist_ok=True)
         return p
@@ -255,6 +259,7 @@ class MakeDir(Pather):
 
 class Write(Part):
     """Write the signal into a file. Creates parent folders."""
+    fits = {"changes": "files"}
     def __init__(self, path, append=False): self.path, self.append = path, append
     def step(self, ctx):
         target = _p(self.path)
@@ -271,6 +276,7 @@ class Write(Part):
 
 class Copy(Changer):
     """Copy whatever comes down the chain into a folder, originals intact."""
+    fits = {"changes": "files"}
     def change(self, path, ctx):
         into = _dest(self.into)
         if os.path.isdir(path):
@@ -282,12 +288,14 @@ class Copy(Changer):
 
 class Move(Changer):
     """Move whatever comes down the chain into a folder, leaving nothing."""
+    fits = {"changes": "files"}
     def change(self, path, ctx):
         return shutil.move(path, _dest(self.into))
 
 
 class Rename(Changer):
     """Rename in place. The new name may use {name}, {ext} and {n}."""
+    fits = {"changes": "files"}
     def __init__(self, to): self.to, self.into, self.n = to, None, 0
     def change(self, path, ctx):
         self.n += 1
@@ -305,6 +313,7 @@ class Remove(Changer):
     folders=true, because deleting a tree by accident is the one mistake
     you cannot undo.
     """
+    fits = {"changes": "DELETES"}
     def __init__(self, folders=False): self.folders, self.into = folders, None
     def step(self, ctx):
         # always a list, even for one path -- you want to see what went
@@ -326,6 +335,7 @@ class Make(Pather):
     MakeDir is the folder version. Named Make and not Touch, because
     space.Touch already means "is something overlapping me".
     """
+    fits = {"changes": "files"}
     def about(self, p):
         os.makedirs(os.path.dirname(p) or ".", exist_ok=True)
         with open(p, "a"):

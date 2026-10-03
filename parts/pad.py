@@ -46,6 +46,9 @@ import sys
 from .core import Part
 from .screen import read_tap
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["terminal"], "changes": "screen", "waits": False}
+
 HOLD = "#pad"
 
 TOPLEFT = "+"
@@ -224,6 +227,7 @@ class Press(Part):
 
     A typed digit counts too, so it still works where touch does not.
     """
+    fits = {"needs": ["terminal", "touch", "person"], "waits": True}
     def __init__(self, seconds=None):
         self.seconds = seconds
 

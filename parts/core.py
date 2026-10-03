@@ -28,6 +28,10 @@ import math
 import re
 
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": [], "changes": "nothing", "waits": False}
+
+
 # ==========================================================================
 #  THE CONTEXT
 # ==========================================================================
@@ -46,7 +50,23 @@ class Ctx:
 
 
 class Part:
-    """Everything is one of these. Override step()."""
+    """Everything is one of these. Override step().
+
+    FITS is the block's own datasheet: what it needs in order to work.
+    A block declares it, so nothing that holds blocks ever has to guess
+    -- a part should only fail for what it IS, never for where it was
+    plugged in.
+
+        needs    what must be there: shell, files, network, world,
+                 body, grid, terminal, touch, person
+        changes  what it alters: nothing, files, world, screen, vars
+        waits    true if it stops and waits for a person or a machine
+
+    A block states only what is unusual for its module; the module
+    supplies the rest. See parts/book.py.
+    """
+    fits = {}
+
     def step(self, ctx):
         return ctx.value
 
@@ -541,6 +561,7 @@ def _field(v, key, default=None):
 
 class Say(Part):
     """Print it. The debugger of this language."""
+    fits = {"needs": ["terminal"], "changes": "screen"}
     def __init__(self, label=None): self.label = label
     def step(self, ctx):
         v = ctx.value
@@ -560,6 +581,7 @@ class Put(Part):
     With no value it saves whatever is coming down the chain; with one it
     saves that instead, so `put hot 0.8` sets a variable outright.
     """
+    fits = {"changes": "vars"}
     def __init__(self, key, value=None):
         self.key, self.value = key, value
 
@@ -574,6 +596,7 @@ class Tick(Part):
     The way a program makes something move: `tick angle by=10` adds ten
     to `angle` every pass, and anything reading `angle` follows along.
     """
+    fits = {"changes": "vars"}
     def __init__(self, key, by=1, start=0, wrap=None):
         self.key, self.by, self.start, self.wrap = key, by, start, wrap
 
@@ -587,6 +610,7 @@ class Tick(Part):
 
 class Do(Part):
     """Escape hatch: call your own function with the value."""
+    fits = {"changes": "anything"}
     def __init__(self, fn, keep=True): self.fn, self.keep = fn, keep
     def step(self, ctx):
         out = self.fn(ctx.value)

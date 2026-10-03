@@ -21,6 +21,9 @@ import urllib.request
 
 from .core import Part, _as_list
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["network"], "changes": "nothing", "waits": True}
+
 AGENT = "parts/1.0"
 
 
@@ -82,6 +85,7 @@ class Fetch(Reaching):
 
 class Json(Part):
     """Parse the signal as JSON. Bad JSON gives None."""
+    fits = {"needs": [], "waits": False}
     def step(self, ctx):
         try:
             return _json.loads(ctx.value)
@@ -113,6 +117,7 @@ class Reach(Reaching):
 
 class Host(Reaching):
     """Pull the machine's name out of a web address."""
+    fits = {"needs": [], "waits": False}
     def about(self, url): return urllib.parse.urlparse(url).hostname or ""
 
 
@@ -126,6 +131,7 @@ class Links(Part):
 
     Pass the page's own address as `base` to turn relative links absolute.
     """
+    fits = {"needs": [], "waits": False}
     RX = re.compile(r'(?:href|src)\s*=\s*["\']([^"\'>\s]+)', re.I)
 
     def __init__(self, base=None): self.base = base
@@ -139,6 +145,7 @@ class Links(Part):
 
 class Mine(Part):
     """This machine's own name and address on the network."""
+    fits = {"needs": [], "waits": False}
     def step(self, ctx):
         name = socket.gethostname()
         try:    addr = socket.gethostbyname(name)
@@ -152,6 +159,7 @@ class Mine(Part):
 
 class Send(Part):
     """POST the signal to a URL. Returns what comes back, as text."""
+    fits = {"changes": "network"}
     def __init__(self, url, as_json=True, timeout=20, headers=None):
         self.url, self.as_json = url, as_json
         self.timeout, self.headers = timeout, dict(headers or {})
@@ -177,6 +185,7 @@ class Download(Part):
 
     Passes the saved paths on, so you can chain straight into Say or Move.
     """
+    fits = {"changes": "files"}
     def __init__(self, into=".", timeout=60):
         self.into, self.timeout = into, timeout
 

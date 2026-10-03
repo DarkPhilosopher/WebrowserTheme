@@ -47,6 +47,9 @@ import sys
 
 from .core import Part, _as_list
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["grid"], "changes": "screen", "waits": False}
+
 HOLD = "#screen"           # where the grid lives in a run's scratch space
 
 
@@ -128,6 +131,7 @@ class Draw(Part):
     Each pixel is drawn two characters wide, because a character is
     taller than it is wide -- two of them side by side come out square.
     """
+    fits = {"needs": ["grid", "terminal"], "changes": "screen"}
     def __init__(self, on="##", off="..", wide=True, top=True):
         self.on, self.off, self.wide, self.top = on, off, wide, top
 
@@ -147,6 +151,7 @@ class Draw(Part):
 
 class Wipe(Part):
     """Blank the whole terminal. Use once before a moving picture."""
+    fits = {"needs": ["terminal"], "changes": "screen"}
     def step(self, ctx):
         sys.stdout.write("\033[2J\033[H")
         sys.stdout.flush()
@@ -278,6 +283,7 @@ def _over(v, line):
 
 class Dot(Shape):
     """One point in space. The start of a shape."""
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.p = (float(x), float(y), float(z))
     def points(self): return [self.p]
@@ -285,6 +291,7 @@ class Dot(Shape):
 
 class Box(Shape):
     """The twelve edges of a box, as points."""
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, w=2.0, h=2.0, d=2.0, gap=0.25):
         # NB: not `self.step` -- that would shadow the step() method every
         # block in this language must have.
@@ -305,6 +312,7 @@ class Box(Shape):
 
 class Ball(Shape):
     """Points spread over the surface of a ball."""
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, r=1.5, rings=9):
         self.r, self.rings = float(r), int(rings)
 
@@ -339,6 +347,7 @@ class Spin(Moves):
     `spin y var=angle` takes the angle from a variable instead, so a
     `tick angle by=10` earlier in the program makes it turn by itself.
     """
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, axis="y", degrees=0.0, var=None):
         self.axis, self.degrees, self.var = str(axis).lower(), float(degrees), var
 
@@ -365,6 +374,7 @@ class Spin(Moves):
 
 class Shift(Moves):
     """Shift the shape. The translation matrix."""
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.d = (float(x), float(y), float(z))
     def moved(self, points, ctx):
@@ -374,6 +384,7 @@ class Shift(Moves):
 
 class Grow(Moves):
     """Make it bigger or smaller. The scaling matrix."""
+    fits = {"needs": [], "changes": "nothing"}
     def __init__(self, k=1.0, y=None, z=None):
         self.kx = float(k)
         self.ky = float(k if y is None else y)
@@ -448,6 +459,7 @@ class Spot(Part):
     Put it straight after `tap` and touching the screen paints on it.
     `spot on=false` rubs out instead.
     """
+    fits = {"needs": ["grid"], "changes": "screen"}
     def __init__(self, on=True):
         self.on = on
 
@@ -469,6 +481,7 @@ class Tap(Part):
     Needs a real terminal. Anywhere else -- a pipe, a test -- it answers
     None straight away rather than hanging.
     """
+    fits = {"needs": ["terminal", "touch"], "waits": True}
     def __init__(self, seconds=None):
         self.seconds = seconds
 

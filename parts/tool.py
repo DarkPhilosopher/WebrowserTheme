@@ -32,6 +32,9 @@ import sys
 
 from .core import Part, _as_list
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["shell"], "changes": "nothing", "waits": False}
+
 SLOTS = 8                      # choices on screen, the last always back
 ROWS  = "#rows"                # where a run's table is kept
 LAST  = "#lastrun"             # how the last `run` went
@@ -81,18 +84,21 @@ class Asking(Part):
 
 class Have(Test):
     """Is this program installed and runnable? `have git`"""
+    fits = {"needs": []}
     def __init__(self, program): self.program = program
     def yes(self, ctx): return shutil.which(str(self.program)) is not None
 
 
 class Inside(Test):
     """Is this folder there? `inside /data/data/com.termux`"""
+    fits = {"needs": ["files"]}
     def __init__(self, path): self.path = path
     def yes(self, ctx): return os.path.isdir(os.path.expanduser(str(self.path)))
 
 
 class Kind(Doing):
     """What sort of machine is this -- aarch64, armv7l, x86_64, AMD64."""
+    fits = {"needs": []}
     def did(self, ctx):
         import platform
         return platform.machine()
@@ -116,6 +122,7 @@ class Run(Doing):
     `run quiet=true` keeps the output to itself; otherwise you watch it
     as it goes. Whether it worked is remembered for `worked`.
     """
+    fits = {"needs": ["shell"], "changes": "anything", "waits": True}
     def __init__(self, *words, **how):
         self.words = [str(w) for w in words]
         self.quiet = bool(how.get("quiet", False))
@@ -144,6 +151,7 @@ class Open(Doing):
     `open panel/panel.html` puts the browser panel on the screen. On a
     phone it hands the job to Android.
     """
+    fits = {"needs": ["shell"], "changes": "anything"}
     def __init__(self, what=None): self.what = what
 
     def did(self, ctx):
@@ -169,6 +177,7 @@ class Open(Doing):
 
 class Stop(Part):
     """Give up here, quietly, when what came in is true."""
+    fits = {"needs": []}
     class Enough(Exception):
         """Thrown to end a run early. The runner catches it."""
 
@@ -186,6 +195,7 @@ class Stop(Part):
 
 class Ask(Asking):
     """Ask the person something and hand on what they typed."""
+    fits = {"needs": ["person", "terminal"], "waits": True}
     def __init__(self, about="", default=""):
         self.about, self.default = about, default
 
@@ -196,6 +206,7 @@ class Ask(Asking):
 
 class Sure(Asking):
     """Ask a yes-or-no question. Anything but yes counts as no."""
+    fits = {"needs": ["person", "terminal"], "waits": True}
     def __init__(self, about="go on?"): self.about = about
 
     def question(self, ctx):
@@ -211,6 +222,7 @@ class Pick(Asking):
     Hands on the words you picked, or None for back. The same rule the
     menus and the pad keep, as a block you can put in a program.
     """
+    fits = {"needs": ["person", "terminal"], "waits": True}
     def __init__(self, *choices, **how):
         self.choices = [str(c) for c in choices]
         self.back = str(how.get("back", "back"))
@@ -242,6 +254,7 @@ class Row(Doing):
     True becomes `ok`, false becomes `--`. The answer carries on, so a
     row never gets in the way of what follows.
     """
+    fits = {"needs": [], "changes": "vars"}
     def __init__(self, name, note=""):
         self.name, self.note = str(name), str(note)
 
@@ -254,6 +267,7 @@ class Row(Doing):
 
 class Table(Doing):
     """Show every row gathered so far, and hand on the ones that failed."""
+    fits = {"needs": ["terminal"], "changes": "screen"}
     def __init__(self, title=""): self.title = str(title)
 
     def did(self, ctx):
@@ -285,6 +299,7 @@ class Missing(Doing):
 
 class Forget(Doing):
     """Throw the rows away and start the table again."""
+    fits = {"needs": [], "changes": "vars"}
     def did(self, ctx):
         ctx.vars[ROWS] = []
         return ctx.value

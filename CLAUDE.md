@@ -128,6 +128,53 @@ explains the three steps for adding a block, and the one rule worth
 knowing: never store a setting called `step`, because it shadows the
 method every block must have.
 
+## The rule everything here follows
+
+**Make everything out of parts, and make every part able to join any
+other part by the same hand.** Not a philosophy — the way a body runs
+its organs together. Organs are not interchangeable, but they all speak
+the same few things: blood, nerve, hormone. That is why one can be put
+into a different body.
+
+So: do not make everything the same. **Make everything speak the same
+few things.**
+
+### A part fails for what it is, never for where it was plugged in
+
+A valve that will not fit because the port is in the wrong place is a
+fault of the *system*, not the valve.
+
+Here, one contract means a block can never fail to **fit** — only to
+**do**. And every block carries a **datasheet** saying what it needs,
+so nothing that holds blocks has to guess:
+
+```python
+class Run(Doing):
+    """Run a command and hand on what it said."""
+    fits = {"needs": ["shell"], "changes": "anything", "waits": True}
+```
+
+`needs` is from `shell files network world body grid terminal touch
+person`. `changes` is `nothing vars files DELETES world screen network
+anything`. A module states what is usual; a block states only what
+differs.
+
+**Nothing may keep its own list of what works where.** The browser
+panel used to, and it was wrong the moment a block was added. It now
+reads the datasheets, and tells two failures apart: *this needs files,
+which a browser does not have* versus *this page has not learnt it yet*.
+
+### When you add anything
+
+1. Does it have **one way in**, the same as everything else?
+2. Does it **say what it needs**, so nothing must guess?
+3. If two things share a shape, is the shape **written once**?
+4. Is there a **manual with a layout map**?
+5. Is it in **`INDEX.md`** and boxed in **`BOXES.md`** — and if it is
+   missing, is there an **empty box** saying where it belongs?
+
+`python3 -m parts check` enforces 1, 2 and 3. You have to do 4 and 5.
+
 ## How he wants programs built
 
 **A launcher opens a terminal first, and the big picture mode from

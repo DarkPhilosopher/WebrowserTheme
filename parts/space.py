@@ -15,6 +15,9 @@ import math
 
 from .core import Part, Ctx
 
+# What every block in this module needs, unless it says otherwise.
+FITS = {"needs": ["world", "body"], "changes": "nothing", "waits": False}
+
 
 # ==========================================================================
 #  VECTORS
@@ -163,6 +166,7 @@ class Motor(Part):
     The number carries on untouched, so one number can drive the engine,
     the rudder and the fuel gauge at once.
     """
+    fits = {"changes": "world"}
     def step(self, ctx):
         self.push(ctx.value, ctx.body, ctx)
         return ctx.value
@@ -325,6 +329,7 @@ class Spawn(Part):
     Fires along body.forward() and inherits the shooter's velocity, so a
     shot from something moving leads correctly without extra work.
     """
+    fits = {"changes": "world"}
     def __init__(self, make, ahead=1.0, speed=10.0, cooldown=0.25):
         self.make, self.ahead, self.speed = make, ahead, speed
         self.cooldown, self.ready = cooldown, 0.0
@@ -344,6 +349,7 @@ class Spawn(Part):
 
 class Expire(Part):
     """Die once the signal has been up for `after` seconds."""
+    fits = {"changes": "world"}
     def __init__(self, after=2.0): self.after, self.age = after, 0.0
     def step(self, ctx):
         if ctx.value and ctx.value > 0:
@@ -355,6 +361,7 @@ class Expire(Part):
 
 class Die(Part):
     """Remove the body the moment the signal goes up."""
+    fits = {"changes": "world"}
     def step(self, ctx):
         if ctx.value and ctx.value > 0:
             ctx.body.alive = False

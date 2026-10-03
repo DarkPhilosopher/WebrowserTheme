@@ -39,6 +39,28 @@ def settings_of(cls):
     return out
 
 
+def fits_of(cls, module):
+    """A block's datasheet: what it needs, merged over its module's.
+
+    The module says what is usual; the block states only what differs.
+    Nothing that holds blocks should ever have to guess -- a part must
+    fail for what it is, never for where it was plugged in.
+    """
+    import sys as _sys
+    mod = _sys.modules.get("parts." + module)
+    base = dict(getattr(mod, "FITS", None) or
+                {"needs": [], "changes": "nothing", "waits": False})
+    # a shape may declare for everything built on it
+    for parent in reversed(cls.__mro__[1:]):
+        base.update(getattr(parent, "fits", None) or {})
+    base.update(cls.__dict__.get("fits", None) or {})
+    base.setdefault("needs", [])
+    base.setdefault("changes", "nothing")
+    base.setdefault("waits", False)
+    base["needs"] = sorted(set(base["needs"]))
+    return base
+
+
 def one_line(cls):
     doc = (cls.__doc__ or "").strip()
     return doc.split("\n")[0] if doc else ""
@@ -73,6 +95,7 @@ def book():
             "says": one_line(cls),
             "more": whole_doc(cls),
             "holds": name.lower() in HOLDERS,
+            "fits": fits_of(cls, mod),
             "settings": settings_of(cls),
         }
         out["modules"].setdefault(mod, {}).setdefault(kind, []).append(
@@ -88,6 +111,20 @@ def book():
             add("connect", "compare", cls)
 
     out["count"] = len(out["blocks"])
+    # which blocks a place can run, worked out from what they need --
+    # not from a list anybody has to keep up to date
+    out["where"] = {
+        "browser": sorted(n for n, b in out["blocks"].items()
+                          if not ({"files", "network", "shell", "world",
+                                   "body", "person", "touch"}
+                                  & set(b["fits"]["needs"]))),
+        "no-person": sorted(n for n, b in out["blocks"].items()
+                            if not b["fits"]["waits"]),
+        "read-only": sorted(n for n, b in out["blocks"].items()
+                            if b["fits"]["changes"] in ("nothing", "vars")),
+        "changes-files": sorted(n for n, b in out["blocks"].items()
+                                if b["fits"]["changes"] in ("files", "DELETES")),
+    }
     return out
 
 

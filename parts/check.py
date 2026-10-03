@@ -16,6 +16,7 @@ quietly:
   * every example program still parses
   * a handful of things actually do what they claim
   * the awkward cases answer sensibly rather than lying
+  * every block says what it needs, in words the holders understand
   * and the panels still describe the blocks that actually exist
 
 That last one is the only check that can catch a block which keeps every
@@ -350,6 +351,41 @@ def awkward_cases(r):
     gives("Threshold below is below", Chain([Const(1), Threshold(5)]), 0.0)
 
 
+def every_block_has_a_datasheet(r):
+    """A part must say what it needs, so nothing has to guess.
+
+    A valve that will not fit because the port is in the wrong place is
+    a fault of the system, not the valve. Nothing that holds blocks
+    should ever have to keep its own list of what works where -- the
+    block says, and the holder reads.
+    """
+    from .book import fits_of
+
+    ALLOWED_NEEDS = {"shell", "files", "network", "world", "body",
+                     "grid", "terminal", "touch", "person"}
+    ALLOWED_CHANGES = {"nothing", "vars", "files", "DELETES", "world",
+                       "screen", "network", "anything"}
+
+    for mod, _kind, name, cls in every_block():
+        r.looked()
+        try:
+            fits = fits_of(cls, mod)
+        except Exception as e:
+            r.fault("%s.%s" % (mod, name), "has no readable datasheet: %s" % e)
+            continue
+        odd = set(fits["needs"]) - ALLOWED_NEEDS
+        if odd:
+            r.fault("%s.%s" % (mod, name),
+                    "says it needs %s, which is not one of: %s"
+                    % (", ".join(sorted(odd)), ", ".join(sorted(ALLOWED_NEEDS))))
+        if fits["changes"] not in ALLOWED_CHANGES:
+            r.fault("%s.%s" % (mod, name),
+                    "says it changes %r, which is not one of: %s"
+                    % (fits["changes"], ", ".join(sorted(ALLOWED_CHANGES))))
+        if not isinstance(fits["waits"], bool):
+            r.fault("%s.%s" % (mod, name), "`waits` is not true or false")
+
+
 def the_panels_agree(r):
     """The panels read a catalogue, not the Python. It must still match.
 
@@ -416,6 +452,7 @@ CHECKS = [
     ("the examples still parse", examples_parse),
     ("things actually work",    things_actually_work),
     ("the awkward cases",       awkward_cases),
+    ("every block has a datasheet", every_block_has_a_datasheet),
     ("the panels agree",        the_panels_agree),
 ]
 

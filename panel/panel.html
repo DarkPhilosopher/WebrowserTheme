@@ -220,6 +220,11 @@ aside{
 {
  "blocks": {
   "abs": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -229,27 +234,46 @@ aside{
    "settings": []
   },
   "address": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "net",
    "more": "",
    "name": "Address",
-   "says": "Look a name up in DNS. Unknown names give \"\".",
+   "says": "Look a machine's name up and answer its number. Unknown gives \"\".",
    "settings": [
     {
      "default": null,
-     "name": "host",
+     "name": "url",
+     "needed": false
+    },
+    {
+     "default": 15,
+     "name": "timeout",
      "needed": false
     }
    ]
   },
   "age": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
    "more": "",
    "name": "Age",
-   "says": "Days since it was last changed.",
+   "says": "Days since it was last changed. A missing one is very old.",
    "settings": [
     {
      "default": null,
@@ -259,6 +283,11 @@ aside{
    ]
   },
   "among": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "compare",
    "module": "connect",
@@ -274,6 +303,14 @@ aside{
    ]
   },
   "ask": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "person",
+     "terminal"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "tool",
@@ -294,6 +331,11 @@ aside{
    ]
   },
   "ball": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "shapes",
    "module": "screen",
@@ -314,6 +356,13 @@ aside{
    ]
   },
   "banner": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pad",
    "module": "pad",
@@ -334,6 +383,14 @@ aside{
    ]
   },
   "bearing": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -354,6 +411,11 @@ aside{
    ]
   },
   "bias": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -369,6 +431,11 @@ aside{
    ]
   },
   "box": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "shapes",
    "module": "screen",
@@ -399,6 +466,13 @@ aside{
    ]
   },
   "button": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pad",
    "module": "pad",
@@ -429,6 +503,11 @@ aside{
    ]
   },
   "chain": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "link",
    "module": "core",
@@ -444,6 +523,11 @@ aside{
    ]
   },
   "clamp": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -464,6 +548,13 @@ aside{
    ]
   },
   "clear": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "screen",
    "module": "screen",
@@ -473,6 +564,14 @@ aside{
    "settings": []
   },
   "clock": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -482,6 +581,11 @@ aside{
    "settings": []
   },
   "const": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "source",
    "module": "core",
@@ -497,6 +601,11 @@ aside{
    ]
   },
   "contains": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -517,21 +626,33 @@ aside{
    ]
   },
   "copy": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
-   "more": "Takes a single path or a whole list of them. Passes the new paths on.",
+   "more": "",
    "name": "Copy",
-   "says": "Copy whatever comes down the chain into a folder.",
+   "says": "Copy whatever comes down the chain into a folder, originals intact.",
    "settings": [
     {
      "default": null,
      "name": "into",
-     "needed": true
+     "needed": false
     }
    ]
   },
   "count": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -541,6 +662,13 @@ aside{
    "settings": []
   },
   "dark": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
@@ -566,6 +694,11 @@ aside{
    ]
   },
   "delay": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -581,6 +714,11 @@ aside{
    ]
   },
   "derive": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -590,6 +728,14 @@ aside{
    "settings": []
   },
   "die": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -599,6 +745,11 @@ aside{
    "settings": []
   },
   "do": {
+   "fits": {
+    "changes": "anything",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "sink",
    "module": "core",
@@ -619,6 +770,11 @@ aside{
    ]
   },
   "dot": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "shapes",
    "module": "screen",
@@ -644,6 +800,13 @@ aside{
    ]
   },
   "download": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "put",
    "module": "net",
@@ -664,6 +827,14 @@ aside{
    ]
   },
   "drain": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -684,6 +855,14 @@ aside{
    ]
   },
   "draw": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid",
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "screen",
    "module": "screen",
@@ -714,6 +893,11 @@ aside{
    ]
   },
   "drop": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": true,
    "kind": "link",
    "module": "core",
@@ -729,6 +913,11 @@ aside{
    ]
   },
   "each": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": true,
    "kind": "link",
    "module": "core",
@@ -744,6 +933,13 @@ aside{
    ]
   },
   "exists": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -759,6 +955,14 @@ aside{
    ]
   },
   "expire": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -774,12 +978,19 @@ aside{
    ]
   },
   "ext": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "where",
    "module": "files",
    "more": "",
    "name": "Ext",
-   "says": "With no argument: the extension. With one: True when it matches.",
+   "says": "With no setting: the extension. With one: true when it matches.",
    "settings": [
     {
      "default": null,
@@ -794,6 +1005,11 @@ aside{
    ]
   },
   "fan": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "link",
    "module": "core",
@@ -814,12 +1030,19 @@ aside{
    ]
   },
   "fetch": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "net",
    "more": "",
    "name": "Fetch",
-   "says": "The text at a URL. Anything that goes wrong gives \"\" rather than a crash.",
+   "says": "The text at a web address. Anything that goes wrong gives \"\".",
    "settings": [
     {
      "default": null,
@@ -839,6 +1062,11 @@ aside{
    ]
   },
   "field": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -859,6 +1087,13 @@ aside{
    ]
   },
   "fill": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
@@ -874,6 +1109,11 @@ aside{
    ]
   },
   "first": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -889,6 +1129,13 @@ aside{
    ]
   },
   "flat": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "matrix",
    "module": "screen",
@@ -909,6 +1156,11 @@ aside{
    ]
   },
   "flatten": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -918,6 +1170,11 @@ aside{
    "settings": []
   },
   "forget": {
+   "fits": {
+    "changes": "vars",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "table",
    "module": "tool",
@@ -927,6 +1184,11 @@ aside{
    "settings": []
   },
   "gain": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -942,6 +1204,11 @@ aside{
    ]
   },
   "gate": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": true,
    "kind": "link",
    "module": "core",
@@ -957,6 +1224,13 @@ aside{
    ]
   },
   "glob": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -982,6 +1256,11 @@ aside{
    ]
   },
   "grab": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -1002,6 +1281,11 @@ aside{
    ]
   },
   "grow": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "matrix",
    "module": "screen",
@@ -1027,6 +1311,11 @@ aside{
    ]
   },
   "have": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "tool",
@@ -1042,6 +1331,14 @@ aside{
    ]
   },
   "heading": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -1051,6 +1348,14 @@ aside{
    "settings": []
   },
   "height": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -1060,6 +1365,13 @@ aside{
    "settings": []
   },
   "here": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "where",
    "module": "files",
@@ -1069,6 +1381,13 @@ aside{
    "settings": []
   },
   "home": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "where",
    "module": "files",
@@ -1078,21 +1397,38 @@ aside{
    "settings": []
   },
   "host": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "read",
    "module": "net",
    "more": "",
    "name": "Host",
-   "says": "Pull the machine name out of a URL.",
+   "says": "Pull the machine's name out of a web address.",
    "settings": [
     {
      "default": null,
      "name": "url",
      "needed": false
+    },
+    {
+     "default": 15,
+     "name": "timeout",
+     "needed": false
     }
    ]
   },
   "inside": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "tool",
@@ -1108,6 +1444,11 @@ aside{
    ]
   },
   "integrate": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -1128,6 +1469,11 @@ aside{
    ]
   },
   "invert": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -1137,6 +1483,11 @@ aside{
    "settings": []
   },
   "is": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -1157,6 +1508,13 @@ aside{
    ]
   },
   "isdir": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -1172,6 +1530,13 @@ aside{
    ]
   },
   "isfile": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -1187,6 +1552,11 @@ aside{
    ]
   },
   "join": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -1202,6 +1572,11 @@ aside{
    ]
   },
   "json": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "read",
    "module": "net",
@@ -1211,6 +1586,11 @@ aside{
    "settings": []
   },
   "keep": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": true,
    "kind": "link",
    "module": "core",
@@ -1226,6 +1606,11 @@ aside{
    ]
   },
   "kind": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "tool",
@@ -1235,6 +1620,11 @@ aside{
    "settings": []
   },
   "last": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -1250,6 +1640,14 @@ aside{
    ]
   },
   "level": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -1270,6 +1668,14 @@ aside{
    ]
   },
   "lift": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -1285,10 +1691,17 @@ aside{
    ]
   },
   "light": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
-   "more": "var hot\nlight 3 4 at=0.5\n\nThe number keeps travelling, so several lights can share one number.",
+   "more": "var hot\nlight 3 4 at=0.5",
    "name": "Light",
    "says": "Turn one pixel on when the number is over the line, off when under.",
    "settings": [
@@ -1310,6 +1723,13 @@ aside{
    ]
   },
   "lights": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
@@ -1319,6 +1739,13 @@ aside{
    "settings": []
   },
   "lines": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "read",
    "module": "files",
@@ -1334,6 +1761,11 @@ aside{
    ]
   },
   "links": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "read",
    "module": "net",
@@ -1349,6 +1781,13 @@ aside{
    ]
   },
   "lit": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
@@ -1369,6 +1808,11 @@ aside{
    ]
   },
   "lower": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -1378,6 +1822,13 @@ aside{
    "settings": []
   },
   "ls": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -1403,12 +1854,19 @@ aside{
    ]
   },
   "make": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
-   "more": "(MakeDir is the folder version. Named Make, not Touch, because\nspace.Touch already means \"is something overlapping me\".)",
+   "more": "MakeDir is the folder version. Named Make and not Touch, because\nspace.Touch already means \"is something overlapping me\".",
    "name": "Make",
-   "says": "Create an empty file if it isn't there; otherwise mark it changed now.",
+   "says": "Create an empty file, or mark an existing one as changed now.",
    "settings": [
     {
      "default": null,
@@ -1418,12 +1876,19 @@ aside{
    ]
   },
   "makedir": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
    "more": "",
    "name": "MakeDir",
-   "says": "Create a folder, and any parent folders it needs.",
+   "says": "Create a folder, and any folders above it that it needs.",
    "settings": [
     {
      "default": null,
@@ -1433,6 +1898,11 @@ aside{
    ]
   },
   "match": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -1453,6 +1923,13 @@ aside{
    ]
   },
   "meter": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pixels",
    "module": "screen",
@@ -1483,6 +1960,11 @@ aside{
    ]
   },
   "mine": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "ask",
    "module": "net",
@@ -1492,6 +1974,11 @@ aside{
    "settings": []
   },
   "minus": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -1507,6 +1994,13 @@ aside{
    ]
   },
   "missing": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "shell"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "table",
    "module": "tool",
@@ -1516,27 +2010,41 @@ aside{
    "settings": []
   },
   "move": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
    "more": "",
    "name": "Move",
-   "says": "Move whatever comes down the chain into a folder.",
+   "says": "Move whatever comes down the chain into a folder, leaving nothing.",
    "settings": [
     {
      "default": null,
      "name": "into",
-     "needed": true
+     "needed": false
     }
    ]
   },
   "name": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "where",
    "module": "files",
    "more": "",
    "name": "Name",
-   "says": "Just the file's own name, no folders.",
+   "says": "Just the file's own name, with no folders in front of it.",
    "settings": [
     {
      "default": null,
@@ -1546,6 +2054,14 @@ aside{
    ]
   },
   "near": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -1571,6 +2087,13 @@ aside{
    ]
   },
   "open": {
+   "fits": {
+    "changes": "anything",
+    "needs": [
+     "shell"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "do",
    "module": "tool",
@@ -1586,6 +2109,11 @@ aside{
    ]
   },
   "osc": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "source",
    "module": "core",
@@ -1611,6 +2139,11 @@ aside{
    ]
   },
   "pack": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -1626,6 +2159,13 @@ aside{
    ]
   },
   "pad": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "pad",
    "module": "pad",
@@ -1651,6 +2191,13 @@ aside{
    ]
   },
   "parent": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "where",
    "module": "files",
@@ -1666,6 +2213,14 @@ aside{
    ]
   },
   "pick": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "person",
+     "terminal"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "tool",
@@ -1675,6 +2230,11 @@ aside{
    "settings": []
   },
   "pid": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -1700,6 +2260,13 @@ aside{
    ]
   },
   "plot": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "matrix",
    "module": "screen",
@@ -1709,6 +2276,15 @@ aside{
    "settings": []
   },
   "press": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "person",
+     "terminal",
+     "touch"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "pad",
    "module": "pad",
@@ -1724,6 +2300,11 @@ aside{
    ]
   },
   "put": {
+   "fits": {
+    "changes": "vars",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "sink",
    "module": "core",
@@ -1744,6 +2325,14 @@ aside{
    ]
   },
   "ray": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -1769,12 +2358,19 @@ aside{
    ]
   },
   "reach": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "net",
    "more": "",
    "name": "Reach",
-   "says": "True if a TCP connection opens. Works on bare hosts, not just URLs.",
+   "says": "Can this machine be reached at all? Works on bare names too.",
    "settings": [
     {
      "default": null,
@@ -1794,6 +2390,13 @@ aside{
    ]
   },
   "read": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "read",
    "module": "files",
@@ -1814,10 +2417,17 @@ aside{
    ]
   },
   "remove": {
+   "fits": {
+    "changes": "DELETES",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
-   "more": "Files go quietly. A FOLDER is only removed when you pass folders=True,\nbecause deleting a tree by accident is the one mistake you cannot undo.",
+   "more": "Files go quietly. A FOLDER is only removed when you pass\nfolders=true, because deleting a tree by accident is the one mistake\nyou cannot undo.",
    "name": "Remove",
    "says": "Delete. Guarded on purpose.",
    "settings": [
@@ -1829,12 +2439,19 @@ aside{
    ]
   },
   "rename": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
    "more": "",
    "name": "Rename",
-   "says": "Rename in place. `to` may use {name} {ext} {n}.",
+   "says": "Rename in place. The new name may use {name}, {ext} and {n}.",
    "settings": [
     {
      "default": null,
@@ -1844,6 +2461,11 @@ aside{
    ]
   },
   "replace": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -1864,6 +2486,11 @@ aside{
    ]
   },
   "row": {
+   "fits": {
+    "changes": "vars",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "table",
    "module": "tool",
@@ -1884,6 +2511,13 @@ aside{
    ]
   },
   "run": {
+   "fits": {
+    "changes": "anything",
+    "needs": [
+     "shell"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "do",
    "module": "tool",
@@ -1893,6 +2527,13 @@ aside{
    "settings": []
   },
   "say": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sink",
    "module": "core",
@@ -1908,6 +2549,13 @@ aside{
    ]
   },
   "screen": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "screen",
    "module": "screen",
@@ -1928,6 +2576,13 @@ aside{
    ]
   },
   "send": {
+   "fits": {
+    "changes": "network",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "put",
    "module": "net",
@@ -1958,6 +2613,11 @@ aside{
    ]
   },
   "shared": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "compare",
    "module": "connect",
@@ -1978,6 +2638,11 @@ aside{
    ]
   },
   "shift": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "matrix",
    "module": "screen",
@@ -2003,12 +2668,19 @@ aside{
    ]
   },
   "size": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
    "more": "",
    "name": "Size",
-   "says": "Bytes. A missing file is 0.",
+   "says": "How many bytes a file is. A missing one is 0.",
    "settings": [
     {
      "default": null,
@@ -2018,6 +2690,11 @@ aside{
    ]
   },
   "smooth": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -2033,6 +2710,11 @@ aside{
    ]
   },
   "sort": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -2053,6 +2735,14 @@ aside{
    ]
   },
   "spawn": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -2083,6 +2773,14 @@ aside{
    ]
   },
   "speed": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -2092,6 +2790,11 @@ aside{
    "settings": []
   },
   "spin": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "matrix",
    "module": "screen",
@@ -2117,6 +2820,11 @@ aside{
    ]
   },
   "split": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -2132,6 +2840,13 @@ aside{
    ]
   },
   "spot": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "grid"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "touch",
    "module": "screen",
@@ -2147,12 +2862,19 @@ aside{
    ]
   },
   "status": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "network"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "net",
    "more": "",
    "name": "Status",
-   "says": "The HTTP number a URL answers with. 0 means it could not be reached.",
+   "says": "The number a web address answers with. 0 means it was not reached.",
    "settings": [
     {
      "default": null,
@@ -2167,6 +2889,11 @@ aside{
    ]
   },
   "stop": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "do",
    "module": "tool",
@@ -2182,12 +2909,20 @@ aside{
    ]
   },
   "store": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
    "more": "",
    "name": "Store",
-   "says": "Write the signal into a named number on the body.",
+   "says": "Write the number into a named slot on the body.",
    "settings": [
     {
      "default": null,
@@ -2197,6 +2932,11 @@ aside{
    ]
   },
   "strip": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -2206,6 +2946,14 @@ aside{
    "settings": []
   },
   "sure": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "person",
+     "terminal"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "ask",
    "module": "tool",
@@ -2221,6 +2969,13 @@ aside{
    ]
   },
   "table": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "table",
    "module": "tool",
@@ -2236,6 +2991,14 @@ aside{
    ]
   },
   "tap": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal",
+     "touch"
+    ],
+    "waits": true
+   },
    "holds": false,
    "kind": "touch",
    "module": "screen",
@@ -2251,6 +3014,11 @@ aside{
    ]
   },
   "text": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -2266,6 +3034,11 @@ aside{
    ]
   },
   "threshold": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "number",
    "module": "core",
@@ -2291,6 +3064,14 @@ aside{
    ]
   },
   "thrust": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -2306,6 +3087,11 @@ aside{
    ]
   },
   "tick": {
+   "fits": {
+    "changes": "vars",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "sink",
    "module": "core",
@@ -2336,6 +3122,14 @@ aside{
    ]
   },
   "tilt": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -2356,6 +3150,14 @@ aside{
    ]
   },
   "touch": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "sensor",
    "module": "space",
@@ -2371,6 +3173,11 @@ aside{
    ]
   },
   "try": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": true,
    "kind": "link",
    "module": "core",
@@ -2391,6 +3198,14 @@ aside{
    ]
   },
   "turn": {
+   "fits": {
+    "changes": "world",
+    "needs": [
+     "body",
+     "world"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "motor",
    "module": "space",
@@ -2406,6 +3221,11 @@ aside{
    ]
   },
   "uniq": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "list",
    "module": "core",
@@ -2415,6 +3235,11 @@ aside{
    "settings": []
   },
   "upper": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "text",
    "module": "core",
@@ -2424,6 +3249,11 @@ aside{
    "settings": []
   },
   "urls": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "compare",
    "module": "connect",
@@ -2433,6 +3263,11 @@ aside{
    "settings": []
   },
   "var": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "source",
    "module": "core",
@@ -2453,6 +3288,13 @@ aside{
    ]
   },
   "walk": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "files",
@@ -2488,6 +3330,13 @@ aside{
    ]
   },
   "wipe": {
+   "fits": {
+    "changes": "screen",
+    "needs": [
+     "terminal"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "screen",
    "module": "screen",
@@ -2497,6 +3346,11 @@ aside{
    "settings": []
   },
   "words": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [],
+    "waits": false
+   },
    "holds": false,
    "kind": "compare",
    "module": "connect",
@@ -2506,6 +3360,13 @@ aside{
    "settings": []
   },
   "worked": {
+   "fits": {
+    "changes": "nothing",
+    "needs": [
+     "shell"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "look",
    "module": "tool",
@@ -2515,6 +3376,13 @@ aside{
    "settings": []
   },
   "write": {
+   "fits": {
+    "changes": "files",
+    "needs": [
+     "files"
+    ],
+    "waits": false
+   },
    "holds": false,
    "kind": "change",
    "module": "files",
@@ -2760,7 +3628,327 @@ aside{
    ]
   }
  },
- "what": "Wakeup -- the parts language"
+ "what": "Wakeup -- the parts language",
+ "where": {
+  "browser": [
+   "abs",
+   "among",
+   "ball",
+   "banner",
+   "bias",
+   "box",
+   "button",
+   "chain",
+   "clamp",
+   "clear",
+   "const",
+   "contains",
+   "count",
+   "dark",
+   "delay",
+   "derive",
+   "do",
+   "dot",
+   "draw",
+   "drop",
+   "each",
+   "fan",
+   "field",
+   "fill",
+   "first",
+   "flat",
+   "flatten",
+   "forget",
+   "gain",
+   "gate",
+   "grab",
+   "grow",
+   "have",
+   "host",
+   "integrate",
+   "invert",
+   "is",
+   "join",
+   "json",
+   "keep",
+   "kind",
+   "last",
+   "light",
+   "lights",
+   "links",
+   "lit",
+   "lower",
+   "match",
+   "meter",
+   "mine",
+   "minus",
+   "osc",
+   "pack",
+   "pad",
+   "pid",
+   "plot",
+   "put",
+   "replace",
+   "row",
+   "say",
+   "screen",
+   "shared",
+   "shift",
+   "smooth",
+   "sort",
+   "spin",
+   "split",
+   "spot",
+   "stop",
+   "strip",
+   "table",
+   "text",
+   "threshold",
+   "tick",
+   "try",
+   "uniq",
+   "upper",
+   "urls",
+   "var",
+   "wipe",
+   "words"
+  ],
+  "changes-files": [
+   "copy",
+   "download",
+   "make",
+   "makedir",
+   "move",
+   "remove",
+   "rename",
+   "write"
+  ],
+  "no-person": [
+   "abs",
+   "age",
+   "among",
+   "ball",
+   "banner",
+   "bearing",
+   "bias",
+   "box",
+   "button",
+   "chain",
+   "clamp",
+   "clear",
+   "clock",
+   "const",
+   "contains",
+   "copy",
+   "count",
+   "dark",
+   "delay",
+   "derive",
+   "die",
+   "do",
+   "dot",
+   "drain",
+   "draw",
+   "drop",
+   "each",
+   "exists",
+   "expire",
+   "ext",
+   "fan",
+   "field",
+   "fill",
+   "first",
+   "flat",
+   "flatten",
+   "forget",
+   "gain",
+   "gate",
+   "glob",
+   "grab",
+   "grow",
+   "have",
+   "heading",
+   "height",
+   "here",
+   "home",
+   "host",
+   "inside",
+   "integrate",
+   "invert",
+   "is",
+   "isdir",
+   "isfile",
+   "join",
+   "json",
+   "keep",
+   "kind",
+   "last",
+   "level",
+   "lift",
+   "light",
+   "lights",
+   "lines",
+   "links",
+   "lit",
+   "lower",
+   "ls",
+   "make",
+   "makedir",
+   "match",
+   "meter",
+   "mine",
+   "minus",
+   "missing",
+   "move",
+   "name",
+   "near",
+   "open",
+   "osc",
+   "pack",
+   "pad",
+   "parent",
+   "pid",
+   "plot",
+   "put",
+   "ray",
+   "read",
+   "remove",
+   "rename",
+   "replace",
+   "row",
+   "say",
+   "screen",
+   "shared",
+   "shift",
+   "size",
+   "smooth",
+   "sort",
+   "spawn",
+   "speed",
+   "spin",
+   "split",
+   "spot",
+   "stop",
+   "store",
+   "strip",
+   "table",
+   "text",
+   "threshold",
+   "thrust",
+   "tick",
+   "tilt",
+   "touch",
+   "try",
+   "turn",
+   "uniq",
+   "upper",
+   "urls",
+   "var",
+   "walk",
+   "wipe",
+   "words",
+   "worked",
+   "write"
+  ],
+  "read-only": [
+   "abs",
+   "address",
+   "age",
+   "among",
+   "ask",
+   "ball",
+   "bearing",
+   "bias",
+   "box",
+   "chain",
+   "clamp",
+   "clock",
+   "const",
+   "contains",
+   "count",
+   "delay",
+   "derive",
+   "dot",
+   "drop",
+   "each",
+   "exists",
+   "ext",
+   "fan",
+   "fetch",
+   "field",
+   "first",
+   "flatten",
+   "forget",
+   "gain",
+   "gate",
+   "glob",
+   "grab",
+   "grow",
+   "have",
+   "heading",
+   "height",
+   "here",
+   "home",
+   "host",
+   "inside",
+   "integrate",
+   "invert",
+   "is",
+   "isdir",
+   "isfile",
+   "join",
+   "json",
+   "keep",
+   "kind",
+   "last",
+   "level",
+   "lines",
+   "links",
+   "lower",
+   "ls",
+   "match",
+   "mine",
+   "minus",
+   "missing",
+   "name",
+   "near",
+   "osc",
+   "pack",
+   "parent",
+   "pick",
+   "pid",
+   "put",
+   "ray",
+   "reach",
+   "read",
+   "replace",
+   "row",
+   "shared",
+   "shift",
+   "size",
+   "smooth",
+   "sort",
+   "speed",
+   "spin",
+   "split",
+   "status",
+   "stop",
+   "strip",
+   "sure",
+   "text",
+   "threshold",
+   "tick",
+   "touch",
+   "try",
+   "uniq",
+   "upper",
+   "urls",
+   "var",
+   "walk",
+   "words",
+   "worked"
+  ]
+ }
 }
 </script>
 
@@ -2774,12 +3962,22 @@ aside{
 // ==========================================================================
 const BOOK = JSON.parse(document.getElementById("catalogue").textContent);
 
-// What the browser can actually run. Files and the network are not
-// reachable from a page, and the 3D world needs a running world, so
-// those build and save but do not run here.
-const RUNS_HERE = new Set([
+// TWO different questions, and they used to be muddled into one list.
+//
+//   CAN it run in a browser?   Answered by the block itself, in its
+//   datasheet. A block needing files, a network, a shell, a world or a
+//   person cannot, and says so -- nothing here has to keep a list.
+//
+//   HAS this page implemented it?  A separate matter: the page carries
+//   a small reading of the language, and it is not all of it.
+//
+// A part should fail for what it IS, never for where it was plugged
+// in -- so the two reasons are told apart, and said differently.
+const COULD_RUN = new Set(BOOK.where.browser);
+
+const IMPLEMENTED = new Set([
   "const","var","put","tick","gain","bias","invert","minus","abs","clamp",
-  "threshold","smooth","delay","say","count","first","last","join","text",
+  "threshold","say","count",
   "screen","clear","wipe","light","dark","meter","fill","lit","lights","draw",
   "dot","box","ball","spin","shift","grow","flat","plot"
 ]);
@@ -2791,7 +3989,21 @@ let program = [];
 let chosen  = -1;
 
 function nameOf(line){ return (line.trim().split(/\s+/)[0] || "").toLowerCase(); }
-function runnable(line){ return RUNS_HERE.has(nameOf(line)); }
+function runnable(line){ const n = nameOf(line);
+  return COULD_RUN.has(n) && IMPLEMENTED.has(n); }
+
+function whyNot(name){
+  const b = BOOK.blocks[name];
+  if (!b) return "there is no block called '" + name + "'";
+  if (COULD_RUN.has(name) && IMPLEMENTED.has(name))
+    return "`" + name + "` runs here";
+  if (!COULD_RUN.has(name))
+    return "`" + name + "` needs " + b.fits.needs.join(" and ") +
+           ", which a browser does not have -- save the program and run " +
+           "it in the terminal";
+  return "`" + name + "` could run here, but this page has not been " +
+         "taught it yet -- save the program and run it in the terminal";
+}
 
 function showProgram(){
   const box = document.getElementById("prog");
@@ -2802,9 +4014,14 @@ function showProgram(){
     program.forEach((line, i) => {
       const el = document.createElement("div");
       el.className = "line" + (i === chosen ? " sel" : "");
+      const n = nameOf(line);
+      const mark = runnable(line) ? ""
+        : (COULD_RUN.has(n) ? '<span class="cant">page cannot yet</span>'
+                            : '<span class="cant">needs ' +
+                              escape_((BOOK.blocks[n] || {fits:{needs:[]}}).fits.needs.join(", ")) +
+                              '</span>');
       el.innerHTML = '<span class="i">' + (i + 1) + '</span>' +
-        '<span>' + escape_(line) + '</span>' +
-        (runnable(line) ? "" : '<span class="cant">not in browser</span>');
+        '<span>' + escape_(line) + '</span>' + mark;
       el.onclick = () => { chosen = (chosen === i ? -1 : i); showProgram(); };
       box.appendChild(el);
     });
@@ -2992,6 +4209,9 @@ function terminalLine(said){
     if (!b){ say("no block called " + low.slice(0, -1), "err"); return; }
     say(b.name + " -- " + b.says, "note");
     if (b.more) say(b.more, "note");
+    say("  needs: " + (b.fits.needs.join(", ") || "nothing") +
+        " · changes: " + b.fits.changes +
+        (b.fits.waits ? " · waits for an answer" : ""), "note");
     if (b.settings.length)
       say("settings: " + b.settings.map(s =>
         s.name + (s.needed ? " (needed)" : " (" + s.default + ")")).join(", "), "note");
@@ -3007,7 +4227,7 @@ function terminalLine(said){
     return;
   }
   addLine(said);
-  if (!runnable(said)) say("  (added -- but that one cannot run in a browser)", "note");
+  if (!runnable(said)) say("  (added -- " + whyNot(name) + ")", "note");
 }
 
 document.getElementById("typed").addEventListener("keydown", e => {
@@ -3180,8 +4400,7 @@ function step(line, carried){
       (v||[]).forEach(p => gset(g, p[0], p[1], 1)); return v; }
   }
 
-  throw new Error("`" + name + "` does not run in a browser -- save the " +
-                  "program and run it in the terminal");
+  throw new Error(whyNot(name));
 }
 
 function once(){
