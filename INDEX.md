@@ -18,6 +18,7 @@ the zip, and everything is accounted for.
 | `get.sh` | root | **The one that makes the rest available.** Off github with Termux and nothing else: installs git and python, clones, makes `import sparkblocks` work anywhere, makes `wakeup` a word you can type. Safe to run again — it pulls | A network, and git | `/bin/sh`: Termux, Linux, mac |
 | `wakeup.py` | root | The front door. Eight choices, the last always back; starts everything else and does no work of its own | — | Any terminal with Python |
 | `wizard.py` | root | The installer. Says what the smallest working version needs, what each part needs and costs, and what this machine has — **before** anything is written. Then installs one part at a time. Terminal only, and that is on purpose | Reads the machine | Any machine with Python 3.6+ |
+| `CROC.md` | root | Moving a file between his own machines with a code phrase — croc, on Termux and on Windows, with the generated code, a chosen code, and running his own relay | A network. Both machines | Termux, Windows, anywhere croc runs |
 | `BLUEPRINTS.md` | root | What was learned rather than decided, how a part plugs into another, the common standard they all speak, and the shape of anything either of us signs | — | Read anywhere |
 | `sign.py` | root | Writes and reads back the header, footer and chronology every signed document carries, so "they match" can be proved rather than believed | The documents | Any machine with Python |
 | `make-private.py` | root | Builds an empty container with a labelled slot for every gap `WITHHELD.md` records. Shape comes from the directory, so the two cannot drift | `WITHHELD.md` | Any machine with Python |
@@ -136,6 +137,7 @@ insides — what it is made of and how the pieces connect.
 | `get.sh` and `wakeup.py` | [`SETUP.md`](SETUP.md) |
 | `check-withheld.py` and `make-private.py` | [`WITHHELD.md`](WITHHELD.md) |
 | `wizard.py` | its own `--help`, and [`BLUEPRINTS.md`](BLUEPRINTS.md) §1.4 |
+| sending files between machines | [`CROC.md`](CROC.md) |
 | `sign.py` | [`BLUEPRINTS.md`](BLUEPRINTS.md) §4 |
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |

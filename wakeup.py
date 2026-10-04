@@ -59,11 +59,17 @@ def choose(title, choices):
         line("-" * len(title))
         for i, (label, _what) in enumerate(shown, 1):
             line("  %d. %s" % (i, label))
-        n = len(shown)
+
+        # `more` and `back` keep the SAME numbers on every page, even
+        # a short last page. They used to shuffle up when a page had
+        # fewer items, so on the last page `back` was 3 instead of 8 --
+        # which undoes the one thing the eight-choice rule is for.
         if many:
-            n += 1
-            line("  %d. more" % n)
-        line("  %d. back" % (n + 1))
+            more_at, back_at = 7, 8
+            line("  %d. more" % more_at)
+        else:
+            more_at, back_at = None, len(shown) + 1
+        line("  %d. back" % back_at)
 
         got = ask("\npick a number: ")
         if not got:
@@ -72,9 +78,9 @@ def choose(title, choices):
             line("  a number, please.")
             continue
         got = int(got)
-        if got == n + 1:
+        if got == back_at:
             return None
-        if many and got == n:
+        if more_at and got == more_at:
             page += 1
             if page * 6 >= len(choices):
                 page = 0
@@ -354,6 +360,78 @@ def claude_menu():
 
 
 # ==========================================================================
+#  SENDING A FILE TO ANOTHER OF HIS MACHINES
+#
+#  croc does the work. This only checks it is there, offers to put it
+#  there, and types the line for him -- see CROC.md.
+# ==========================================================================
+
+def croc_there():
+    return shutil.which("croc") is not None
+
+
+def croc_get():
+    line()
+    if on_android():
+        line("croc is an official Termux package, so this is all it takes.")
+        cmd = ["pkg", "i", "-y", "croc"]
+    elif os.name == "nt":
+        line("Try whichever of winget, scoop or choco you have:")
+        line("    winget install schollz.croc")
+        line("    scoop install croc")
+        line("    choco install croc")
+        line()
+        line("Or take the .exe from github.com/schollz/croc/releases")
+        ask("\n-- press enter --")
+        return False
+    else:
+        line("croc is not here, and I will not guess how your machine")
+        line("installs things. See github.com/schollz/croc")
+        ask("\n-- press enter --")
+        return False
+
+    if not ask("install croc? (y/n) ").lower().startswith("y"):
+        return False
+    return go_cmd(cmd) == 0
+
+
+def croc_send():
+    line()
+    if not croc_there() and not croc_get():
+        return
+    line("What shall I send? A file or a folder.")
+    line("Blank to stop. Your saved programs are in ~/.wakeup/programs")
+    what = ask("\n  > ")
+    if not what:
+        return
+    path = os.path.abspath(os.path.expanduser(what))
+    if not os.path.exists(path):
+        line("\n  There is nothing at %s" % path)
+        ask("\n-- press enter --")
+        return
+    line()
+    line("croc will print a code phrase and then wait.")
+    line("On the other machine, type:  croc THAT-CODE")
+    line()
+    line("Stop it with ctrl-c if you change your mind.")
+    go_cmd(["croc", "send", path])
+
+
+def croc_get_file():
+    line()
+    if not croc_there() and not croc_get():
+        return
+    line("The code phrase from the machine that is sending.")
+    line("Three words with a number, like 1234-fairy-tiger-saddle.")
+    code = ask("\n  > ")
+    if not code:
+        return
+    line()
+    line("It will arrive in %s" % os.getcwd())
+    go_cmd(["croc", code])
+
+
+# ==========================================================================
 #  THE MENUS
 # ==========================================================================
 
@@ -361,6 +439,8 @@ def more_menu():
     while True:
         pick = choose("More", [
             ("check -- make sure it all still hangs together", "check"),
+            ("send a file to another machine", "send"),
+            ("receive a file, with its code", "receive"),
             ("saves -- your own programs, wherever they are", "saves"),
             ("outside -- blocks from somewhere else", "outside"),
             ("whereami -- which machine is this", "where"),
@@ -376,6 +456,10 @@ def more_menu():
             return
         if pick == "check":
             go("-m", "sparkblocks", "check")
+        elif pick == "send":
+            croc_send()
+        elif pick == "receive":
+            croc_get_file()
         elif pick == "saves":
             go("-m", "sparkblocks", "saves")
         elif pick == "outside":

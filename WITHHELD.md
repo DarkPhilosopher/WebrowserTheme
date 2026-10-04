@@ -122,12 +122,18 @@ walks these questions and prints the row to paste in.
 | Google Drive `xzg4b3xz@gmail.com` | Yes, unless shared | Reachable from here. Check it is not on a share link |
 | Google Drive `lewisgabe33@gmail.com` | Unknown from here | No connector. This session cannot see it at all — ⟦W-08⟧ |
 | Gabriel's own phone or laptop | His to say | Only he knows who else uses the machine |
+| `croc`, through the **public** relay | Encrypted, but the route is not his | End to end encrypted, and the relay cannot open it — but it is somebody else's machine, and the code phrase is the whole key. Fine for ordinary files |
+| `croc`, through **his own** relay | Yes, if both machines are his | `croc relay` on the Dell, both phones pointed at it. Nothing leaves the house. This is the one to use for anything private — see [`CROC.md`](CROC.md) |
 | A private GitHub repository | Yes | **Does not exist yet.** The obvious home |
 
-**The honest summary:** of everywhere this session can actually reach,
-exactly one is locked, and that is the `xzg4b3xz` Drive. Everything
-else is either public or temporary. That is worth saying plainly
-rather than implying there is a safe place here when there is one.
+**The honest summary:** of everywhere *this session* can actually
+reach, exactly one is locked — the `xzg4b3xz` Drive. Everything else
+it can reach is public or temporary.
+
+Between **his own machines** he has a better option than any of them:
+`croc` over his own relay, which this session cannot touch at all.
+That is the right route for private material, and it is worth saying
+that the best answer here is one that does not involve me.
 
 ## Keeping it honest
 
