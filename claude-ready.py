@@ -151,13 +151,25 @@ def look():
     })
 
     ubuntu = have("proot-distro") and _ubuntu_installed()
+    half = (not ubuntu) and have("proot-distro") and _ubuntu_half_done()
     out.append({
         "name": "Ubuntu",
         "how": OK if ubuntu else (NO if have("proot-distro") else NA),
-        "says": "installed" if ubuntu else "a few minutes to download",
-        "fix": ["proot-distro", "install", "ubuntu"] if have("proot-distro") else None,
-        "doing": "install Ubuntu (a few minutes)",
-        "fixtell": None if have("proot-distro") else "needs proot-distro first",
+        "says": ("installed" if ubuntu else
+                 ("here but will not open -- needs resetting" if half
+                  else "a few minutes to download")),
+        # A half-finished one must be RESET, not installed. Installing
+        # over it is refused: "container 'ubuntu' already exists".
+        "fix": (None if not have("proot-distro") else
+                (["proot-distro", "reset", "ubuntu"] if half
+                 else ["proot-distro", "install", "ubuntu"])),
+        "doing": ("reset Ubuntu -- the one here is half finished" if half
+                  else "install Ubuntu (a few minutes)"),
+        "fixtell": (None if not have("proot-distro") else
+                    ("An install that stopped part way leaves a container\n"
+                     "that exists but cannot be opened. proot-distro refuses\n"
+                     "to install over it, so it has to be reset instead."
+                     if half else None)),
     })
 
     node = _node_version() if ubuntu else None
@@ -181,8 +193,8 @@ def look():
     out.append({
         "name": "the `claude` word",
         "how": OK if _alias_set() else NO,
-        "says": "`claude` and `claude --continue` work from anywhere"
-                if _alias_set() else "not set up yet",
+        "says": ("the word is here -- it works once the steps above do"
+                 if _alias_set() else "not set up yet"),
         "fix": "alias",
         "doing": "make `claude` work straight from Termux",
         "fixtell": "Writes a small `claude` program into Termux's bin, so you\n"
@@ -239,6 +251,30 @@ def _version(cmd):
     return said.split("\n")[0] if worked and said else "not installed"
 
 
+def _ubuntu_rootfs():
+    """Where the Ubuntu folder would be, if there is one."""
+    prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+    for root in (os.path.join(prefix, "var", "lib", "proot-distro",
+                              "installed-rootfs", "ubuntu"),
+                 "/data/data/com.termux/files/usr/var/lib/proot-distro/"
+                 "installed-rootfs/ubuntu"):
+        if os.path.isdir(root):
+            return root
+    return None
+
+
+def _ubuntu_half_done():
+    """Is there an Ubuntu that exists but cannot be opened?
+
+    Three states, not two. An install that stopped part way leaves the
+    folder behind, so `proot-distro install` refuses with "container
+    'ubuntu' already exists" -- while nothing can actually log in. It
+    is neither installed nor absent, and treating it as absent walks
+    you straight into that refusal.
+    """
+    return _ubuntu_rootfs() is not None and not _ubuntu_installed()
+
+
 def _ubuntu_installed():
     """Is there an Ubuntu we can actually log in to?
 
@@ -259,12 +295,8 @@ def _ubuntu_installed():
     # Cheap look first, so we do not pay for starting proot when there
     # is plainly nothing there. A rootfs with no /etc is a half-done
     # install, which counts as not installed.
-    prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
-    root = os.path.join(prefix, "var", "lib", "proot-distro",
-                        "installed-rootfs", "ubuntu")
-    if not os.path.isdir(os.path.join(root, "etc")):
-        return False
-
+    # The only test that counts: can anything actually log in? The
+    # folder existing is not enough -- that is the half-finished case.
     worked, _said = run(["proot-distro", "login", "ubuntu", "--", "true"],
                         timeout=120)
     return worked
@@ -510,7 +542,19 @@ def selftest():
     else:
         print("  (get-claude.sh is not here, so that one was not tried)")
 
-    # 5. The echoed command must be pasteable -- quoting kept.
+    # 5. An Ubuntu that exists but will not open must be RESET, never
+    #    installed over. proot-distro refuses the install with
+    #    "container 'ubuntu' already exists", which on his phone left
+    #    the installer stuck in a loop with no way forward.
+    if not have("proot-distro"):
+        want("no proot-distro means no half-finished Ubuntu either",
+             _ubuntu_half_done(), False)
+    if os.path.exists(getter):
+        text = open(getter).read()
+        want("get-claude.sh knows how to reset a half-finished Ubuntu",
+             "reset" in text, True)
+
+    # 6. The echoed command must be pasteable -- quoting kept.
     step = ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
             "apt update && apt install -y curl"]
     shown = " ".join(shlex.quote(w) for w in step)

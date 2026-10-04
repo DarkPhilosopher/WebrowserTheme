@@ -101,20 +101,68 @@ done
 
 # ------------------------------------------------------------------- ubuntu
 step "Ubuntu inside Termux"
-# Do NOT read `proot-distro list` for this. It prints every distro
-# there is, and an uninstalled one says "not installed" -- which
-# contains the word "installed". Matching on that answers yes on a
-# phone with no Ubuntu at all, and every step after it then fails
-# with: container 'ubuntu' is not installed. That exact bug shipped
-# in claude-ready.py and cost Gabriel a morning.
+# THREE states, not two. This is the bit that caught us twice.
 #
-# So ask the thing itself: open the same door the later steps use.
-if [ -d "$PREFIX/var/lib/proot-distro/installed-rootfs/$DISTRO/etc" ] \
-   && $PD login "$DISTRO" -- true >/dev/null 2>&1; then
+#   usable   you can log in. Nothing to do.
+#   half     the folder is there but you cannot log in -- an install
+#            that was interrupted. `install` REFUSES this with
+#            "container 'ubuntu' already exists", so installing is
+#            exactly the wrong move. It needs a reset.
+#   absent   nothing there. Install it.
+#
+# Do NOT read `proot-distro list` to tell them apart. It prints every
+# distro there is, and an uninstalled one says "not installed" --
+# which contains the word "installed". That bug shipped once already.
+
+rootfs_of() {
+  for d in "$PREFIX/var/lib/proot-distro/installed-rootfs/$1" \
+           "/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/$1"; do
+    if [ -d "$d" ]; then printf '%s' "$d"; return 0; fi
+  done
+  return 1
+}
+
+can_log_in() {
+  $PD login "$1" -- true >/dev/null 2>&1
+}
+
+if can_log_in "$DISTRO"; then
   skip "$DISTRO"
+elif rootfs_of "$DISTRO" >/dev/null; then
+  say "There is an Ubuntu here already, but it cannot be logged into."
+  say "That is an install that was interrupted part way."
+  say ""
+  say "Installing over it is refused -- proot-distro says the container"
+  say "already exists. So this resets it, which is its own word for"
+  say "throwing the broken one away and fetching it again."
+  say ""
+  say "  $PD reset $DISTRO"
+  say ""
+  if ! $PD reset "$DISTRO"; then
+    say ""
+    say "The reset did not work either. Take it away by hand and run"
+    say "this again:"
+    say "    $PD remove $DISTRO"
+    exit 1
+  fi
+  if ! can_log_in "$DISTRO"; then
+    say ""
+    say "Reset finished but it still will not log in. Something is"
+    say "wrong underneath this script. Try by hand:"
+    say "    $PD remove $DISTRO"
+    say "    $PD install $DISTRO"
+    exit 1
+  fi
+  say "reset, and it logs in now"
 else
   say "installing it -- this is the slow part, a few hundred megabytes"
   $PD install "$DISTRO"
+  if ! can_log_in "$DISTRO"; then
+    say ""
+    say "It installed but will not log in. Run this again -- it will"
+    say "see the half-finished one and reset it."
+    exit 1
+  fi
 fi
 
 # ----------------------------------------------------- inside ubuntu: node
