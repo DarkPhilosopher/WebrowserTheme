@@ -3,3 +3,6 @@ __pycache__/
 
 # Nothing in here is ever committed. See WITHHELD.md.
 private/
+
+# Built by make-private.py --zip. Yours to place by hand, never here.
+private-container/

@@ -241,6 +241,17 @@ which a browser does not have* versus *this page has not learnt it yet*.
 
 `python3 -m sparkblocks check` enforces 1, 2 and 3. You have to do 4 and 5.
 
+### The four checks, and what each one is for
+
+```bash
+python3 -m sparkblocks check     the language still hangs together
+python3 check-withheld.py        the record of what is missing is true
+python3 sign.py --check          the signed documents still match
+python3 claude-ready.py --selftest   the faults that bit before stay dead
+```
+
+Run all four before saying something is done.
+
 ## The second moral: an update is an offer, never a demand
 
 He called this **a moral**, in those words, on 2026-10-04. It sits

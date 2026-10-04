@@ -367,6 +367,7 @@ def more_menu():
             ("connect -- what touches what", "connect"),
             ("withheld -- what is deliberately not here", "withheld"),
             ("panel in Chrome -- buttons and pictures", "browser"),
+            ("wizard -- what this needs, and install it a part at a time", "wizard"),
             ("save a copy to storage", "save"),
             ("update from github", "update"),
         ])
@@ -388,6 +389,8 @@ def more_menu():
             go(os.path.join(HERE, "check-withheld.py"))
         elif pick == "browser":
             open_browser_panel()
+        elif pick == "wizard":
+            go(os.path.join(HERE, "wizard.py"))
         elif pick == "save":
             save_to_storage()
         elif pick == "update":

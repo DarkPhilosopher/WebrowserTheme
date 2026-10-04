@@ -17,6 +17,10 @@ the zip, and everything is accounted for.
 | `whereami.py` | root | Says which of your machines this is, from the signs it carries. Holds the register of all of them | `~/.whereami` if named; otherwise system, architecture, hostname | Anything with Python |
 | `get.sh` | root | **The one that makes the rest available.** Off github with Termux and nothing else: installs git and python, clones, makes `import sparkblocks` work anywhere, makes `wakeup` a word you can type. Safe to run again — it pulls | A network, and git | `/bin/sh`: Termux, Linux, mac |
 | `wakeup.py` | root | The front door. Eight choices, the last always back; starts everything else and does no work of its own | — | Any terminal with Python |
+| `wizard.py` | root | The installer. Says what the smallest working version needs, what each part needs and costs, and what this machine has — **before** anything is written. Then installs one part at a time. Terminal only, and that is on purpose | Reads the machine | Any machine with Python 3.6+ |
+| `BLUEPRINTS.md` | root | What was learned rather than decided, how a part plugs into another, the common standard they all speak, and the shape of anything either of us signs | — | Read anywhere |
+| `sign.py` | root | Writes and reads back the header, footer and chronology every signed document carries, so "they match" can be proved rather than believed | The documents | Any machine with Python |
+| `make-private.py` | root | Builds an empty container with a labelled slot for every gap `WITHHELD.md` records. Shape comes from the directory, so the two cannot drift | `WITHHELD.md` | Any machine with Python |
 | `WITHHELD.md` | root | The directory of what is deliberately not here: by name, with its state, where it went and why. Names the field, never the value, which is what makes it safe to publish | — | Read anywhere |
 | `check-withheld.py` | root | The guard on that directory. No marker pointing at nothing, no row without a reason, no invented state, no value leaked onto the page, and git not carrying `private/` | The repo itself | Any machine with Python and git |
 | `SETUP.md` | root | The steps, split by device, because they genuinely differ | — | Read anywhere |
@@ -115,6 +119,8 @@ oversight and "fix" it.
 | **The repo is still called `WebrowserTheme`** | Rename it to match the project | Renaming breaks every clone and every link already written down. The mismatch is cheaper than the breakage |
 | **Updates are optional, one module at a time** | One version, newest, take it or leave it | Gabriel calls this a moral. An update is a shelf, not a bundle, and *no* is a complete answer |
 | **Versions branch like species; old ones stay alive** | A single line where only the newest is supported | A machine that cannot run the latest is not behind, it is on another branch. "Too old" is not something this project says to anybody |
+| **The installer states the requirements before it installs** | Requirements in a README, or discovered when something fails | An installer that tells you while installing has already decided for you. Declining should be a decision, not an interruption |
+| **The wizard is terminal only, and always will be** | A graphical installer | The terminal is the thing that always works — on a phone, over ssh, on a laptop that will not boot anything else |
 | **There is always a minimal whole version** | A free tier, or a stripped demo | Not crippled — small and complete. It is a promise made to the user, so it is not dropped when keeping it gets inconvenient |
 
 ---
@@ -127,7 +133,9 @@ insides — what it is made of and how the pieces connect.
 | Program | Manual |
 |---|---|
 | `get.sh` and `wakeup.py` | [`SETUP.md`](SETUP.md) |
-| `check-withheld.py` | [`WITHHELD.md`](WITHHELD.md) |
+| `check-withheld.py` and `make-private.py` | [`WITHHELD.md`](WITHHELD.md) |
+| `wizard.py` | its own `--help`, and [`BLUEPRINTS.md`](BLUEPRINTS.md) §1.4 |
+| `sign.py` | [`BLUEPRINTS.md`](BLUEPRINTS.md) §4 |
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |
 | the block language | [`sparkblocks/README.md`](sparkblocks/README.md) |
