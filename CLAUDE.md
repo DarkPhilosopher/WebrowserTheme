@@ -263,15 +263,52 @@ He said plainly: **"use me if your must"** — asking him is the intended
 fallback, not a failure. Ask once, write the answer here, and stop
 asking.
 
-| Fact | Value |
-|---|---|
-| Timezone | ⟦P-01 not given yet → ask him; blocks the time-of-day greeting and any scheduled Routine⟧ |
-| Town, for weather | ⟦P-02 not given yet → ask him; blocks the weather line⟧ |
+| Fact | Value | Said |
+|---|---|---|
+| Timezone | **America/Denver** — Utah, Mountain Time | 2026-10-04 |
+| Town, for weather | **Provo, Utah** | 2026-10-04 |
 
-Once both are here, this can also be armed as a **Routine** that fires
-each morning on its own, instead of waiting for him to open a session.
-Do not arm it before the timezone is known — it would fire at the wrong
-hour, every day, and he would have to ask twice to stop it.
+```bash
+TZ=America/Denver date "+%A %-d %B %Y, %-I:%M %p %Z"
+```
+
+That is the line for his local time. The container clock is UTC and
+saying a UTC hour to him is the same mistake as naming the wrong
+machine.
+
+### Getting the weather, from in here
+
+**`curl` to a weather service does not work.** Both of the obvious
+ones are refused by the container's egress policy, not by the sites:
+
+| | |
+|---|---|
+| `wttr.in` | HTTP 403 through the agent proxy |
+| `api.weather.gov` | `connect_rejected` — organization network policy |
+
+**Use `WebSearch`** for it, which goes a different way and does work.
+Do not spend the morning rediscovering this.
+
+### The Routine
+
+Armed on 2026-10-04. It fires **6:55 a.m. Mountain, every day**, and
+starts a fresh session that pushes a notification to his phone.
+
+| | |
+|---|---|
+| Trigger id | `trig_015PAxMgWN7LjNoWYUw1VU6k` |
+| Schedule | `CRON_TZ=America/Denver 55 6 * * *` |
+
+**Change that Routine, never add a second one.** Two greetings firing
+each morning is exactly the kind of thing he would have to ask twice to
+stop. `update_trigger` with the id above changes the hour or the words;
+`list_triggers` finds it if the id is lost.
+
+It carries **no connectors** — the fired sessions have no Google Drive
+or other `mcp__*` tools, only the built-in ones. That is enough for the
+greeting, which needs `git` and `WebSearch` and nothing else. If the
+greeting ever needs a connector, he has to create the Routine from the
+claude.ai Routines screen; a session cannot grant one it does not hold.
 
 ## He wants to draw this
 
