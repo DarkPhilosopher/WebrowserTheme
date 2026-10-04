@@ -24,7 +24,20 @@ set -e
 
 REPO="https://github.com/DarkPhilosopher/WebrowserTheme"
 BRANCH="${WAKEUP_BRANCH:-claude/new-session-y0nuxy}"
-INTO="${WAKEUP_INTO:-$HOME/wakeup}"
+
+# If this script is already sitting inside a clone, THAT clone is the
+# one meant -- not a second copy at the default path. Without this,
+# cloning to ~/w and running ~/w/get.sh quietly made a whole second
+# copy in ~/wakeup and set everything up to point at the wrong one.
+#
+# Piped from curl, $0 is not a path, so the dirname is only trusted
+# when get.sh is actually found in it.
+SELF_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd)" || SELF_DIR=""
+if [ -n "$SELF_DIR" ] && [ -f "$SELF_DIR/get.sh" ] && [ -d "$SELF_DIR/.git" ]; then
+  INTO="${WAKEUP_INTO:-$SELF_DIR}"
+else
+  INTO="${WAKEUP_INTO:-$HOME/wakeup}"
+fi
 
 say() { printf '%s\n' "$*"; }
 step() { printf '\n== %s\n' "$*"; }
