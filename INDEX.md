@@ -106,6 +106,9 @@ oversight and "fix" it.
 | **`⟦M-01 thing → where⟧` markers** | Black bars, or silent deletion | Taken from how archives leave a withdrawal sheet: the gap names itself and says where to ask |
 | **A launcher opens a terminal first** | Launch straight into the GUI | The terminal always works. The graphical mode is reached from inside it, never instead of it |
 | **The repo is still called `WebrowserTheme`** | Rename it to match the project | Renaming breaks every clone and every link already written down. The mismatch is cheaper than the breakage |
+| **Updates are optional, one module at a time** | One version, newest, take it or leave it | Gabriel calls this a moral. An update is a shelf, not a bundle, and *no* is a complete answer |
+| **Versions branch like species; old ones stay alive** | A single line where only the newest is supported | A machine that cannot run the latest is not behind, it is on another branch. "Too old" is not something this project says to anybody |
+| **There is always a minimal whole version** | A free tier, or a stripped demo | Not crippled — small and complete. It is a promise made to the user, so it is not dropped when keeping it gets inconvenient |
 
 ---
 

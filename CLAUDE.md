@@ -194,6 +194,82 @@ which a browser does not have* versus *this page has not learnt it yet*.
 
 `python3 -m sparkblocks check` enforces 1, 2 and 3. You have to do 4 and 5.
 
+## The second moral: an update is an offer, never a demand
+
+He called this **a moral**, in those words, on 2026-10-04. It sits
+beside the organ rule above, and it is the same moral turned from
+*parts* toward *time*. The organ rule says a part must fit any body.
+This one says a part must fit any **moment** — including an old one.
+
+> *"It's a moral to me to release updates as optionally as possible...
+> there will simply promise to be a part of or version of the expanse
+> in what program we are making will always have a minimalism option
+> and communication and news view into it, also speciation — even if
+> you cannot seem to play a game or advanced software upon its final
+> updates, but we wanna make backwards compatible with previous
+> updates and install update one module at a time, optional which ones
+> at all."*
+
+Five things follow, and none of them is negotiable.
+
+### 1. There is always a minimal option
+
+However far the thing grows — he calls it **the expanse** — there is
+always a small version that still does the job. Not a crippled demo: a
+real, whole, smaller one. **This is a promise made to the user**, so it
+is not something to drop when it becomes inconvenient to keep.
+
+### 2. One module at a time, or none at all
+
+An update is a shelf, not a bundle. He picks which pieces, and *no*
+is a complete answer. Nothing may require the whole thing, and nothing
+may quietly bring in a neighbour.
+
+Never write an update that only applies entire. If a change needs two
+modules at once, that is a sign those two were never properly separate
+and the fault is ours, not his.
+
+### 3. Backwards compatible, in both directions
+
+New parts work with old ones. Old parts keep working. A program he
+wrote a year ago still runs, and nothing made today may be the reason
+it stops.
+
+### 4. Speciation — versions are species, not a queue
+
+The important word, and the one that makes this different from ordinary
+versioning. A version is **not** a place in a line where the newest is
+the only living one. Versions **branch**, like species, and the old
+branch stays alive.
+
+So when a machine cannot run the latest — a phone too old for the
+advanced build, something that will not play the game at its final
+updates — **that machine is not behind. It is on a different branch,
+and that branch is supported.** "Too old" is never a thing this project
+says to anybody.
+
+This is already how the project behaves: the 32-bit answer is not *buy
+a better phone*, it is *everything except Claude Code itself still runs
+here.* Keep it that way on purpose.
+
+### 5. A news view, so he can see what he is declining
+
+Choosing is only real if he can see the choice. Whatever offers
+updates must also say, in plain words, what each one changes — so
+turning one down is a decision rather than a shrug.
+
+### What this already obliges us to build
+
+Written as empty boxes in `BOXES.md` rather than left as good
+intentions:
+
+| | |
+|---|---|
+| A minimal mode in each program | so the promise in 1 is kept, not just meant |
+| Module-at-a-time updating in `get.sh` | today it pulls everything or nothing — it breaks rule 2 |
+| A `NEWS.md`, and a view onto it | rule 5 has nothing behind it yet |
+| Something that proves old programs still run | rule 3 is currently only a good intention |
+
 ## How he wants programs built
 
 **A launcher opens a terminal first, and the big picture mode from

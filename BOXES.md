@@ -10,7 +10,8 @@ work not done yet.
 ┌─ name ────────────────────────────┐
 │ what     what it is for           │
 │ manual   where to read about it   │
-│ map      where its insides are drawn │
+│ map      where its insides are    │
+│          drawn                    │
 │ needs    data, and physical thing │
 │ joins    what it connects to      │
 └───────────────────────────────────┘
@@ -34,8 +35,8 @@ plugged in.
 ```
 ┌─ sparkblocks/ ─────────────────────────────────────────────┐
 │ what    133 blocks. One contract: part.step(ctx) -> value  │
-│ manual  sparkblocks/README.md                                    │
-│ map     sparkblocks/README.md § Layout                           │
+│ manual   sparkblocks/README.md                             │
+│ map      sparkblocks/README.md § Layout                    │
 │ needs   Python. Nothing else, ever                         │
 │ joins   EVERYTHING. This is the blood supply               │
 └────────────────────────────────────────────────────────────┘
@@ -55,7 +56,8 @@ plugged in.
 │ map     claude-ready.md § Layout                           │
 │ needs   the machine itself · Python                        │
 │ joins   whereami (which machine) · SETUP.md (by hand)      │
-│ also as sparkblocks/examples/claude-ready.parts, in blocks       │
+│ also     as sparkblocks/examples/claude-ready.parts, in    │
+│          blocks                                            │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ whereami.py ──────────────────────────────────────────────┐
@@ -85,7 +87,8 @@ plugged in.
 │ what    Search every file on the phone                     │
 │ manual  tfind.md   map  § Layout                           │
 │ needs   shared storage · Termux · ripgrep makes it fast    │
-│ joins   nothing — and sparkblocks/files.py now does most of it   │
+│ joins    nothing — and sparkblocks/files.py now does most  │
+│          of it                                             │
 └────────────────────────────────────────────────────────────┘
 
 ┌─ rustbuild/ ───────────────────────────────────────────────┐
@@ -162,15 +165,16 @@ held back, or nothing, which is its own kind of answer.
 │          Python traceback                      │
 │ how      Wrap the step loop, catch, report     │
 │          which line was running                │
-│ waited   sparkblocks/script.py. Every program a      │
-│          child runs is held back by this       │
+│ waited   sparkblocks/script.py. Every program  │
+│          a child runs is held back by this     │
 │ size     small                                 │
 └────────────────────────────────────────────────┘
 
 ┌─ undo in the menus ────────────────── CERTAIN ─┐
 │ what     Delete is final. A child will delete  │
 │ how      A stack of past programs              │
-│ waited   sparkblocks/menu.py · sparkblocks/pad.py          │
+│ waited   sparkblocks/menu.py ·                 │
+│          sparkblocks/pad.py                    │
 │ size     small                                 │
 └────────────────────────────────────────────────┘
 
@@ -196,6 +200,58 @@ held back, or nothing, which is its own kind of answer.
 │ waited   panel/panel.html says so itself now   │
 │ size     medium, and purely mechanical         │
 └────────────────────────────────────────────────┘
+
+┌─ a minimal mode in each program ───── CERTAIN ─┐
+│ what     Every program here can grow. The      │
+│          promise is that a small WHOLE version │
+│          stays available -- not a crippled     │
+│          demo                                  │
+│ how      A --minimal flag and a minimal path   │
+│          through each menu. panel.py half does │
+│          it already: it degrades when the      │
+│          package is missing                    │
+│ waited   the first moral of the update rule. A │
+│          promise nobody built is not a promise │
+│ size     medium; it touches every program      │
+└────────────────────────────────────────────────┘
+
+┌─ one module at a time in get.sh ───── CERTAIN ─┐
+│ what     get.sh pulls everything or nothing.   │
+│          That breaks the rule outright -- an   │
+│          update is a shelf, not a bundle       │
+│ how      Let it take module names, offered by  │
+│          number. `sh get.sh blocks panel` and  │
+│          nothing else moves                    │
+│ waited   get.sh. It is the one thing that      │
+│          contradicts the moral it serves       │
+│ size     medium                                │
+└────────────────────────────────────────────────┘
+
+┌─ NEWS.md, and a view onto it ──────── CERTAIN ─┐
+│ what     Choosing is only real if you can see  │
+│          the choice. Nothing yet says in plain │
+│          words what an update changes          │
+│ how      One NEWS.md, newest first, a short    │
+│          paragraph per change, written WHEN    │
+│          the change is. A `news` entry in      │
+│          wakeup and the panels                 │
+│ waited   the fifth moral. Declining should be  │
+│          a decision, not a shrug               │
+│ size     small to start, then a habit          │
+└────────────────────────────────────────────────┘
+
+┌─ proof that old programs still run ── CERTAIN ─┐
+│ what     Backwards compatibility is a good     │
+│          intention and nothing more. No test   │
+│          would notice if a .spark file from    │
+│          last month stopped parsing            │
+│ how      Keep dated example programs and parse │
+│          every one in check. An old one that   │
+│          breaks becomes a failure with a name  │
+│ waited   sparkblocks/check.py, and the third   │
+│          moral                                 │
+│ size     small, and it only gets more valuable │
+└────────────────────────────────────────────────┘
 ```
 
 ### MAYBE — worth doing, not obviously right
@@ -209,7 +265,7 @@ held back, or nothing, which is its own kind of answer.
 │ doubt    What is its datasheet? A program's    │
 │          needs are the union of its blocks' —  │
 │          workable, but it has to be worked out │
-│ waited   sparkblocks/script.py                       │
+│ waited   sparkblocks/script.py                 │
 └────────────────────────────────────────────────┘
 
 ┌─ an index for connect ──────────────── MAYBE ──┐
@@ -217,7 +273,7 @@ held back, or nothing, which is its own kind of answer.
 │ for      A phone-wide search in a moment       │
 │ doubt    An index is stale the instant a file  │
 │          changes. Needs a staleness answer     │
-│ waited   sparkblocks/connect.py                      │
+│ waited   sparkblocks/connect.py                │
 └────────────────────────────────────────────────┘
 
 ┌─ joining the three 3D engines ──────── MAYBE ──┐
@@ -277,10 +333,11 @@ held back, or nothing, which is its own kind of answer.
 └────────────────────────────────────────────────┘
 
 ┌─ does touch work in Termux ────────── LONGING ─┐
-│ what     sparkblocks/pad.py reads the terminal's own │
-│          touch reporting. NEVER TRIED on a     │
-│          real phone — only reasoned about      │
-│ how      python3 -m sparkblocks pad   on the A33     │
+│ what     sparkblocks/pad.py reads the          │
+│          terminal's own touch reporting. NEVER │
+│          TRIED on a real phone — only reasoned │
+│          about                                 │
+│ how      python3 -m sparkblocks pad on the A33 │
 │ waited   the whole pad idea rests on it        │
 │ YOURS    ten minutes, and only you can do it   │
 └────────────────────────────────────────────────┘
@@ -292,7 +349,8 @@ held back, or nothing, which is its own kind of answer.
 ┌─ THREE 3D ENGINES, NOTHING JOINING THEM ───────────────────┐
 │                                                            │
 │   house/house.sh      wireframe house, maths in awk        │
-│   sparkblocks/screen.py     XYZ points, matrices, projection     │
+│          sparkblocks/screen.py XYZ points, matrices,       │
+│          projection                                        │
 │   rustbuild/*.py      isometric building, its own maths    │
 │                                                            │
 │ Three separate pieces of isometric-3D code, in one         │
@@ -302,11 +360,10 @@ held back, or nothing, which is its own kind of answer.
 │ prevent, and it is already here.                           │
 │                                                            │
 │ to fill  Decide. Either                                    │
-│          (a) sparkblocks/screen.py is the one, and the other     │
-│              two call it — house loses its awk, rustbuild  │
-│              loses its projection, both keep their look    │
-│          (b) they stay apart and this box says why         │
-│                                                            │
+│          (a) sparkblocks/screen.py is the one, and the     │
+│          other two call it — house loses its awk,          │
+│          rustbuild loses its projection, both keep their   │
+│          look (b) they stay apart and this box says why    │
 │ belongs  a decision from you. I will not pick for you —    │
 │          two of these are yours and predate this work      │
 └────────────────────────────────────────────────────────────┘
