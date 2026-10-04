@@ -31,6 +31,36 @@ def line(text=""):
     print(text)
 
 
+def read_key():
+    """One keypress, no enter. Falls back to a typed line.
+
+    Needs a real terminal. In a pipe, over a dumb connection, or on
+    Windows there is no raw mode, so it reads a line instead -- the
+    menu still works, it just wants enter.
+    """
+    try:
+        import termios, tty
+        fd = sys.stdin.fileno()
+        if not os.isatty(fd):
+            raise OSError("not a terminal")
+        old = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        if ch in ("\x03", "\x04"):        # ctrl-c, ctrl-d
+            return ""
+        print(ch)
+        return ch
+    except Exception:
+        try:
+            return input().strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return ""
+
+
 def ask(question):
     """One answer, and ctrl-c or end-of-input counts as going back."""
     try:
@@ -71,7 +101,9 @@ def choose(title, choices):
             more_at, back_at = None, len(shown) + 1
         line("  %d. back" % back_at)
 
-        got = ask("\npick a number: ")
+        sys.stdout.write("\npick a number: ")
+        sys.stdout.flush()
+        got = read_key()
         if not got:
             return None
         if not got.isdigit():

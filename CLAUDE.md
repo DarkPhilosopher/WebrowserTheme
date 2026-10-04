@@ -231,6 +231,13 @@ elsewhere.
 **Both of these go in `BLUEPRINTS.md` §4 and §5**, which is where to
 add to them rather than starting a new list.
 
+## Remind him about
+
+- **Claude from wakeup, by one number** — he wants `wakeup` → a number
+  to actually land him in `claude --continue`, not just install it.
+  Built, but **never confirmed working on the A33**. Ask.
+- **The chart** — see below.
+
 ## The rule everything here follows
 
 **Make everything out of parts, and make every part able to join any
