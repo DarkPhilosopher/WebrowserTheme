@@ -10,6 +10,9 @@ runs on a phone.
 is for, what data it needs and what it runs on — including the things
 not built yet and where they would go.
 
+**[START-HERE.md](START-HERE.md)** — four ways in: automatic, quick,
+in order, and how to choose between them.
+
 ## Start here
 
 On a fresh Android phone, one line pasted into Termux:

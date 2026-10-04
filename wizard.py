@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """wizard -- says what it needs before it takes anything.
 
-    python3 wizard.py
+    python3 wizard.py            the specification, then pick by number
+    python3 wizard.py --auto     install everything this machine can take
+    python3 wizard.py --list     say what it would do, and do nothing
 
 A plain terminal screen, on any machine with Python, that tells you
 **first**:
@@ -249,19 +251,21 @@ def offer(m):
     return [p for p in PARTS if p["fit"](m) and not p["ready"](m)]
 
 
-def install(part):
+def install(part, yes=False):
+    """Install one part. `yes` means do not ask and do not pause."""
     print("\n--- %s ---" % part["name"])
     print("    %s" % part["what"])
     print("    costs %s" % part["costs"])
     steps = part["do"]()
     if not steps:
         print("\n  Nothing to install -- it is already here.")
-        ask("\n-- press enter --")
+        if not yes:
+            ask("\n-- press enter --")
         return True
     print()
     for step in steps:
         print("  $ %s" % " ".join(step))
-    if not ask("\ngo ahead? (y/n) ").lower().startswith("y"):
+    if not yes and not ask("\ngo ahead? (y/n) ").lower().startswith("y"):
         print("  left alone.")
         ask("\n-- press enter --")
         return False
@@ -269,17 +273,85 @@ def install(part):
         print()
         if subprocess.call(step, cwd=HERE) != 0:
             print("\n  that step did not work. Nothing after it was tried.")
-            ask("\n-- press enter --")
+            if not yes:
+                ask("\n-- press enter --")
             return False
     print("\n  done.")
-    ask("\n-- press enter --")
+    if not yes:
+        ask("\n-- press enter --")
     return True
 
 
+def automatic():
+    """Everything this machine can take, in order, without asking.
+
+    Still shows the specification first and still names every command
+    before running it -- `--auto` means "do not stop and ask me", not
+    "do it where I cannot see".
+    """
+    m = this_machine()
+    spec(m)
+    todo = offer(m)
+    if not todo:
+        print("\n Everything this machine can take is already here.")
+        print(" Type:  wakeup\n")
+        return 0
+
+    print("\n AUTOMATIC -- installing these, in order, without stopping:")
+    for part in todo:
+        print("   %s" % part["name"])
+    print()
+
+    done, stopped = [], None
+    for part in todo:
+        if install(part, yes=True):
+            done.append(part["name"])
+        else:
+            stopped = part["name"]
+            break
+
+    print("\n" + "=" * 60)
+    for name in done:
+        print("  done       %s" % name)
+    if stopped:
+        print("  STOPPED AT %s" % stopped)
+        for part in todo[len(done) + 1:]:
+            print("  not tried  %s" % part["name"])
+        print("\n Run it again to carry on from there -- everything")
+        print(" already done is skipped.")
+        return 1
+    print("\n All of it. Type:  wakeup\n")
+    return 0
+
+
+def just_say(m):
+    """What it WOULD do. Changes nothing."""
+    todo = offer(m)
+    print("\n would install, in order:")
+    if not todo:
+        print("   nothing -- it is all here already")
+    for part in todo:
+        print("   %-28s %s" % (part["name"], part["costs"]))
+    cannot = [p for p in PARTS if not p["fit"](m)]
+    if cannot:
+        print("\n cannot, on this machine:")
+        for part in cannot:
+            print("   %-28s %s" % (part["name"], part["why"]))
+    print()
+    return 0
+
+
 def main(argv=()):
+    argv = list(argv)
     if "-h" in argv or "--help" in argv:
         print(__doc__)
         return 0
+    if "--list" in argv or "--dry-run" in argv:
+        m = this_machine()
+        spec(m)
+        return just_say(m)
+    if "--auto" in argv or "--yes" in argv or "-y" in argv:
+        return automatic()
 
     while True:
         m = this_machine()
@@ -299,6 +371,8 @@ def main(argv=()):
         print("  %d) all of it, in order" % all_n)
         print("  %d) leave everything alone" % SLOTS)
 
+        print("\n  (or run `python3 wizard.py --auto` to do all of it")
+        print("   without being asked again)")
         got = ask("\n  1-%d: " % SLOTS)
         if not got or got == str(SLOTS):
             print("\n Nothing was changed.\n")
