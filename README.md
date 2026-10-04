@@ -12,16 +12,10 @@ not built yet and where they would go.
 
 ## Start here
 
-On a phone, straight off github — three lines, no zip and no cable:
+On a fresh Android phone, one line pasted into Termux:
 
 ```bash
-pkg install git -y
-```
-```bash
-git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup
-```
-```bash
-sh ~/wakeup/get.sh
+pkg i -y git && git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get.sh
 ```
 
 Then one word, and pick a number:

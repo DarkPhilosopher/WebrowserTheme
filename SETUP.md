@@ -4,29 +4,48 @@ Which steps you need depends on which machine. Find yours.
 
 ---
 
-## Straight off github, with Termux and nothing else
+## A fresh phone: one line
 
-This is the short way, and the one to use on a phone. It needs no zip,
-no file manager, and no cable.
-
-**One line, if the phone has curl:**
+Open Termux and paste this. Nothing else — no zip, no file manager,
+no cable.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/DarkPhilosopher/WebrowserTheme/refs/heads/claude/new-session-y0nuxy/get.sh | sh
+pkg i -y git && git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get.sh
 ```
 
-**Three lines, if it does not** — Termux ships without curl, so this is
-the usual case:
+Then:
 
 ```bash
-pkg install git -y
+wakeup
 ```
-```bash
-git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup
-```
-```bash
-sh ~/wakeup/get.sh
-```
+
+### Why it cannot be shorter
+
+A fresh Termux has **no curl, no wget and no git**. Checked against
+Termux's own bootstrap list rather than from memory — the whole base
+is `apt bash bzip2 proot coreutils dash diffutils findutils gawk grep
+gzip less procps psmisc sed tar termux-core termux-exec
+termux-keyring termux-tools util-linux ed debianutils dos2unix
+inetutils lsof nano net-tools patch unzip`.
+
+Nothing in that list can fetch a URL. So the first thing has to
+install something that can, and `pkg i -y git` is the shortest honest
+start. (`pkg` matches `i*`, so `i` is enough.)
+
+The `-b` is needed because the work is not on the repository's
+default branch.
+
+### What the one line does
+
+| | |
+|---|---|
+| `pkg i -y git` | the one thing a fresh Termux lacks and cannot fetch without |
+| `git clone ... ~/wakeup` | the files, about 700 KB |
+| `sh ~/wakeup/get.sh` | installs python, makes `import sparkblocks` work anywhere, and makes `wakeup` a word you can type |
+
+`get.sh` is safe to run again — it pulls instead of cloning and skips
+anything already done. It uses whichever clone it is sitting in, so
+putting the folder somewhere else is fine.
 
 `get.sh` is the one that makes the rest available. It installs git and
 python, puts the folder in `~/wakeup`, makes `import sparkblocks` work
