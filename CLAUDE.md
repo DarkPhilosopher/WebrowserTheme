@@ -29,7 +29,7 @@ is not his.
 |---|---|
 | cloud container | No reach to any of his machines. Say so plainly rather than offering workarounds |
 | Dell i7 laptop | Modified, bought on Facebook Marketplace. Windows paths. Two profiles, `sauve` and `xzg4b`, on the one machine. Also has an `S:` drive |
-| A33 | Samsung Galaxy A33, 64-bit. Usually the one he is on. Claude Code runs, but only inside `proot-distro ubuntu` |
+| A33 | Samsung Galaxy A33, 64-bit. Usually the one he is on. Claude Code **installs** inside `proot-distro ubuntu` — done and verified 2026-10-04 — but has **never answered**: the account is refused with *your organization has disabled Claude subscription access for Claude Code*. Not a fault here. `claude-ready.py --deep` is the only check that sees it |
 | A17 | His other Android phone. Architecture not yet confirmed — run `whereami.py` there |
 
 His 32-bit phone was a **Hotpepper ACP** and he has **disposed of it**,
