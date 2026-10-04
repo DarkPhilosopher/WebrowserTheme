@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """check-withheld -- make sure the directory of what is missing is honest.
 
-    python3 check-withheld.py
+    python3 check-withheld.py          is the directory still true
+    python3 check-withheld.py --ask    something private is moving
 
 `WITHHELD.md` says what has been left out of this repository, where it
 went, and why. This checks that it still tells the truth.
@@ -207,10 +208,146 @@ def rows_with_no_marker(r, sheet, marks):
 
 
 # ==========================================================================
+#  ASKING, BEFORE SOMETHING MOVES
+#
+#  Material does not arrive and get filed. The point of these is to
+#  make "I assumed it was private" impossible to say by accident.
+# ==========================================================================
+
+COMING_IN = [
+    ("name", "What is it, by name? The FIELD, not the value.",
+     "If you cannot name it without writing the thing down, it does "
+     "not belong on that page at all."),
+    ("from", "Which container did it come out of? Name it.",
+     "`my notes` is not a container. `Drive/xzg4b3xz` is. "
+     "`the A33, Termux home` is."),
+    ("locked", "Is that container actually LOCKED? (yes/no/not sure)",
+     "Not felt private -- locked. Who else can open it? Is there a "
+     "share link? Was it ever public, even briefly?"),
+    ("allowed", "Did Gabriel permit THIS material to come here? (yes/no)",
+     "Permission for one thing is not permission for the next."),
+]
+
+GOING_OUT = [
+    ("name", "What is it, by name? The FIELD, not the value.", ""),
+    ("to", "Where exactly is it going?",
+     "Name the container, not the person."),
+    ("locked", "Is THAT container locked? (yes/no/not sure)", ""),
+    ("route", "Does the route pass anywhere open? (yes/no/not sure)",
+     "A file handed over in the chat has been through the "
+     "conversation. A commit has been through the history. Neither "
+     "can be taken back."),
+    ("copies", "What copies get left behind, and who clears them?",
+     "The session scratchpad, a zip in Downloads, a branch, a reflog."),
+]
+
+VAGUE = ("not sure", "dunno", "?", "unsure", "don't know",
+         "dont know", "unknown", "maybe", "")
+
+# Which answer is the SAFE one differs per question, and getting that
+# backwards is the whole danger. "Is it locked? -- no" and "does the
+# route pass anywhere open? -- yes" are both bad news, but they are
+# opposite words. Say so once, here, rather than in an if.
+SAFE = {
+    "locked":  ("yes", "y"),          # anything else, including no
+    "allowed": ("yes", "y"),
+    "route":   ("no", "n"),           # yes means it goes through the open
+}
+
+TROUBLE = {
+    "locked":  "that the container is locked",
+    "allowed": "that Gabriel permitted it",
+    "route":   "that the route stays out of the open",
+}
+
+
+def worrying(key, answer):
+    """Is this answer a reason to stop?"""
+    if key not in SAFE:
+        return False
+    said = answer.strip().lower()
+    return said in VAGUE or said not in SAFE[key]
+
+
+def ask_about(which, questions):
+    print("\n%s\n%s" % (which, "-" * len(which)))
+    answers, doubt = {}, []
+    for key, question, note in questions:
+        print("\n  %s" % question)
+        if note:
+            for bit in note.split(". "):
+                print("    %s" % bit.rstrip("."))
+        try:
+            got = input("  > ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\n  stopped. Nothing moves.")
+            return None
+        answers[key] = got
+        if worrying(key, got):
+            doubt.append(key)
+    return answers, doubt
+
+
+def ask(argv=()):
+    """Walk the questions, then print the row to paste in."""
+    print(__doc__.split("WHAT IT CHECKS")[0].strip())
+    print("\nWhich way is it moving?")
+    print("  1. coming in  -- something private is arriving here")
+    print("  2. going out  -- something private is leaving")
+    try:
+        way = input("\n  1 or 2: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return 0
+
+    got = ask_about("Coming in", COMING_IN) if way == "1" else \
+          ask_about("Going out", GOING_OUT)
+    if got is None:
+        return 1
+    answers, doubt = got
+
+    print("\n" + "=" * 58)
+    if doubt:
+        print("\nSTOP. These are not settled:")
+        for key in doubt:
+            print("    %-8s you answered %r" % (key, answers[key]))
+        print("""
+Then the state is `unknown`, and the material does not move until it
+is not. `unknown` is an honest row. A guess is not, and a wrong guess
+about whether somewhere is locked is the one mistake here that cannot
+be taken back.
+
+Add this row to WITHHELD.md and leave the material where it is:
+""")
+        print("| `W-nn` | %s | unknown | %s | not moved: could not confirm "
+              "%s |"
+              % (answers.get("name", "?"),
+                 answers.get("from") or answers.get("to") or "—",
+                 ", and ".join(TROUBLE[k] for k in doubt)))
+        return 1
+
+    print("\nNothing unanswered. The row to add:\n")
+    if way == "1":
+        print("| `W-nn` | %s | withheld | %s | came from %s, confirmed "
+              "locked; Gabriel permitted it |"
+              % (answers["name"], answers["from"], answers["from"]))
+    else:
+        print("| `W-nn` | %s | elsewhere | %s | confirmed locked, route "
+              "stays closed; copies left: %s |"
+              % (answers["name"], answers["to"],
+                 answers.get("copies") or "none stated"))
+    print("\nThen: python3 check-withheld.py")
+    return 0
+
+
+# ==========================================================================
 #  SAYING IT
 # ==========================================================================
 
 def main(argv=()):
+    if "--ask" in argv:
+        return ask(argv)
+
     sheet, trouble = rows()
     if trouble:
         print("\n%s\n" % trouble)

@@ -15,6 +15,7 @@ the work.
 """
 
 import os
+import shutil
 import subprocess
 import sys
 
@@ -100,6 +101,25 @@ def go(*args):
     except KeyboardInterrupt:
         line("\n  stopped.")
     ask("\n-- press enter --")
+
+
+def go_cmd(cmd, wait=True):
+    """Run any command, letting it own the screen. For things that are
+    not our own Python -- `claude`, `sh get-claude.sh`."""
+    line()
+    line("  $ " + " ".join(cmd))
+    line()
+    try:
+        code = subprocess.call(cmd, cwd=HERE)
+    except FileNotFoundError:
+        line("  there is no `%s` on this machine yet." % cmd[0])
+        code = 127
+    except KeyboardInterrupt:
+        line("\n  stopped.")
+        code = 130
+    if wait:
+        ask("\n-- press enter --")
+    return code
 
 
 def on_android():
@@ -232,6 +252,108 @@ def update():
 
 
 # ==========================================================================
+#  CLAUDE IN THE TERMINAL
+#
+#  One number, and it sorts itself out: look first, offer to fix what
+#  is missing, then start. He should never have to know which of the
+#  five things in the chain is the one that is not there.
+# ==========================================================================
+
+READY = os.path.join(HERE, "claude-ready.py")
+GETTER = os.path.join(HERE, "get-claude.sh")
+
+
+def claude_state():
+    """(ready, what it said). Looks, says nothing, changes nothing."""
+    try:
+        out = subprocess.run([PY, READY, "--check"], cwd=HERE,
+                             capture_output=True, text=True, timeout=300)
+        return out.returncode == 0, (out.stdout or out.stderr)
+    except Exception as e:
+        return False, "could not look: %s" % e
+
+
+def claude_fix():
+    """Install whatever is missing, before and after Claude itself."""
+    line()
+    if not os.path.exists(GETTER):
+        line("get-claude.sh is not here. Pull the latest:")
+        line("    cd %s && git pull" % HERE)
+        ask("\n-- press enter --")
+        return False
+
+    line("This installs whatever is missing, in order, and skips")
+    line("anything already done. The Ubuntu step is a few hundred")
+    line("megabytes and is the slow one -- leave it running.")
+    line()
+    if not ask("go ahead? (y/n) ").lower().startswith("y"):
+        return False
+    return go_cmd(["sh", GETTER]) == 0
+
+
+def claude_start(carry_on=False):
+    """Start it, after making sure it can start."""
+    cmd = ["claude", "--continue"] if carry_on else ["claude"]
+
+    # Off Android there is no proot and no Termux, and claude-ready
+    # would tell a Windows laptop to install Termux from F-Droid --
+    # which is the kind of useless advice he will actually try.
+    if not on_android():
+        if shutil.which("claude"):
+            go_cmd(cmd)
+            return
+        line()
+        line("Claude is not on this machine, and this is not a phone,")
+        line("so none of the proot business applies. Here it installs")
+        line("the ordinary way:")
+        line()
+        line("    npm install -g @anthropic-ai/claude-code")
+        line()
+        line("Node.js first, from nodejs.org.")
+        ask("\n-- press enter --")
+        return
+
+    ready, said = claude_state()
+    if not ready:
+        line()
+        line(said.strip())
+        line()
+        line("Claude cannot start until the above is sorted.")
+        if ask("fix it now? (y/n) ").lower().startswith("y"):
+            claude_fix()
+            ready, said = claude_state()
+            if not ready:
+                line("\nStill not ready. What it says now:")
+                line(said.strip())
+                ask("\n-- press enter --")
+                return
+        else:
+            return
+
+    go_cmd(cmd)
+
+
+def claude_menu():
+    while True:
+        pick = choose("Claude in the terminal", [
+            ("start it", "start"),
+            ("carry on the last conversation", "continue"),
+            ("check what is missing", "check"),
+            ("fix what is missing", "fix"),
+        ])
+        if pick is None:
+            return
+        if pick == "start":
+            claude_start()
+        elif pick == "continue":
+            claude_start(carry_on=True)
+        elif pick == "check":
+            go(READY, "--check")
+        elif pick == "fix":
+            claude_fix()
+
+
+# ==========================================================================
 #  THE MENUS
 # ==========================================================================
 
@@ -244,6 +366,7 @@ def more_menu():
             ("claude-ready -- can this phone run Claude", "ready"),
             ("connect -- what touches what", "connect"),
             ("withheld -- what is deliberately not here", "withheld"),
+            ("panel in Chrome -- buttons and pictures", "browser"),
             ("save a copy to storage", "save"),
             ("update from github", "update"),
         ])
@@ -263,6 +386,8 @@ def more_menu():
                 go("-m", "sparkblocks", "connect", thing)
         elif pick == "withheld":
             go(os.path.join(HERE, "check-withheld.py"))
+        elif pick == "browser":
+            open_browser_panel()
         elif pick == "save":
             save_to_storage()
         elif pick == "update":
@@ -281,17 +406,19 @@ def main(argv=()):
 
     while True:
         pick = choose("Wakeup", [
+            ("claude -- check, fix, and start it", "claude"),
             ("blocks -- every block there is", "blocks"),
             ("menu -- build a program with numbers", "menu"),
             ("pad -- build one by pressing squares", "pad"),
             ("panel -- the control panel, in this terminal", "panel"),
-            ("panel in Chrome -- buttons and pictures", "browser"),
             ("run a program", "run"),
         ] + [("more", "more")])
         if pick is None:
             line("\n  bye.\n")
             return 0
-        if pick == "blocks":
+        if pick == "claude":
+            claude_menu()
+        elif pick == "blocks":
             go("-m", "sparkblocks")
         elif pick == "menu":
             go("-m", "sparkblocks", "menu")

@@ -75,6 +75,60 @@ above works whether or not he ever makes it private — which is the
 point of writing the gap down rather than waiting for permission to
 fill it.
 
+## Before private material moves, ask
+
+Material does not just arrive and get filed. **Ask first, and write
+the answers into the row.** If any answer is *I do not know*, the
+state is `unknown` and the material does not move until it is not.
+
+```bash
+python3 check-withheld.py --ask
+```
+
+walks these questions and prints the row to paste in.
+
+### Coming in — is it really from a locked place
+
+1. **What is it, by name?** The field, not the value. If it cannot be
+   named without writing the thing down, it does not belong on this
+   page at all.
+2. **Which container did it come out of?** Name it. "my notes" is not
+   a container; `Drive/xzg4b3xz`, `the A33, Termux home` are.
+3. **Is that container actually locked?** Not *felt* private —
+   *locked*. Who else can open it? Is there a share link? Was it ever
+   public, even briefly?
+4. **Did Gabriel permit this material, specifically, to come here?**
+   Permission for one thing is not permission for the next.
+5. **Is it still needed in the open one?** If it is in two places and
+   one is open, locking the second has done nothing.
+
+### Going out — is the destination locked
+
+1. **Where exactly is it going**, and is *that* a locked container?
+2. **Does the route pass anywhere open?** A file handed over in a chat
+   has been through the conversation. A commit has been through the
+   history. Neither can be taken back.
+3. **What copies get left behind?** The session scratchpad, a zip in
+   Downloads, a branch, a reflog. Name them, and say who clears them.
+4. **Is the destination his alone, or shared with anyone?**
+
+### Places this project knows about, and whether they are locked
+
+| Place | Locked | Worth knowing |
+|---|---|---|
+| This repository | **No — public** | Anyone can read it, and history keeps deleted files. There is no undo on a push |
+| `private/` | Not shared, **not durable** | Gitignored, so git will not take it. Wiped when the session ends. Scratch space, never storage |
+| A file handed over in the conversation | **No** | It has been through the chat to get to him. Fine for his own material going back to him; not a vault |
+| Google Drive `xzg4b3xz@gmail.com` | Yes, unless shared | Reachable from here. Check it is not on a share link |
+| Google Drive `lewisgabe33@gmail.com` | Unknown from here | No connector. This session cannot see it at all — ⟦W-08⟧ |
+| Gabriel's own phone or laptop | His to say | Only he knows who else uses the machine |
+| A private GitHub repository | Yes | **Does not exist yet.** The obvious home |
+
+**The honest summary:** of everywhere this session can actually reach,
+exactly one is locked, and that is the `xzg4b3xz` Drive. Everything
+else is either public or temporary. That is worth saying plainly
+rather than implying there is a safe place here when there is one.
+
 ## Keeping it honest
 
 ```bash
@@ -94,10 +148,22 @@ WITHHELD.md          this page: the directory, and nothing private
 ├─ ⟦W-nn name⟧       the marker left in the gap, anywhere in the repo
 ├─ the states        refused · withheld · elsewhere ·
 │                    not collected · unknown · out of order
-└─ check-withheld.py the guard
-    ├─ markers_have_rows()    no marker points at nothing
-    ├─ rows_are_complete()    no row is missing where or why
-    ├─ rows_are_used()        no row describes a gap that is gone
-    ├─ states_are_known()     no invented state
-    └─ nothing_private_tracked()  git is not carrying private/
+└─ check-withheld.py
+    │
+    ├─ the guard               python3 check-withheld.py
+    │   ├─ every_marker_has_a_row()      no marker points at nothing
+    │   ├─ every_row_says_where_and_why()
+    │   ├─ every_state_is_a_real_one()   no invented state
+    │   ├─ no_value_leaked_in()          the page names fields only
+    │   ├─ git_is_not_carrying_private() the one that matters
+    │   └─ rows_with_no_marker()         noted, not faulted
+    │
+    └─ the questions           python3 check-withheld.py --ask
+        ├─ COMING_IN · GOING_OUT   what to ask, each way
+        ├─ SAFE                    WHICH answer is the safe one, per
+        │                          question. "locked? no" and "open
+        │                          route? yes" are both bad news in
+        │                          opposite words -- said once, here
+        └─ worrying()              anything vague, or not the safe
+                                   answer, stops the move
 ```
