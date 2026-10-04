@@ -1,0 +1,30 @@
+# A NUMBER THAT WATCHES ITSELF AND SENDS TO OTHERS.
+#
+#   python3 -m sparkblocks run t5-watcher.spark
+#
+# `put hp 4`            a reserved number, by name
+# `var hp`              read it back
+# `threshold 5 above=0 below=1`
+#                       1 when hp is 5 or below, 0 when above
+# `gate`                let the rest through only while that is true
+# `fan list`            send the same value to every target at once
+#
+# So: when hp drops to 5 or below, every target gets -5.
+#
+# Try: change `put hp 4` to `put hp 9` -- nothing is sent, because
+# the gate is shut.
+
+put hp 4
+
+const -5
+gate
+    var hp
+    threshold 5 above=0 below=1
+
+fan list
+    - put ally1
+    - put ally2
+    - put ally3
+
+var ally2
+say

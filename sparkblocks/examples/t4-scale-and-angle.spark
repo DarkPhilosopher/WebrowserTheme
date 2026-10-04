@@ -1,0 +1,21 @@
+# SCALING IN 2D, AND ANGLE FROM A DISTANCE.
+#
+#   python3 -m sparkblocks run t4-scale-and-angle.spark --loop
+#
+# `grow` is the scaling matrix: `grow 2` doubles, `grow 0.5` halves,
+# `grow 2 1 1` stretches x only.
+#
+# `spin y var=angle` takes its angle from a variable rather than a
+# fixed number, so anything that changes that variable changes the
+# angle -- a tick, a sensor, a distance.
+#
+# Try: `grow 2`, then `grow 0.5 2 1`. Change `by=6` to `by=30`.
+
+tick angle by=6 wrap=360
+screen fit
+box 3 3 3
+grow 1.5
+spin y var=angle
+flat
+plot
+draw

@@ -1,0 +1,14 @@
+# TURNING ONE PIXEL ON, AND OFF.
+#
+#   python3 -m sparkblocks run t1-one-pixel.spark
+#
+# `screen 8 4` makes a grid 8 across and 4 down.
+# `light 3 1` turns on the pixel at column 3, row 1 -- when the
+# number coming down the chain is over the line (0.5 by default).
+#
+# Try: change `const 1` to `const 0` and it goes off instead.
+
+screen 8 4
+const 1
+light 3 1
+draw

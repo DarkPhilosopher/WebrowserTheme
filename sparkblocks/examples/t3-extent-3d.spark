@@ -1,0 +1,22 @@
+# GIVING AN EXTENT IN 3D, AND LETTING IT WORK OUT THE PIXELS.
+#
+#   python3 -m sparkblocks run t3-extent-3d.spark
+#
+# `box 4 3 2` is not a picture. It is an EXTENT -- 4 wide, 3 high,
+# 2 deep -- handed over as points in space.
+#
+#   flat   drops xyz onto the grid, so 3D becomes 2D
+#   plot   lights whichever pixel each point lands on
+#
+# You never name a pixel. You say where things ARE, and their
+# location decides which pixels come on.
+#
+# Try: change `box 4 3 2` to `ball 2`, or the numbers to `box 8 1 1`.
+
+screen fit
+box 4 3 2
+spin y 30
+spin x 20
+flat
+plot
+draw

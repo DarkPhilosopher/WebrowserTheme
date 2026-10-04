@@ -260,7 +260,7 @@ def _build(ln, known):
         if not branches:
             raise ScriptError("line %d: fan needs branches, each starting `- `"
                               % ln.n)
-        return Fan([_chain_of(b, known) for b in branches], how=how)
+        return Fan([_branch_chain(b, known) for b in branches], how=how)
 
     if name not in known:
         near = _near(name, known)
@@ -301,6 +301,42 @@ def _build(ln, known):
         raise ScriptError("line %d: %s does not take those settings (%s).\n"
                           "  Try: python3 -m sparkblocks %s"
                           % (ln.n, name, e, cls.__name__))
+
+
+def _branch_chain(branch, known):
+    """One `- ` branch of a fan, as a chain.
+
+    A branch always begins with a block on its own line, and may carry
+    more indented under it:
+
+        - ext .md            one block
+        - read               a block, then the rest of the chain
+          contains spark
+
+    A bare `-` is refused by the reader, so there is no third form.
+
+    NEITHER of these worked before. The branch was handed to
+    `_chain_of`, which looks only at what is BELOW a line and never at
+    the line itself -- so the first raised "nothing is indented under
+    ext", and the second raised "read does not hold other blocks".
+    Both forms are in the format's own documentation at the top of
+    this file. No example used `fan`, so nothing ever caught it.
+    """
+    kids = [k for k in branch.kids if not k.branch]
+    if not branch.name:
+        if not kids:
+            raise ScriptError("line %d: this branch has nothing in it"
+                              % branch.n)
+        return Chain([_build(k, known) for k in kids])
+    if branch.name in HOLDERS:
+        # A holder swallows what is under it, here as everywhere else.
+        return Chain([_build(branch, known)])
+    # Build the branch line on its own. Its kids are the REST of this
+    # chain, not something it holds, and `_build` rightly refuses to
+    # let an ordinary block have anything indented under it.
+    head = Line(branch.n, branch.indent, branch.branch, branch.name,
+                list(branch.args))
+    return Chain([_build(head, known)] + [_build(k, known) for k in kids])
 
 
 def _chain_of(parent, known):

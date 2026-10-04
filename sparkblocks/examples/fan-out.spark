@@ -1,0 +1,20 @@
+# ONE NUMBER, SENT TO SEVERAL PLACES AT ONCE.
+#
+#   python3 -m sparkblocks run fan-out.spark
+#
+# `fan` runs every branch on the SAME number, then combines them.
+# Each branch is a line starting `- `, and a branch can be one block
+# or a whole chain.
+#
+# Try: change `sum` to `max`, or `list` to see each answer separately.
+
+const -5
+
+fan sum
+    - put target1
+    - put target2
+    - gain 2
+      put target3
+
+var target3
+say

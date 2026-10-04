@@ -268,6 +268,54 @@ held back, or nothing, which is its own kind of answer.
 │ YOURS    only you can say which, and give      │
 │          permission for the material to go in  │
 └────────────────────────────────────────────────┘
+
+┌─ auto-render in 3D ────────────────── CERTAIN ─┐
+│ what     Today a program writes `flat` and     │
+│          `plot` itself every frame. A shape    │
+│          should be able to draw itself         │
+│ how      A `render` block that holds a shape   │
+│          and does the flatten-and-plot, so the │
+│          line reads box 3 3 3 / render         │
+│ waited   TUTORIAL.md section 6, which has to   │
+│          teach the long way round              │
+│ size     small                                 │
+└────────────────────────────────────────────────┘
+
+┌─ targets by faction, not by name ────── MAYBE ─┐
+│ what     t5-watcher names ally1 ally2 ally3.   │
+│          He wants `every ally in range, not    │
+│          enemies` -- chosen by WHAT a thing is │
+│ how      A register of entities, each with a   │
+│          classification and a faction, and a   │
+│          block that picks from it              │
+│ waited   TUTORIAL.md section 7 says plainly    │
+│          that this part does not exist         │
+│ size     medium, and it is a new idea rather   │
+│          than a missing piece                  │
+└────────────────────────────────────────────────┘
+
+┌─ the same program, in a browser ───── LONGING ─┐
+│ what     REAL phone pixels instead of          │
+│          character cells, with the same blocks │
+│          behind it. A terminal cannot address  │
+│          a phone pixel at all                  │
+│ have     panel/panel.html already runs blocks  │
+│          in Chrome                             │
+│ YOURS    you asked for this as a future wish,  │
+│          in Java. Worth deciding Java vs what  │
+│          the panel already uses before anybody │
+│          starts                                │
+└────────────────────────────────────────────────┘
+
+┌─ ASC, and whether to bridge it ──────── MAYBE ─┐
+│ what     His own 16x16 ASCII grid repository.  │
+│          `screen 16 16` is the same shape      │
+│ waited   nothing. It runs on its own           │
+│ YOURS    NEAR THE LINE. spark and Spark blocks │
+│          are deliberately separate and he has  │
+│          said so twice. Do not bridge ASC      │
+│          either unless he says so              │
+└────────────────────────────────────────────────┘
 ```
 
 ### MAYBE — worth doing, not obviously right

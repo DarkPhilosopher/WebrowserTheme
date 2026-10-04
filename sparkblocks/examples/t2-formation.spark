@@ -1,0 +1,27 @@
+# A FORMATION: SEVERAL PIXELS PLACED AT ONCE, AS ONE GROUP.
+#
+#   python3 -m sparkblocks run t2-formation.spark
+#
+# `fan list` runs every branch and collects the answers into one list.
+# Each `dot x y` is one point, so the fan is a formation of points.
+# `plot` then lights whichever pixel each point LANDS ON -- you say
+# where things are, not which pixels to switch.
+#
+# `flatten` is needed because every branch hands back a LIST of
+# points, so the fan collects a list OF lists. Flatten makes it one
+# list again. Leave it out and nothing draws, silently.
+#
+# Try: add another `- dot 6 1` line. Move one and watch it move.
+
+screen 12 6
+
+fan list
+    - dot 2 1
+    - dot 3 1
+    - dot 4 1
+    - dot 3 2
+    - dot 3 3
+
+flatten
+plot
+draw
