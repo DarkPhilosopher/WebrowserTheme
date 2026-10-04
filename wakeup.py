@@ -361,6 +361,7 @@ def more_menu():
     while True:
         pick = choose("More", [
             ("check -- make sure it all still hangs together", "check"),
+            ("saves -- your own programs, wherever they are", "saves"),
             ("outside -- blocks from somewhere else", "outside"),
             ("whereami -- which machine is this", "where"),
             ("claude-ready -- can this phone run Claude", "ready"),
@@ -375,6 +376,8 @@ def more_menu():
             return
         if pick == "check":
             go("-m", "sparkblocks", "check")
+        elif pick == "saves":
+            go("-m", "sparkblocks", "saves")
         elif pick == "outside":
             go("-m", "sparkblocks", "outside")
         elif pick == "where":

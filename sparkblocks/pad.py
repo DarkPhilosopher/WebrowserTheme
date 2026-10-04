@@ -449,9 +449,8 @@ def _file(lay, program, saving):
         return program
     if not said:
         return program
-    if not said.endswith((".spark", ".parts")):
-        said += ".spark"
-    path = os.path.abspath(os.path.expanduser(said))
+    from .saves import where
+    path = where(said, for_saving=saving)
     try:
         if saving:
             os.makedirs(os.path.dirname(path) or ".", exist_ok=True)

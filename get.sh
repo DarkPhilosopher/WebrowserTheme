@@ -23,7 +23,6 @@
 set -e
 
 REPO="https://github.com/DarkPhilosopher/WebrowserTheme"
-BRANCH="${WAKEUP_BRANCH:-claude/new-session-y0nuxy}"
 
 # If this script is already sitting inside a clone, THAT clone is the
 # one meant -- not a second copy at the default path. Without this,
@@ -37,6 +36,21 @@ if [ -n "$SELF_DIR" ] && [ -f "$SELF_DIR/get.sh" ] && [ -d "$SELF_DIR/.git" ]; t
   INTO="${WAKEUP_INTO:-$SELF_DIR}"
 else
   INTO="${WAKEUP_INTO:-$HOME/wakeup}"
+fi
+
+# Follow whichever branch this copy was cloned from, rather than a
+# name written in here. Clone from `get` and updates come from `get`;
+# clone from the working branch and they come from that. A hardcoded
+# name would quietly drag one into the other on the first update.
+BRANCH="$WAKEUP_BRANCH"
+if [ -z "$BRANCH" ] && [ -d "$INTO/.git" ]; then
+  BRANCH="$(git -C "$INTO" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+fi
+# Written as a plain `if`, not as `[ ] || [ ] && x`. Whether that
+# chain aborts under `set -e` depends on the shell, and this file
+# runs on a phone where a silent early exit is very hard to see.
+if [ -z "$BRANCH" ] || [ "$BRANCH" = "HEAD" ]; then
+  BRANCH="get"
 fi
 
 say() { printf '%s\n' "$*"; }
@@ -84,11 +98,29 @@ command -v python3 >/dev/null || PY=python
 # ------------------------------------------------------------------ the files
 step "the files"
 if [ -d "$INTO/.git" ]; then
-  say "already there -- pulling instead"
+  say "already there -- updating instead"
   cd "$INTO"
+
+  # Your own programs come out first. Saving used to land them in
+  # this folder, where a pull can collide with them and where they
+  # look like changes to the project. They are moved to
+  # ~/.wakeup/programs, which no update ever touches, and nothing of
+  # the project's own is moved -- git is asked which is which.
+  "$PY" "$INTO/sparkblocks/saves.py" --adopt "$INTO" 2>/dev/null || true
+
+  # Never force. If there is something here worth keeping that git
+  # does not know about, it stays, and the pull says so rather than
+  # rolling over it.
   git fetch origin "$BRANCH"
   git checkout "$BRANCH" 2>/dev/null || git checkout -b "$BRANCH" "origin/$BRANCH"
-  git pull origin "$BRANCH"
+  if ! git pull origin "$BRANCH"; then
+    say ""
+    say "The update stopped, and nothing was thrown away."
+    say "Usually that means a file here has been changed by hand."
+    say "See what:    cd $INTO && git status"
+    say "Keep yours:  git stash        (then run this again)"
+    exit 1
+  fi
 elif [ -d "$INTO" ] && [ "$(ls -A "$INTO" 2>/dev/null)" ]; then
   say "$INTO already has things in it and is not a git copy."
   say "I will not write over it. Move it, or name somewhere else:"
@@ -99,6 +131,12 @@ else
   cd "$INTO"
 fi
 say "got it: $INTO"
+
+# Programs you save live outside this folder on purpose, so deleting
+# the whole thing and starting again never loses them.
+if [ -d "$HOME/.wakeup/programs" ]; then
+  say "your own programs stay in ~/.wakeup/programs -- untouched"
+fi
 
 # ------------------------------------------- make `import sparkblocks` work
 step "making the blocks reachable from any folder"

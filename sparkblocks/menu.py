@@ -355,9 +355,8 @@ def do_save(program):
     said = ask("file name (blank to stop)")
     if not said:
         return
-    if not said.endswith((".spark", ".parts")):
-        said += ".spark"
-    path = os.path.abspath(os.path.expanduser(said))
+    from .saves import where
+    path = where(said, for_saving=True)
     try:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
         with open(path, "w") as fh:
@@ -378,9 +377,8 @@ def do_open(program):
     said = ask("file name (blank to stop)")
     if not said:
         return program
-    path = os.path.abspath(os.path.expanduser(said))
-    if not os.path.exists(path) and not path.endswith((".spark", ".parts")):
-        path += ".spark"
+    from .saves import where
+    path = where(said, for_saving=False)
     try:
         with open(path) as fh:
             lines = [l.rstrip() for l in fh if l.strip()]

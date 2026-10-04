@@ -47,6 +47,36 @@ def load_book():
         return None, None
 
 
+def load_saves():
+    """The module that knows where your programs live.
+
+    Imported normally when the package is reachable, and otherwise
+    loaded straight off the disk by path -- because this panel has to
+    keep working when `import sparkblocks` does not, and knowing where
+    your own files are is not a thing to lose along with it.
+    """
+    try:
+        sys.path.insert(0, os.path.dirname(HERE))
+        from sparkblocks import saves
+        return saves
+    except Exception:
+        pass
+    try:
+        import importlib.util
+        path = os.path.join(os.path.dirname(HERE), "sparkblocks", "saves.py")
+        spec = importlib.util.spec_from_file_location("wakeup_saves", path)
+        if spec is None or spec.loader is None:
+            return None
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:
+        return None
+
+
+SAVES = load_saves()
+
+
 def have_parts():
     """Can we actually run a program here, or only write one?"""
     try:
@@ -273,13 +303,17 @@ def save(program):
     said = ask("file name (blank to stop)")
     if not said:
         return
-    if not said.endswith((".spark", ".parts")):
-        said += ".spark"
-    path = os.path.abspath(os.path.expanduser(said))
     try:
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        with open(path, "w") as fh:
-            fh.write("\n".join(program) + "\n")
+        if SAVES:
+            path = SAVES.where(said, for_saving=True)
+            SAVES.write(path, program)
+        else:
+            if not said.endswith((".spark", ".parts")):
+                said += ".spark"
+            path = os.path.abspath(os.path.expanduser(said))
+            os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write("\n".join(program) + "\n")
         print("\n wrote %s" % path)
         print("\n Open it in any text editor to move the lines around.")
     except OSError as e:
@@ -292,9 +326,12 @@ def open_file(program):
     said = ask("file name (blank to stop)")
     if not said:
         return program
-    path = os.path.abspath(os.path.expanduser(said))
-    if not os.path.exists(path) and not path.endswith((".spark", ".parts")):
-        path += ".spark"
+    if SAVES:
+        path = SAVES.where(said, for_saving=False)
+    else:
+        path = os.path.abspath(os.path.expanduser(said))
+        if not os.path.exists(path) and not path.endswith((".spark", ".parts")):
+            path += ".spark"
     try:
         with open(path) as fh:
             lines = [l.rstrip() for l in fh if l.strip()]

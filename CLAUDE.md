@@ -252,6 +252,60 @@ python3 claude-ready.py --selftest   the faults that bit before stay dead
 
 Run all four before saying something is done.
 
+## His own files are not ours
+
+Programs he saves are **his**, and they must never live inside the
+clone. `sparkblocks/saves.py` is the one place that knows this.
+
+**The tag.** Every save begins with one ordinary `#` comment:
+
+```
+# wakeup program · hello · saved 2026-10-04 11:40 MDT · on A33
+```
+
+Readers ignore it, so the program runs the same. But it means a file
+is found **by what it is**, not by remembering where it went — the
+only thing that works on a phone, where everything ends up in
+Downloads whatever anyone intended.
+
+**Finding.** `saves.found()` looks in likely places, **most likely
+first** — Downloads, then `~/.wakeup/programs`, the Termux home, the
+project folder, Documents, shared storage, where you are standing —
+shallowly, because a phone cannot walk the whole card. Results are
+**newest first**.
+
+**Moving is his choice.** Nothing is relocated on its own.
+`saves --tidy` shows what it found and asks. No is a complete answer;
+the tag means it will still be found next time.
+
+**The project's own files are not his.** The examples that ship here
+are programs too. `saves.theirs()` asks git which files the project
+tracks and leaves those alone — without it, tidying would move the
+examples out of the folder `check` reads and break it.
+
+**Updating carries his work out first.** `get.sh` runs
+`saves.py --adopt` before pulling, and never force-resets. If a pull
+would collide it stops and says so rather than rolling over anything.
+
+| | |
+|---|---|
+| `~/.wakeup/programs` | his. No update ever touches it |
+| the clone | ours. Replaceable, and treated as replaceable |
+
+## The two branches
+
+| Branch | What it is |
+|---|---|
+| `claude/new-session-y0nuxy` | where the work goes |
+| `get` | the same thing under a short name, so the install line is shorter |
+
+**Push to both, every time.** `get` going stale means a fresh phone
+installs something old and nobody finds out for a while.
+
+`get.sh` takes the branch from the clone it is in, so whichever one he
+cloned is the one he keeps getting. Do not put a branch name back into
+that file.
+
 ## The second moral: an update is an offer, never a demand
 
 He called this **a moral**, in those words, on 2026-10-04. It sits

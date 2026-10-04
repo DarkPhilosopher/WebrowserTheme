@@ -43,6 +43,7 @@ the zip, and everything is accounted for.
 | `sparkblocks/book.py` | `sparkblocks/` | Writes the whole language out as JSON for the panels | — | Any machine |
 | `sparkblocks/check.py` | `sparkblocks/` | 855 checks that the language still hangs together | — | Any machine |
 | `sparkblocks/install.py` | `sparkblocks/` | Makes `import sparkblocks` work from any folder, for good | A writable site-packages | Any machine |
+| `sparkblocks/saves.py` | `sparkblocks/` | His own programs: the tag every save carries, the ranked search that finds them wherever they went, and the move-them prompt that only ever moves when asked | `~/.wakeup/programs`, Downloads, and anywhere likely | Any machine |
 | `sparkblocks/outside.py` | `sparkblocks/` | The adapter: blocks somebody else wrote, used exactly like the ones that shipped. Making the folder is the consent; a name already taken is refused loudly, never quietly swapped | `~/.sparkblocks/`, `$SPARKBLOCKS_PATH`, `./sparkblocks-extra/` | Any machine |
 | `sparkblocks/examples/*.parts` | `sparkblocks/examples/` | Ten working programs to copy and change | Varies by program | Varies |
 
