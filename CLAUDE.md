@@ -589,6 +589,16 @@ offer to help turn the maps into a diagram when he comes to it.
 - **He was right and I was wrong about the 32-bit build.** The answer
   was in the npm package metadata, not in memory. When he pushes back
   on a limit, go and check.
+- **Claude Code on the A33 is refused at the account, not the phone.**
+  Logged in as `lewisgabe33@gmail.com`, which belongs to an
+  organization whose admin has disabled Claude Code subscription
+  access. The install is complete and correct — Ubuntu, node v22,
+  claude 2.1.289 — and every request comes back with that refusal.
+  Three ways on: sign in as his other account, have the org admin
+  enable it, or use an `ANTHROPIC_API_KEY` (the `claude` word already
+  carries one in). **Pro at $20 does include Claude Code and Opus**
+  (claude.com/pricing) — but an org policy sits above the plan, so
+  paying on that same account would not fix it.
 - **His Google Drive connector is `xzg4b3xz@gmail.com`**, which is not
   the address his git commits use (`lewisgabe33@gmail.com`). Two
   accounts. `xzg4b` is also the second Windows profile on the Dell.
