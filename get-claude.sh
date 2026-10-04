@@ -100,6 +100,26 @@ for pkg in git python proot-distro; do
 done
 
 # ------------------------------------------------------------------- ubuntu
+step "is there room"
+FREE_KB="$(df -Pk "$HOME" 2>/dev/null | awk 'NR==2 {print $4}')"
+if [ -n "$FREE_KB" ]; then
+  say "$((FREE_KB / 1024)) MB free"
+  if [ "$FREE_KB" -lt 1500000 ] 2>/dev/null; then
+    say ""
+    say "Ubuntu, Node and Claude together want about 1.5 GB, and there"
+    say "is less than that. It will most likely stop part way, and a"
+    say "half-finished container is more annoying than none."
+    say ""
+    say "Clear some space and run this again."
+    say "If you want to try anyway:   WAKEUP_CRAMPED=1 sh $0"
+    [ -n "$WAKEUP_CRAMPED" ] || exit 1
+    say ""
+    say "Carrying on because WAKEUP_CRAMPED is set."
+  fi
+else
+  say "could not tell -- carrying on"
+fi
+
 step "Ubuntu inside Termux"
 # THREE states, not two. This is the bit that caught us twice.
 #
@@ -167,16 +187,75 @@ fi
 
 # ----------------------------------------------------- inside ubuntu: node
 inside() { $PD login "$DISTRO" -- sh -lc "$1"; }
+quietly() { $PD login "$DISTRO" -- sh -lc "$1" 2>/dev/null; }
+
+# Claude Code's own package says: engines node >= 22. Checked against
+# the npm registry, not remembered. Ubuntu's OWN nodejs package is
+# 18, so `apt install nodejs` looks like it worked and then Claude
+# refuses to start -- which is why there is a version test here and
+# not just a "is node there" test.
+NEED_NODE=22
+
+node_major() {
+  v="$(quietly 'node --version' | tr -d '\r' | head -1)"
+  case "$v" in
+    v*) echo "${v#v}" | cut -d. -f1 ;;
+    *)  echo 0 ;;
+  esac
+}
+
+step "can Ubuntu reach the network"
+if quietly 'getent hosts deb.nodesource.com >/dev/null'; then
+  say "yes"
+else
+  say "Ubuntu cannot look up a name. That is nearly always an empty"
+  say "resolv.conf inside the container, which proot sometimes leaves."
+  say "Writing one:"
+  inside 'printf "nameserver 8.8.8.8\nnameserver 1.1.1.1\n" > /etc/resolv.conf' || true
+  if quietly 'getent hosts deb.nodesource.com >/dev/null'; then
+    say "fixed -- it resolves now"
+  else
+    say ""
+    say "Still cannot. Check the phone is online and not on a network"
+    say "that blocks it, then run this again."
+    exit 1
+  fi
+fi
 
 step "Node.js, inside Ubuntu"
-if inside "command -v node >/dev/null && node --version" 2>/dev/null | grep -q '^v'; then
-  skip "node $(inside 'node --version' 2>/dev/null | tr -d '\r')"
+HAVE_NODE="$(node_major)"
+if [ "$HAVE_NODE" -ge "$NEED_NODE" ] 2>/dev/null; then
+  skip "node v$HAVE_NODE"
 else
-  say "installing curl and Node.js"
+  if [ "$HAVE_NODE" -gt 0 ] 2>/dev/null; then
+    say "node v$HAVE_NODE is here, but Claude Code needs v$NEED_NODE or newer."
+    say "Replacing it."
+  else
+    say "installing curl and Node.js"
+  fi
   inside "apt-get update -y"
   inside "apt-get install -y curl ca-certificates"
-  inside "curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -"
+  # setup_22.x by name, not setup_lts.x. LTS moves, and the day it
+  # moves to something Claude does not accept this would break with
+  # no clue why.
+  inside "curl -fsSL https://deb.nodesource.com/setup_${NEED_NODE}.x | bash -"
   inside "apt-get install -y nodejs"
+
+  HAVE_NODE="$(node_major)"
+  if [ "$HAVE_NODE" -lt "$NEED_NODE" ] 2>/dev/null; then
+    say ""
+    say "Node is v$HAVE_NODE and Claude Code needs v$NEED_NODE or newer."
+    say ""
+    say "Do NOT use Ubuntu's own nodejs package for this -- it is v18,"
+    say "which installs cleanly and then Claude refuses to start."
+    say ""
+    say "Try the nodesource step by hand and read what it says:"
+    say "    $PD login $DISTRO"
+    say "    curl -fsSL https://deb.nodesource.com/setup_${NEED_NODE}.x | bash -"
+    say "    apt-get install -y nodejs"
+    exit 1
+  fi
+  say "node v$HAVE_NODE"
 fi
 
 # --------------------------------------------------- inside ubuntu: claude

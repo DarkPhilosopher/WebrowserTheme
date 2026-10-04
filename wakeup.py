@@ -439,7 +439,7 @@ def more_menu():
     while True:
         pick = choose("More", [
             ("check -- make sure it all still hangs together", "check"),
-            ("send a file to another machine", "send"),
+            ("send -- a file to github, Drive or another machine", "send"),
             ("receive a file, with its code", "receive"),
             ("saves -- your own programs, wherever they are", "saves"),
             ("outside -- blocks from somewhere else", "outside"),
@@ -457,7 +457,7 @@ def more_menu():
         if pick == "check":
             go("-m", "sparkblocks", "check")
         elif pick == "send":
-            croc_send()
+            go(os.path.join(HERE, "send.py"))
         elif pick == "receive":
             croc_get_file()
         elif pick == "saves":

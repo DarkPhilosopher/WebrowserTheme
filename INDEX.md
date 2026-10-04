@@ -19,6 +19,7 @@ the zip, and everything is accounted for.
 | `wakeup.py` | root | The front door. Eight choices, the last always back; starts everything else and does no work of its own | — | Any terminal with Python |
 | `START-HERE.md` | root | Four ways in — automatic, quick, chronological, and a heuristic table for choosing — plus what each number does and where his own things live | — | Read anywhere |
 | `wizard.py` | root | The installer. Says what the smallest working version needs, what each part needs and costs, and what this machine has — **before** anything is written. Then installs one part at a time. Terminal only, and that is on purpose | Reads the machine | Any machine with Python 3.6+ |
+| `send.py` | root | Put a file on github, in Google Drive, or on another machine — and say **exactly** where before and after. Remembers every send, so the second one updates the same place instead of making a copy you will not find. Asks whether it is private before any public route | The file, and whichever route | Any machine; the Drive share sheet is Android only |
 | `CROC.md` | root | Moving a file between his own machines with a code phrase — croc, on Termux and on Windows, with the generated code, a chosen code, and running his own relay | A network. Both machines | Termux, Windows, anywhere croc runs |
 | `BLUEPRINTS.md` | root | What was learned rather than decided, how a part plugs into another, the common standard they all speak, and the shape of anything either of us signs | — | Read anywhere |
 | `sign.py` | root | Writes and reads back the header, footer and chronology every signed document carries, so "they match" can be proved rather than believed | The documents | Any machine with Python |
@@ -139,6 +140,7 @@ insides — what it is made of and how the pieces connect.
 | `check-withheld.py` and `make-private.py` | [`WITHHELD.md`](WITHHELD.md) |
 | `wizard.py` | its own `--help`, and [`BLUEPRINTS.md`](BLUEPRINTS.md) §1.4 |
 | sending files between machines | [`CROC.md`](CROC.md) |
+| `send.py` | its own `--help`, and [`CROC.md`](CROC.md) for the croc route |
 | `sign.py` | [`BLUEPRINTS.md`](BLUEPRINTS.md) §4 |
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |

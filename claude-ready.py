@@ -173,20 +173,26 @@ def look():
     })
 
     node = _node_version() if ubuntu else None
+    enough = _node_major(node) >= NEED_NODE
     out.append({
         "name": "Node, in Ubuntu",
-        "how": OK if node else (NO if ubuntu else NA),
-        "says": node or ("not installed" if ubuntu else "needs Ubuntu first"),
+        "how": OK if (node and enough) else (NO if ubuntu else NA),
+        "says": ((node if enough else
+                  "%s -- too old, Claude Code needs v%d" % (node, NEED_NODE))
+                 if node else
+                 ("not installed" if ubuntu else "needs Ubuntu first")),
         "fix": _NODE_STEPS if ubuntu else None,
-        "doing": "install Node inside Ubuntu",
+        "doing": ("replace Node -- the one here is too old" if node
+                  else "install Node inside Ubuntu"),
     })
 
-    claude = _claude_version() if node else None
+    claude = _claude_version() if (node and enough) else None
     out.append({
         "name": "Claude Code",
         "how": OK if claude else (NO if node else NA),
-        "says": claude or ("not installed" if node else "needs Node first"),
-        "fix": _CLAUDE_STEPS if node else None,
+        "says": claude or ("not installed" if (node and enough)
+                           else "needs Node v%d first" % NEED_NODE),
+        "fix": _CLAUDE_STEPS if (node and enough) else None,
         "doing": "install Claude Code inside Ubuntu",
     })
 
@@ -204,13 +210,16 @@ def look():
     return out
 
 
+# setup_22.x by name, not setup_lts.x. LTS moves, and the day it
+# moves to something Claude does not accept, this would break with no
+# clue why.
 _NODE_STEPS = [
     ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
-     "apt update && apt install -y curl"],
+     "apt-get update -y && apt-get install -y curl ca-certificates"],
     ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
-     "curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -"],
+     "curl -fsSL https://deb.nodesource.com/setup_22.x | bash -"],
     ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
-     "apt install -y nodejs"],
+     "apt-get install -y nodejs"],
 ]
 
 _CLAUDE_STEPS = [
@@ -302,9 +311,28 @@ def _ubuntu_installed():
     return worked
 
 
+# Claude Code's package says engines node >= 22. Read off the npm
+# registry, not remembered. Ubuntu's OWN nodejs is 18, which installs
+# cleanly and then Claude refuses to start -- so "is node there" is
+# not the question. "Is node new enough" is.
+NEED_NODE = 22
+
+
 def _node_version():
     worked, said = in_ubuntu("node --version")
-    return said.strip() if worked and said.strip().startswith("v") else None
+    got = said.strip().split("\n")[0] if worked and said else ""
+    return got if got.startswith("v") else None
+
+
+def _node_major(version):
+    try:
+        return int(str(version).lstrip("v").split(".")[0])
+    except (ValueError, AttributeError):
+        return 0
+
+
+def _node_new_enough():
+    return _node_major(_node_version()) >= NEED_NODE
 
 
 def _claude_version():
