@@ -190,8 +190,10 @@ def look():
     out.append({
         "name": "Claude Code",
         "how": OK if claude else (NO if node else NA),
-        "says": claude or ("not installed" if (node and enough)
-                           else "needs Node v%d first" % NEED_NODE),
+        "says": (("%s -- installed. `--deep` asks whether your account"
+                  " may actually use it" % claude) if claude else
+                 ("not installed" if (node and enough)
+                  else "needs Node v%d first" % NEED_NODE)),
         "fix": _CLAUDE_STEPS if (node and enough) else None,
         "doing": "install Claude Code inside Ubuntu",
     })
@@ -258,8 +260,8 @@ SHORTCUT = """#!{sh}
 # profile, which can clear the screen before Claude ever draws.
 exec proot-distro login \\
   --bind "$HOME:/root/phone" \\
-  ubuntu -- sh -c 'export TERM="$1"; shift; cd /root/phone 2>/dev/null; exec claude "$@"' \\
-  claude "${TERM:-xterm-256color}" "$@"
+  ubuntu -- sh -c 'export TERM="$1"; if [ -n "$2" ]; then export ANTHROPIC_API_KEY="$2"; fi; shift 2; cd /root/phone 2>/dev/null; exec claude "$@"' \\
+  claude "${TERM:-xterm-256color}" "${ANTHROPIC_API_KEY:-}" "$@"
 """
 
 # Nothing writes an alias any more. If an older version of this
@@ -361,6 +363,29 @@ def _shortcut_path():
     """Where the `claude` word goes -- Termux's own bin."""
     prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
     return os.path.join(prefix, "bin", "claude")
+
+
+def _claude_answers():
+    """Can Claude actually do anything? Returns (yes, what it said).
+
+    `claude --version` proves a file runs. It does NOT prove the
+    account behind it is allowed to use it -- on the A33 everything
+    reported ok while every real request came back
+
+        Your organization has disabled Claude subscription access
+        for Claude Code
+
+    which is invisible to any check that never asks it to work. This
+    is the third time today that "it exists" and "it works" turned
+    out to be different questions.
+
+    Not run by default: it costs a request. `--deep` asks for it.
+    """
+    worked, said = in_ubuntu("claude -p hi 2>&1")
+    text = (said or "").strip()
+    bad = ("disabled" in text or "api key" in text.lower()
+           or "log in" in text.lower() or "unauthor" in text.lower())
+    return (worked and bool(text) and not bad), text
 
 
 def _alias_set():
@@ -647,7 +672,47 @@ def selftest():
     return 0
 
 
+def deep():
+    """Ask Claude to actually answer, and print whatever comes back."""
+    if not have("proot-distro"):
+        print("\nThere is no proot-distro here, so there is no Ubuntu to")
+        print("ask. This one is for the phone.\n")
+        return 1
+    print("\nAsking Claude to answer something, which is the only way")
+    print("to find out whether the account may use it at all.\n")
+    ok, said = _claude_answers()
+    if ok:
+        print("  it answered:")
+        for line in said.split("\n")[:6]:
+            print("    %s" % line)
+        print("\nClaude works on this phone.")
+        return 0
+    print("  it did NOT answer. What it said:\n")
+    for line in (said or "(nothing at all)").split("\n")[:10]:
+        print("    %s" % line)
+    if "disabled" in said or "API key" in said:
+        print("""
+This is not a fault in anything here. Everything is installed and
+runs; the account is refused at the other end.
+
+Two ways on, and both are yours:
+
+  * ask whoever runs your organization to enable Claude Code
+  * use an API key from console.anthropic.com, then in Termux:
+
+        export ANTHROPIC_API_KEY=your-key-here
+        claude
+
+    Put that export line in ~/.bashrc to keep it. The `claude`
+    word carries the key into Ubuntu for you -- the container
+    starts with a bare environment, so without that it would
+    never arrive.""")
+    return 1
+
+
 def main(argv):
+    if "--deep" in argv:
+        return deep()
     if "--selftest" in argv:
         print("\nchecking the faults that bit before:\n")
         return selftest()

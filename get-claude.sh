@@ -420,10 +420,14 @@ cat > "$WRAP" <<WRAPEOF
 #
 # sh -c, not sh -lc. A login shell also sources the container profile,
 # which can clear the screen before Claude ever draws on it.
+#
+# ANTHROPIC_API_KEY goes in the same way, and for the same reason.
+# Set it in Termux and it reaches Claude inside; leave it unset and
+# nothing changes.
 exec $PD login \\
   --bind "\$HOME:/root/phone" \\
-  $DISTRO -- sh -c 'export TERM="\$1"; shift; cd /root/phone 2>/dev/null; exec claude "\$@"' \\
-  claude "\${TERM:-xterm-256color}" "\$@"
+  $DISTRO -- sh -c 'export TERM="\$1"; if [ -n "\$2" ]; then export ANTHROPIC_API_KEY="\$2"; fi; shift 2; cd /root/phone 2>/dev/null; exec claude "\$@"' \\
+  claude "\${TERM:-xterm-256color}" "\${ANTHROPIC_API_KEY:-}" "\$@"
 WRAPEOF
 chmod +x "$WRAP"
 say "wrote $WRAP"
