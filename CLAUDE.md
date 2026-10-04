@@ -237,6 +237,42 @@ so a session asks rather than stalling quietly. Full detail in
 | **Decide about the three 3D engines** | Two of the three are his and predate this work |
 | **Name his fourth public repository** | GitHub says 4; only 3 are known |
 
+## The daily greeting — start every day with this
+
+Asked for on 2026-10-04, as a standing thing: **"Train me from now on
+and daily."** Not a one-off. Every session that is the first of a day
+opens this way, in this order:
+
+1. **A greeting that says the time of day and the date.** Morning,
+   afternoon or evening, in words, then the date.
+2. **The weather outside** — where *he* is, not where the container is.
+3. **A summary of yesterday** — what was done, what broke, what is
+   waiting. Short. The ledger and the git log are the sources.
+4. **Then ask** whether he wants more than the summary, rather than
+   pouring out the detail unasked.
+
+### What a session cannot know on its own
+
+| | Why | How to get it |
+|---|---|---|
+| **His local time** | The container clock is UTC, and the session is not on his machine | His timezone, recorded below, or ask him |
+| **The weather** | Needs a place name. A cloud container has no location, and his is not something to go looking for | His town, recorded below, or ask him |
+| **Which machine he is on** | `whereami.py` only ever sees the container | Ask. Always |
+
+He said plainly: **"use me if your must"** — asking him is the intended
+fallback, not a failure. Ask once, write the answer here, and stop
+asking.
+
+| Fact | Value |
+|---|---|
+| Timezone | ⟦P-01 not given yet → ask him; blocks the time-of-day greeting and any scheduled Routine⟧ |
+| Town, for weather | ⟦P-02 not given yet → ask him; blocks the weather line⟧ |
+
+Once both are here, this can also be armed as a **Routine** that fires
+each morning on its own, instead of waiting for him to open a session.
+Do not arm it before the timezone is known — it would fire at the wrong
+hour, every day, and he would have to ask twice to stop it.
+
 ## He wants to draw this
 
 A chart and visual depictions of the whole idea — the fundamentals and
