@@ -174,8 +174,31 @@ def no_value_leaked_in(r, sheet):
                         % (what, hit.group(0)))
 
 
+def is_a_git_repo():
+    """Is git even in play here?
+
+    An unpacked zip is not a repository, and in that case there is
+    nothing that could commit anything by accident. Saying `private/
+    is NOT in .gitignore` there is a false alarm, and a checker that
+    cries wolf stops being read.
+    """
+    try:
+        out = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"],
+                             cwd=HERE, capture_output=True, text=True,
+                             timeout=30)
+        return out.returncode == 0 and out.stdout.strip() == "true"
+    except Exception:
+        return False
+
+
 def git_is_not_carrying_private(r):
     """The one that actually matters."""
+    if not is_a_git_repo():
+        r.note("this is not a git repository -- an unpacked copy, most "
+               "likely. Nothing here can be committed by accident, so "
+               "the two git checks were not run.")
+        return
+
     r.looked()
     try:
         out = subprocess.run(["git", "ls-files", "private/"], cwd=HERE,
