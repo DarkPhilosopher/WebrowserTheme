@@ -279,6 +279,62 @@ def claude_state():
         return False, "could not look: %s" % e
 
 
+def tried_path():
+    folder = os.path.join(os.path.expanduser("~"), ".wakeup")
+    try:
+        os.makedirs(folder, exist_ok=True)
+    except OSError:
+        return None
+    return os.path.join(folder, "tried.json")
+
+
+def tried():
+    """What has been attempted, so the hard options can be EARNED.
+
+    Suggesting "remove it all and start again" to somebody who has
+    not yet tried the gentle thing is how people lose work they did
+    not need to lose.
+    """
+    path = tried_path()
+    if not path or not os.path.exists(path):
+        return []
+    try:
+        import json
+        with open(path) as fh:
+            return json.load(fh)
+    except Exception:
+        return []
+
+
+def note_try(what, worked):
+    path = tried_path()
+    if not path:
+        return
+    try:
+        import json
+        rows = tried()
+        rows.append({"what": what, "worked": bool(worked),
+                     "when": _when()})
+        with open(path, "w") as fh:
+            json.dump(rows[-20:], fh, indent=1)
+    except Exception:
+        pass
+
+
+def _when():
+    try:
+        sys.path.insert(0, HERE)
+        from sparkblocks.saves import when_of
+        return when_of()
+    except Exception:
+        import time
+        return time.strftime("%Y-%m-%d %H:%M")
+
+
+def failed_fixes():
+    return [r for r in tried() if r.get("what") == "fix" and not r.get("worked")]
+
+
 def claude_fix():
     """Install whatever is missing, before and after Claude itself."""
     line()
@@ -294,7 +350,18 @@ def claude_fix():
     line()
     if not ask("go ahead? (y/n) ").lower().startswith("y"):
         return False
-    return go_cmd(["sh", GETTER]) == 0
+    worked = go_cmd(["sh", GETTER]) == 0
+    note_try("fix", worked)
+    if not worked:
+        line()
+        line("That did not finish. Run it again first -- everything")
+        line("already done is skipped, so a second go often gets past")
+        line("whatever it was.")
+        line()
+        line("If it keeps stopping in the same place, `start over` is")
+        line("the next thing, and it is choice 5.")
+        ask("\n-- press enter --")
+    return worked
 
 
 def claude_start(carry_on=False):
@@ -339,6 +406,55 @@ def claude_start(carry_on=False):
     go_cmd(cmd)
 
 
+def claude_replace():
+    """The last rung: throw the Ubuntu away and fetch a clean one.
+
+    Offered, never taken on its own, and it says plainly when the
+    gentler thing has not been tried yet. It costs the whole download
+    again, so reaching for it first is just a slower way to arrive at
+    the same place.
+    """
+    line()
+    if not on_android():
+        line("This is about the Ubuntu inside Termux, and there is no")
+        line("Termux here. Nothing to replace.")
+        ask("\n-- press enter --")
+        return
+
+    gone_wrong = failed_fixes()
+    line("START OVER -- the last rung")
+    line()
+    line("  1. update     reuse what is here, fetch only what is not")
+    line("  2. install    add what is missing            <- choice 4")
+    line("  3. replace    remove the Ubuntu, fetch a clean one")
+    line()
+    if not gone_wrong:
+        line("You have not had `fix what is missing` fail yet.")
+        line()
+        line("Try choice 4 first. It skips everything already done, so")
+        line("running it twice costs almost nothing -- and replacing")
+        line("costs the whole few hundred megabytes again.")
+        if not ask("\ngo to start over anyway? (y/n) ").lower().startswith("y"):
+            return
+    else:
+        last = gone_wrong[-1]
+        line("`fix` has failed %d time%s here, last at %s."
+             % (len(gone_wrong), "" if len(gone_wrong) == 1 else "s",
+                last.get("when", "?")))
+        line("So this is a fair thing to reach for now.")
+
+    line()
+    line("It throws away the Ubuntu and everything inside it.")
+    line("It does NOT touch your saved programs, the wakeup folder,")
+    line("or anything on the phone outside Termux.")
+    line()
+    line("It will ask you to type a word before doing anything.")
+    if not ask("\ncarry on? (y/n) ").lower().startswith("y"):
+        return
+    worked = go_cmd(["sh", GETTER, "--replace"]) == 0
+    note_try("replace", worked)
+
+
 def claude_menu():
     while True:
         pick = choose("Claude in the terminal", [
@@ -346,6 +462,7 @@ def claude_menu():
             ("carry on the last conversation", "continue"),
             ("check what is missing", "check"),
             ("fix what is missing", "fix"),
+            ("start over -- replace the Ubuntu (last resort)", "replace"),
         ])
         if pick is None:
             return
@@ -357,6 +474,8 @@ def claude_menu():
             go(READY, "--check")
         elif pick == "fix":
             claude_fix()
+        elif pick == "replace":
+            claude_replace()
 
 
 # ==========================================================================

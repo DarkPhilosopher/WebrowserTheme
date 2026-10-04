@@ -96,6 +96,7 @@ Read down the left until something is true of you.
 | **The phone is 32-bit** | Everything here works **except Claude Code**, which has no 32-bit build at all. The wizard says so and does not offer it. Use claude.ai in the browser for Claude |
 | **You are on the Dell, not a phone** | Same clone, but Claude installs the ordinary way: `npm install -g @anthropic-ai/claude-code`. None of the proot business applies |
 | **An install stopped part way** | Run the same line again. Everything already done is skipped, so it picks up where it stopped |
+| **It keeps stopping in the same place** | `wakeup` → **1** → **5**, *start over*. It throws the Ubuntu away and fetches a clean one. **Only after the ordinary way has failed** — it costs the whole download again, and it says so if you have not tried the gentle one yet |
 | **`wakeup` is not a known word** | `python3 ~/wakeup/wakeup.py` always works. The word needs a folder on your PATH |
 | **You want it on both phones** | Same line on each, then name each one in step 3. They are separate machines and should say so |
 | **Something broke and you want to start again** | Delete `~/wakeup` and run the line again. **Your own programs are in `~/.wakeup/programs` and are not in there**, so nothing of yours is lost |
@@ -124,6 +125,25 @@ Read down the left until something is true of you.
 check · send a file · receive a file · saves · outside blocks ·
 whereami · claude-ready · connect · withheld · the Chrome panel ·
 the wizard · save a copy to storage · update from github
+
+### When something will not install — the ladder
+
+Three rungs, gentlest first. Each one loses more than the last, and
+nothing climbs on its own.
+
+| | | |
+|---|---|---|
+| **update** | reuse what is there, fetch only what is not | the ordinary line, run again |
+| **install** | add what is missing | `wakeup` → 1 → 4 |
+| **replace** | remove it and start that part again | `wakeup` → 1 → 5, or `sh ~/wakeup/get-claude.sh --replace` |
+
+**The same line works on a new phone and on one that has been tried
+before.** It checks everything first and only does what is missing,
+so there is no separate *already tried this* version to pick between.
+
+`replace` asks you to type the word `replace` before it removes
+anything, and it does not touch your saved programs, the wakeup
+folder, or anything outside Termux.
 
 ### `wizard.py`
 
@@ -203,6 +223,8 @@ python3 claude-ready.py --selftest
 
 --- chronology --------------------------------------------------
   2026-10-04 11:39 MDT written                  Claude Opus 5
+                                                on cloud container
+  2026-10-04 12:19 MDT the ladder added         Claude Opus 5
                                                 on cloud container
 -----------------------------------------------------------------
 ```

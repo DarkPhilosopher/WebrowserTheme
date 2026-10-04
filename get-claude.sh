@@ -3,7 +3,20 @@
 #
 # THE ONE COMMAND. Paste this whole line into Termux:
 #
-#   pkg install -y git && git clone --depth 1 -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get-claude.sh
+#   pkg install -y git && git clone --depth 1 -b get https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get-claude.sh
+#
+# THE SAME LINE WORKS ON A NEW PHONE AND ON ONE THAT HAS BEEN TRIED
+# BEFORE. It checks everything first and only does what is missing,
+# so there is nothing to decide and no separate "already tried this"
+# version of it.
+#
+# If it has been run twice and is still stuck, there is one more rung:
+#
+#   sh ~/wakeup/get-claude.sh --replace
+#
+# which throws the Ubuntu away and fetches a clean one. It asks before
+# doing it, and is worth trying only after the ordinary line has
+# failed -- it costs the whole download again.
 #
 # It cannot be shorter, and here is exactly why. A fresh Termux has no
 # curl, no wget and no git -- I checked its own bootstrap list rather
@@ -27,6 +40,23 @@
 # second run only fills in what is missing.
 
 set -e
+
+# --replace  throw the Ubuntu away and fetch it again, even if it
+#            works. The last rung of the ladder:
+#
+#              update   reuse what is there, fetch only what is not
+#              install  add what is missing
+#              replace  remove it and start that part again
+#
+#            Each rung loses more. Nothing here climbs to `replace`
+#            on its own -- it is asked for, and asked about.
+REPLACE=""
+for a in "$@"; do
+  case "$a" in
+    --replace|--start-over) REPLACE=1 ;;
+    --yes|-y) ALREADY_SAID_YES=1 ;;
+  esac
+done
 
 PD="proot-distro"
 DISTRO="ubuntu"
@@ -146,7 +176,41 @@ can_log_in() {
   $PD login "$1" -- true >/dev/null 2>&1
 }
 
-if can_log_in "$DISTRO"; then
+if [ -n "$REPLACE" ] && rootfs_of "$DISTRO" >/dev/null; then
+  say "START OVER was asked for."
+  say ""
+  say "This throws away the Ubuntu that is here -- and everything"
+  say "inside it, including anything you installed in there yourself"
+  say "-- and fetches a clean one. A few hundred megabytes again."
+  say ""
+  say "It does NOT touch:"
+  say "  your saved programs in ~/.wakeup/programs"
+  say "  the wakeup folder itself"
+  say "  anything on your phone outside Termux"
+  say ""
+  if [ -z "$ALREADY_SAID_YES" ]; then
+    printf 'Type the word  replace  to go ahead: '
+    read -r SURE
+    if [ "$SURE" != "replace" ]; then
+      say ""
+      say "Not done. Nothing was removed."
+      exit 0
+    fi
+  fi
+  say ""
+  $PD remove "$DISTRO" || true
+  say "removed. Fetching a clean one."
+  $PD install "$DISTRO"
+  if ! can_log_in "$DISTRO"; then
+    say ""
+    say "A clean one still will not log in. That is not something"
+    say "this script can fix -- proot itself is unhappy. Try:"
+    say "    $PD install $DISTRO"
+    say "and read what it says."
+    exit 1
+  fi
+  say "replaced, and it logs in"
+elif can_log_in "$DISTRO"; then
   skip "$DISTRO"
 elif rootfs_of "$DISTRO" >/dev/null; then
   say "There is an Ubuntu here already, but it cannot be logged into."
@@ -160,9 +224,10 @@ elif rootfs_of "$DISTRO" >/dev/null; then
   say ""
   if ! $PD reset "$DISTRO"; then
     say ""
-    say "The reset did not work either. Take it away by hand and run"
-    say "this again:"
-    say "    $PD remove $DISTRO"
+    say "The reset did not work either. The next rung down is to"
+    say "remove it and start that part again:"
+    say ""
+    say "    sh $0 --replace"
     exit 1
   fi
   if ! can_log_in "$DISTRO"; then
@@ -253,6 +318,9 @@ else
     say "    $PD login $DISTRO"
     say "    curl -fsSL https://deb.nodesource.com/setup_${NEED_NODE}.x | bash -"
     say "    apt-get install -y nodejs"
+    say ""
+    say "If that gets nowhere, the last rung is a clean Ubuntu:"
+    say "    sh $0 --replace"
     exit 1
   fi
   say "node v$HAVE_NODE"

@@ -306,6 +306,36 @@ installs something old and nobody finds out for a while.
 cloned is the one he keeps getting. Do not put a branch name back into
 that file.
 
+## The ladder: update, install, replace
+
+When something will not install, there are three rungs and they are
+tried in this order. Each loses more than the last.
+
+| | | |
+|---|---|---|
+| **update** | reuse what is there, fetch only what is not | run the ordinary line again |
+| **install** | add what is missing | `get-claude.sh`, `wizard.py` |
+| **replace** | remove it and start that part again | `get-claude.sh --replace` |
+
+**Nothing climbs to `replace` on its own.** It is asked for, it asks
+back, and it requires the word `replace` to be typed — not a `y`.
+
+**And it is earned.** `wakeup` → 1 → 5 reads `~/.wakeup/tried.json`
+and, if `fix` has never actually failed, says so and suggests choice
+4 first. Offering "remove it all and start again" to somebody who has
+not yet tried the gentle thing is how people lose work they did not
+need to lose.
+
+**One option, both kinds of device.** The same line works on a fresh
+phone and on one that has been half-set-up three times, because
+everything checks before it acts. There is deliberately no separate
+*I have tried this before* command to choose between — choosing
+wrongly is the failure mode that produced the half-finished container
+in the first place.
+
+`replace` never touches `~/.wakeup/programs`, the clone, or anything
+outside Termux, and says so before asking.
+
 ## The second moral: an update is an offer, never a demand
 
 He called this **a moral**, in those words, on 2026-10-04. It sits
