@@ -15,7 +15,7 @@ not built yet and where they would go.
 On a fresh Android phone, one line pasted into Termux:
 
 ```bash
-pkg i -y git && git clone -b claude/new-session-y0nuxy https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get.sh
+pkg i -y git && git clone -b get https://github.com/DarkPhilosopher/WebrowserTheme ~/wakeup && sh ~/wakeup/get.sh
 ```
 
 Then one word, and pick a number:
