@@ -50,7 +50,7 @@ settled; that one is a job.
 | `W-05` | `wakeup-notes/` — the tagged notes | withheld | not committed | Waits on the repository going private. Only Gabriel can do that |
 | `W-06` | the fourth public repository | unknown | — | GitHub says he has 4 public repositories; 3 are known. Name it and it gets a real entry |
 | `W-07` | where each piece of work was done | not collected | — | No location device in a cloud container, and his whereabouts are not something to go looking for. The *machine* is recorded; the *place* is not |
-| `W-08` | the second Google Drive, `lewisgabe33@gmail.com` | elsewhere | that account | There is a connector for `xzg4b3xz@gmail.com` only. This session cannot reach the other one at all |
+| `W-08` | the second Google Drive | elsewhere | his `lewisgabe33` account | There is a connector for one account only. This session cannot reach the other at all |
 
 ## Where the private material actually lives
 
@@ -120,7 +120,7 @@ walks these questions and prints the row to paste in.
 | `private/` | Not shared, **not durable** | Gitignored, so git will not take it. Wiped when the session ends. Scratch space, never storage |
 | A file handed over in the conversation | **No** | It has been through the chat to get to him. Fine for his own material going back to him; not a vault |
 | Google Drive `xzg4b3xz@gmail.com` | Yes, unless shared | Reachable from here. Check it is not on a share link |
-| Google Drive `lewisgabe33@gmail.com` | Unknown from here | No connector. This session cannot see it at all — ⟦W-08⟧ |
+| His other Google Drive | Unknown from here | No connector. This session cannot see it at all — ⟦W-08⟧ |
 | Gabriel's own phone or laptop | His to say | Only he knows who else uses the machine |
 | `croc`, through the **public** relay | Encrypted, but the route is not his | End to end encrypted, and the relay cannot open it — but it is somebody else's machine, and the code phrase is the whole key. Fine for ordinary files |
 | `croc`, through **his own** relay | Yes, if both machines are his | `croc relay` on the Dell, both phones pointed at it. Nothing leaves the house. This is the one to use for anything private — see [`CROC.md`](CROC.md) |

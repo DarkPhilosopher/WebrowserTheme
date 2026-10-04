@@ -44,6 +44,7 @@ LOOKS_LIKE_A_VALUE = [
     (re.compile(r"\b\d{3}[- ]\d{3}[- ]\d{4}\b"), "a phone number"),
     (re.compile(r"\b\d+\s+[A-Z][a-z]+\s+(?:St|Street|Ave|Avenue|Rd|Road)\b"),
      "a street address"),
+    (re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b"), "an email address"),
 ]
 
 SKIP_DIRS = {".git", "__pycache__", "node_modules", "private", ".cache"}
@@ -160,10 +161,17 @@ def every_state_is_a_real_one(r, sheet):
 
 
 def no_value_leaked_in(r, sheet):
-    """The page names the FIELD, never the VALUE. Hold it to that."""
+    """The page names the FIELD, never the VALUE. Hold it to that.
+
+    `where` is exempt, and only `where`. That column exists to say
+    where to GO -- an account, a folder, a machine. A location there
+    is the column doing its job, not a leak. `name` and `why` have no
+    such excuse: a name is what the thing is, and a reason is why it
+    is absent, and neither needs the thing itself to say it.
+    """
     for row in sheet:
         r.looked()
-        blob = " ".join((row["name"], row["where"], row["why"]))
+        blob = " ".join((row["name"], row["why"]))
         for pattern, what in LOOKS_LIKE_A_VALUE:
             hit = pattern.search(blob)
             if hit:
