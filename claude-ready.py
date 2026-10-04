@@ -18,6 +18,7 @@ Nothing but Python's own library. Works on a bare Termux.
 import os
 import platform
 import shutil
+import shlex
 import subprocess
 import sys
 
@@ -180,11 +181,12 @@ def look():
     out.append({
         "name": "the `claude` word",
         "how": OK if _alias_set() else NO,
-        "says": "so `claude` works straight from Termux"
+        "says": "`claude` and `claude --continue` work from anywhere"
                 if _alias_set() else "not set up yet",
         "fix": "alias",
         "doing": "make `claude` work straight from Termux",
-        "fixtell": "Adds one line to ~/.bashrc so you need not log in by hand.",
+        "fixtell": "Writes a small `claude` program into Termux's bin, so you\n"
+                   "never type the proot line. `claude --continue` works too.",
     })
 
     return out
@@ -204,8 +206,30 @@ _CLAUDE_STEPS = [
      "npm install -g @anthropic-ai/claude-code"],
 ]
 
-ALIAS = ("alias claude='proot-distro login ubuntu "
-         "--bind /storage/emulated/0:/sdcard -- claude'")
+# The `claude` word is a SCRIPT, not an alias.
+#
+# An alias only exists inside an interactive bash. It is missing from
+# scripts, from Termux:Widget shortcuts, from `sh -c`, and from the
+# very first shell after an install -- all places you would reasonably
+# type `claude`. A file in bin is the word itself, everywhere.
+#
+# /sdcard is bound so Claude can see the phone's own files, and your
+# Termux home appears inside as /root/phone.
+SHORTCUT = """#!{sh}
+# claude -- start Claude Code, which lives inside the proot Ubuntu.
+# Written by claude-ready.py. Safe to delete; run that again to restore.
+exec proot-distro login ubuntu \\
+  --bind /storage/emulated/0:/sdcard \\
+  --bind "$HOME:/root/phone" \\
+  -- claude "$@"
+"""
+
+# Nothing writes an alias any more. If an older version of this
+# program left one in .bashrc it still works, but it SHADOWS the
+# script in interactive bash -- two mechanisms for one word, which is
+# the fault this project exists to avoid. So we find it and say so,
+# rather than quietly adding a second.
+OLD_ALIAS_MARK = "alias claude="
 
 
 def _version(cmd):
@@ -214,14 +238,34 @@ def _version(cmd):
 
 
 def _ubuntu_installed():
-    for root in ("/data/data/com.termux/files/usr/var/lib/proot-distro/"
-                 "installed-rootfs/ubuntu",
-                 os.path.join(HOME, "../usr/var/lib/proot-distro/"
-                              "installed-rootfs/ubuntu")):
-        if os.path.isdir(root):
-            return True
-    worked, said = run(["proot-distro", "list"])
-    return worked and "ubuntu" in said and "installed" in said.lower()
+    """Is there an Ubuntu we can actually log in to?
+
+    This used to read `proot-distro list` and look for the words
+    `ubuntu` and `installed`. That is always true, because the list
+    prints every distro there is and an uninstalled one says
+    **not installed** -- which contains `installed`. So it answered
+    yes on a phone with no Ubuntu at all, and every step after it
+    failed with `container 'ubuntu' is not installed`.
+
+    Nothing here parses that text any more. It asks the thing itself:
+    log in and run `true`. That is the same door every later step goes
+    through, so it cannot say yes to a door that will not open.
+    """
+    if not have("proot-distro"):
+        return False
+
+    # Cheap look first, so we do not pay for starting proot when there
+    # is plainly nothing there. A rootfs with no /etc is a half-done
+    # install, which counts as not installed.
+    prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+    root = os.path.join(prefix, "var", "lib", "proot-distro",
+                        "installed-rootfs", "ubuntu")
+    if not os.path.isdir(os.path.join(root, "etc")):
+        return False
+
+    worked, _said = run(["proot-distro", "login", "ubuntu", "--", "true"],
+                        timeout=120)
+    return worked
 
 
 def _node_version():
@@ -236,22 +280,59 @@ def _claude_version():
     return None
 
 
+def _shortcut_path():
+    """Where the `claude` word goes -- Termux's own bin."""
+    prefix = os.environ.get("PREFIX", "/data/data/com.termux/files/usr")
+    return os.path.join(prefix, "bin", "claude")
+
+
 def _alias_set():
-    try:
-        with open(os.path.join(HOME, ".bashrc")) as fh:
-            return "alias claude=" in fh.read()
-    except OSError:
-        return False
+    """Is `claude` a word you can type, from anywhere?
+
+    Asks the one question that matters -- is there a `claude` on the
+    PATH that is ours -- rather than reading .bashrc, which only ever
+    described one kind of shell.
+    """
+    path = _shortcut_path()
+    if os.path.isfile(path) and os.access(path, os.X_OK):
+        return True
+    # Something else may already provide it, if Claude were ever
+    # installed in Termux proper. That counts.
+    found = shutil.which("claude")
+    return bool(found) and found != path
 
 
 def set_alias():
-    path = os.path.join(HOME, ".bashrc")
+    """Write the `claude` script, and note the alias as well."""
+    path = _shortcut_path()
+    sh = shutil.which("sh") or "/bin/sh"
     try:
-        with open(path, "a") as fh:
-            fh.write("\n" + ALIAS + "\n")
-        return True, "added to %s -- reopen Termux, or run: source ~/.bashrc" % path
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as fh:
+            fh.write(SHORTCUT.format(sh=sh))
+        os.chmod(path, 0o755)
     except OSError as e:
         return False, str(e)
+
+    told = "wrote %s\n  `claude` and `claude --continue` now work anywhere" % path
+
+    if _old_alias():
+        told += ("\n\n  Heads up: ~/.bashrc still has an `alias claude=` in it"
+                 "\n  from an older version of this program. It does the same"
+                 "\n  job, but in bash the alias wins over the script above,"
+                 "\n  so only one of the two is ever really in use."
+                 "\n  Take the alias line out when you get a moment:"
+                 "\n      nano ~/.bashrc")
+    return True, told
+
+
+def _old_alias():
+    """Did an older version of this leave an alias behind?"""
+    try:
+        with open(os.path.join(HOME, ".bashrc")) as fh:
+            return OLD_ALIAS_MARK in fh.read()
+    except OSError:
+        return False
 
 
 # ==========================================================================
@@ -345,7 +426,11 @@ def do(check):
 
     steps = fix if isinstance(fix[0], list) else [fix]
     for step in steps:
-        print("\n$ %s" % " ".join(step))
+        # Quote it the way a shell needs, so the line shown is a line
+        # you can paste. Joining on spaces turned
+        #   sh -lc "apt update && apt install -y curl"
+        # into something that ran apt install OUTSIDE the container.
+        print("\n$ %s" % " ".join(shlex.quote(word) for word in step))
         worked, _ = run(step, quiet=False)
         if not worked:
             print("\nthat step did not work. Nothing after it was tried.")
@@ -354,7 +439,81 @@ def do(check):
     return True
 
 
+# ==========================================================================
+#  PROVING THE OLD LIE STAYS DEAD
+# ==========================================================================
+
+# What `proot-distro list` really prints for a distro you have NOT
+# installed. The word "installed" is in there, inside "not installed",
+# which is how the old check came to answer yes on a phone with no
+# Ubuntu on it.
+LIST_WITH_NOTHING_INSTALLED = """
+Supported distributions:
+
+  * Ubuntu (24.04)
+
+    Alias: ubuntu
+    Status: not installed
+
+  * Alpine Linux (edge)
+
+    Alias: alpine
+    Status: not installed
+"""
+
+
+def selftest():
+    """Check the things that went wrong before cannot go wrong again."""
+    bad = []
+
+    def want(what, got, expected):
+        if got != expected:
+            bad.append("%s: said %r, should be %r" % (what, got, expected))
+
+    # 1. The lie itself. This is the exact test the old code did.
+    said = LIST_WITH_NOTHING_INSTALLED
+    old_way = "ubuntu" in said and "installed" in said.lower()
+    want("the old text match on a phone with no Ubuntu", old_way, True)
+    print("  the old check answered YES to that text -- which is the bug.")
+
+    # 2. Nothing in the program reads that text any more. Look at the
+    #    source above this test, so the test cannot pass by describing
+    #    itself.
+    import re
+    body = open(os.path.abspath(__file__)).read().split(
+        "#  PROVING THE OLD LIE STAYS DEAD")[0]
+    want("nothing runs `proot-distro list` any more",
+         bool(re.search(r'["\']list["\']', body)), False)
+
+    # 3. With no proot-distro, there is no Ubuntu. No text involved.
+    if not have("proot-distro"):
+        want("no proot-distro means no Ubuntu", _ubuntu_installed(), False)
+    else:
+        print("  (proot-distro is here, so that one was not tried)")
+
+    # 4. The echoed command must be pasteable -- quoting kept.
+    step = ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
+            "apt update && apt install -y curl"]
+    shown = " ".join(shlex.quote(w) for w in step)
+    want("the shown command keeps its quotes",
+         shlex.split(shown) == step, True)
+
+    print()
+    if bad:
+        for line in bad:
+            print("  WRONG  %s" % line)
+        print("\n%d wrong." % len(bad))
+        return 1
+    print("  all well -- the Ubuntu check no longer reads any text,")
+    print("  and the commands it shows you can be pasted.")
+    return 0
+
+
 def main(argv):
+    if "--selftest" in argv:
+        print("\nchecking the faults that bit before:\n")
+        return selftest()
+
     checks = look()
 
     if "--check" in argv:
