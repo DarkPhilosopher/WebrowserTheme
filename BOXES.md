@@ -252,6 +252,22 @@ held back, or nothing, which is its own kind of answer.
 │          moral                                 │
 │ size     small, and it only gets more valuable │
 └────────────────────────────────────────────────┘
+
+┌─ a private home for the withheld ──── CERTAIN ─┐
+│ what     WITHHELD.md records 8 gaps. The       │
+│          material itself has nowhere durable   │
+│          to be. private/ is gitignored but     │
+│          this container is wiped when the      │
+│          session ends                          │
+│ how      A private repository is the obvious   │
+│          home. Google Drive works today and is │
+│          reachable from here                   │
+│ waited   rows W-01 to W-05. Until there is     │
+│          somewhere, `where it went` can only   │
+│          say `Gabriel's hands`                 │
+│ YOURS    only you can say which, and give      │
+│          permission for the material to go in  │
+└────────────────────────────────────────────────┘
 ```
 
 ### MAYBE — worth doing, not obviously right

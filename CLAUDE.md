@@ -147,6 +147,53 @@ The catalogue the panels read leaves outside blocks out unless asked
 machine. Never bake one machine's own outside blocks into
 `panel/panel.html`.
 
+## Private things, and the gaps they leave
+
+**This repository is public.** Nothing private goes in it — and not
+into its history either, because a deleted file is still in the
+history. "Commit it then remove it" is not a way round this. There is
+no undo on a public push.
+
+So private material lives in **a separate container**, and what stays
+here is a **marker** naming the gap:
+
+```
+⟦W-02 birthplace⟧
+```
+
+`W-02` is a row in **`WITHHELD.md`**, which says what it was, its
+state, where it went, and why. That page names the *field* and never
+the *value* — which is exactly what makes it safe to publish.
+
+| | |
+|---|---|
+| `WITHHELD.md` | the directory. Public and safe by construction |
+| `private/` | gitignored working space. **Not storage** — this container is wiped when the session ends |
+| `check-withheld.py` | the guard. Run it after touching any of this |
+
+### The states
+
+`refused` · `withheld` · `elsewhere` · `not collected` · `unknown` ·
+`out of order`
+
+`out of order` means the gap is a **fault**, not a decision. The others
+are settled; that one is a job.
+
+### What to do when something private comes up
+
+1. **Do not commit it.** Not even briefly.
+2. Give it a `W-nn` row in `WITHHELD.md` — the field, never the value.
+3. Leave the marker where the gap is, if there is a page left to mark.
+   When the whole thing is absent there is nowhere to put one, and the
+   row alone is the record. The checker knows the difference.
+4. Hand the material to Gabriel directly, or put it in Drive.
+5. `python3 check-withheld.py`
+
+**If a system refuses to carry something, that refusal stands.** A
+safety classifier refused `ABOUT.md`; it was not worked around, and it
+is not to be. The row says `refused` and names what objected. That is
+the honest record, and it is also the useful one.
+
 ## The rule everything here follows
 
 **Make everything out of parts, and make every part able to join any
@@ -409,7 +456,8 @@ offer to help turn the maps into a diagram when he comes to it.
 - **The repository is public.** He asked for personal details to be
   written into it and confirmed after being told; a safety classifier
   refused the push. That file is `ABOUT.md` and is **not** committed.
-  It goes in only if he makes the repository private.
+  It goes in only if he makes the repository private. The gap it left
+  is rows ⟦W-01⟧ to ⟦W-04⟧ in `WITHHELD.md`.
 
 ## How Gabriel works
 

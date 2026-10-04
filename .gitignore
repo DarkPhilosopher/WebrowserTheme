@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# Nothing in here is ever committed. See WITHHELD.md.
+private/

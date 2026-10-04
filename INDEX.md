@@ -17,6 +17,8 @@ the zip, and everything is accounted for.
 | `whereami.py` | root | Says which of your machines this is, from the signs it carries. Holds the register of all of them | `~/.whereami` if named; otherwise system, architecture, hostname | Anything with Python |
 | `get.sh` | root | **The one that makes the rest available.** Off github with Termux and nothing else: installs git and python, clones, makes `import sparkblocks` work anywhere, makes `wakeup` a word you can type. Safe to run again — it pulls | A network, and git | `/bin/sh`: Termux, Linux, mac |
 | `wakeup.py` | root | The front door. Eight choices, the last always back; starts everything else and does no work of its own | — | Any terminal with Python |
+| `WITHHELD.md` | root | The directory of what is deliberately not here: by name, with its state, where it went and why. Names the field, never the value, which is what makes it safe to publish | — | Read anywhere |
+| `check-withheld.py` | root | The guard on that directory. No marker pointing at nothing, no row without a reason, no invented state, no value leaked onto the page, and git not carrying `private/` | The repo itself | Any machine with Python and git |
 | `SETUP.md` | root | The steps, split by device, because they genuinely differ | — | Read anywhere |
 | `CLAUDE.md` | root | What a future Claude session must know first — above all, *ask which machine* | — | Read by Claude |
 
@@ -68,10 +70,15 @@ the zip, and everything is accounted for.
 
 ## 5. Here but not in the repository
 
+Each gap here carries its marker. **[`WITHHELD.md`](WITHHELD.md)** is
+the directory those point into — it says, for every one, where it went
+and why, and `python3 check-withheld.py` makes sure it stays true.
+
 | Thing | Where it belongs | Why it is not there | To put it there |
 |---|---|---|---|
-| `ABOUT.md` | root | A safety classifier refused it: date of birth and birthplace in a **public** repo | Make the repo private, then it goes in |
-| `wakeup-notes/` | its own repo, or a `notes/` folder | Never offered to the repo — it was built as a download | Unzip it into `notes/` and commit, once the repo is private |
+| `ABOUT.md` — ⟦W-01 date of birth⟧ ⟦W-02 birthplace⟧ ⟦W-03 family details⟧ ⟦W-04 personal description⟧ | root | A safety classifier refused the push to a **public** repo. The refusal was not worked around | Make the repo private, then it goes in |
+| ⟦W-05 wakeup-notes⟧ | its own repo, or a `notes/` folder | Never offered to the repo — it was built as a download | Unzip it into `notes/` and commit, once the repo is private |
+| ⟦W-06 the fourth public repository⟧ | unknown | GitHub says 4; three are known | Name it, and it gets a real row |
 | The zips | nowhere — they are built, not stored | A zip in git is dead weight that git cannot diff | Leave them out. Rebuild from source |
 
 ## 6. Not built yet
@@ -103,7 +110,7 @@ oversight and "fix" it.
 | **Blocks named in lower case in text, capitalised in Python** | One or the other | `walk /sdcard` reads like a sentence; `Walk` reads like a class, because it is |
 | **Twelve shared shapes instead of flat classes** | Whatever each block needs | A shape is somewhere to put a rule so nobody has to remember it. `Number` passing `None` through was a *bug* before it was a shape |
 | **The catalogue baked into the HTML** | Fetch the JSON at load | Chrome will not let a `file://` page fetch its own folder, and the panel must work with no server |
-| **`⟦M-01 thing → where⟧` markers** | Black bars, or silent deletion | Taken from how archives leave a withdrawal sheet: the gap names itself and says where to ask |
+| **`⟦W-02 birthplace⟧` markers, and a directory behind them** | Black bars, or silent deletion | Taken from how archives leave a withdrawal sheet: the gap names itself and says where to ask. The directory names the *field*, never the *value*, so the record of what is private is itself safe to publish |
 | **A launcher opens a terminal first** | Launch straight into the GUI | The terminal always works. The graphical mode is reached from inside it, never instead of it |
 | **The repo is still called `WebrowserTheme`** | Rename it to match the project | Renaming breaks every clone and every link already written down. The mismatch is cheaper than the breakage |
 | **Updates are optional, one module at a time** | One version, newest, take it or leave it | Gabriel calls this a moral. An update is a shelf, not a bundle, and *no* is a complete answer |
@@ -120,6 +127,7 @@ insides — what it is made of and how the pieces connect.
 | Program | Manual |
 |---|---|
 | `get.sh` and `wakeup.py` | [`SETUP.md`](SETUP.md) |
+| `check-withheld.py` | [`WITHHELD.md`](WITHHELD.md) |
 | `claude-ready.py` | [`claude-ready.md`](claude-ready.md) |
 | `whereami.py` | [`whereami.md`](whereami.md) |
 | the block language | [`sparkblocks/README.md`](sparkblocks/README.md) |

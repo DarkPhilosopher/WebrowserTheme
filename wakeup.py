@@ -243,6 +243,7 @@ def more_menu():
             ("whereami -- which machine is this", "where"),
             ("claude-ready -- can this phone run Claude", "ready"),
             ("connect -- what touches what", "connect"),
+            ("withheld -- what is deliberately not here", "withheld"),
             ("save a copy to storage", "save"),
             ("update from github", "update"),
         ])
@@ -260,6 +261,8 @@ def more_menu():
             thing = ask("\nwhat shall I look for? ")
             if thing:
                 go("-m", "sparkblocks", "connect", thing)
+        elif pick == "withheld":
+            go(os.path.join(HERE, "check-withheld.py"))
         elif pick == "save":
             save_to_storage()
         elif pick == "update":
