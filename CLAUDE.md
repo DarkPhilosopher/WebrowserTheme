@@ -589,16 +589,29 @@ offer to help turn the maps into a diagram when he comes to it.
 - **He was right and I was wrong about the 32-bit build.** The answer
   was in the npm package metadata, not in memory. When he pushes back
   on a limit, go and check.
-- **Claude Code on the A33 is refused at the account, not the phone.**
-  Logged in as `lewisgabe33@gmail.com`, which belongs to an
-  organization whose admin has disabled Claude Code subscription
-  access. The install is complete and correct — Ubuntu, node v22,
-  claude 2.1.289 — and every request comes back with that refusal.
-  Three ways on: sign in as his other account, have the org admin
-  enable it, or use an `ANTHROPIC_API_KEY` (the `claude` word already
-  carries one in). **Pro at $20 does include Claude Code and Opus**
-  (claude.com/pricing) — but an org policy sits above the plan, so
-  paying on that same account would not fix it.
+- **Claude Code on the A33 is refused by a KNOWN ANTHROPIC BUG, not
+  by anything here and not by his plan.** He pays for Pro on
+  `lewisgabe33@gmail.com`; the CLI is refused with *your organization
+  has disabled Claude subscription access*. Anthropic support has
+  confirmed (claude-code issue #82700) that this is "a server-side
+  entitlement mapping issue related to which organization ID Claude
+  Code resolves at authentication — not something fixable from the
+  user's end." Claude Code resolves an auto-generated personal org
+  that reports access as disabled. Recurring: issues #58371, #62722,
+  #63685, #68212, #72027, #82700, #83901, #83945, #84472, #84537,
+  #85127.
+
+  **Do not suggest these, they are all wrong here:** buying Pro (he
+  has it), switching to `xzg4b3xz` (unpaid, so Free tier has no
+  Claude Code at all), or any local setting — the docs say plainly it
+  cannot be overridden from settings, env vars or CLI flags.
+
+  The install itself is complete and correct: Ubuntu, node v22,
+  claude 2.1.289, the `claude` word. Only support can fix the
+  mapping. The strong evidence for his ticket is that Claude Code on
+  the WEB works on the same account while the CLI is refused. An
+  `ANTHROPIC_API_KEY` is the only local stopgap, and costs on top of
+  the subscription he already pays.
 - **His Google Drive connector is `xzg4b3xz@gmail.com`**, which is not
   the address his git commits use (`lewisgabe33@gmail.com`). Two
   accounts. `xzg4b` is also the second Windows profile on the Dell.
