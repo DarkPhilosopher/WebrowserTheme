@@ -218,10 +218,12 @@ _CLAUDE_STEPS = [
 SHORTCUT = """#!{sh}
 # claude -- start Claude Code, which lives inside the proot Ubuntu.
 # Written by claude-ready.py. Safe to delete; run that again to restore.
-exec proot-distro login ubuntu \\
+# Options go BEFORE the container name: proot-distro's own synopsis
+# is `login [OPTIONS] CONTAINER [-- COMMAND]`.
+exec proot-distro login \\
   --bind /storage/emulated/0:/sdcard \\
   --bind "$HOME:/root/phone" \\
-  -- claude "$@"
+  ubuntu -- claude "$@"
 """
 
 # Nothing writes an alias any more. If an older version of this
@@ -491,7 +493,24 @@ def selftest():
     else:
         print("  (proot-distro is here, so that one was not tried)")
 
-    # 4. The echoed command must be pasteable -- quoting kept.
+    # 4. Backticks inside an unquoted heredoc get RUN, not printed.
+    #    This has bitten three times now: once printing `wakeup: not
+    #    found` in the middle of a successful install, once eating a
+    #    comment down to "synopsis is .". Anything written into a
+    #    file by a heredoc gets checked for them.
+    getter = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "get-claude.sh")
+    if os.path.exists(getter):
+        text = open(getter).read()
+        inside = ""
+        if "<<WRAPEOF" in text and "\nWRAPEOF" in text:
+            inside = text[text.index("<<WRAPEOF"):text.index("\nWRAPEOF")]
+        want("no backtick inside the heredoc that writes the claude word",
+             "`" in inside, False)
+    else:
+        print("  (get-claude.sh is not here, so that one was not tried)")
+
+    # 5. The echoed command must be pasteable -- quoting kept.
     step = ["proot-distro", "login", "ubuntu", "--", "sh", "-lc",
             "apt update && apt install -y curl"]
     shown = " ".join(shlex.quote(w) for w in step)

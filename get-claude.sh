@@ -158,10 +158,12 @@ cat > "$WRAP" <<WRAPEOF
 #
 # Your Termux home is /root/phone inside, and the phone's shared
 # storage is /sdcard, so Claude can see your own files either way.
-exec $PD login $DISTRO \\
+# Options go BEFORE the container name. proot-distro's own
+# synopsis is: login [OPTIONS] CONTAINER [-- COMMAND]
+exec $PD login \\
   --bind $SDCARD:/sdcard \\
   --bind "\$HOME:/root/phone" \\
-  -- claude "\$@"
+  $DISTRO -- claude "\$@"
 WRAPEOF
 chmod +x "$WRAP"
 say "wrote $WRAP"
