@@ -385,23 +385,47 @@ def set_alias():
 
     told = "wrote %s\n  `claude` and `claude --continue` now work anywhere" % path
 
-    if _old_alias():
-        told += ("\n\n  Heads up: ~/.bashrc still has an `alias claude=` in it"
-                 "\n  from an older version of this program. It does the same"
-                 "\n  job, but in bash the alias wins over the script above,"
-                 "\n  so only one of the two is ever really in use."
-                 "\n  Take the alias line out when you get a moment:"
-                 "\n      nano ~/.bashrc")
+    gone = _remove_old_alias()
+    if gone:
+        told += ("\n\n  Took an old  alias claude=...  out of ~/.bashrc."
+                 "\n  In bash an alias beats a program on the PATH, so that"
+                 "\n  line was shadowing the one just written and `claude`"
+                 "\n  kept failing the old way."
+                 "\n  The previous file is kept as ~/.bashrc.before-wakeup"
+                 "\n\n  This shell still has it loaded. Clear it with:"
+                 "\n      unalias claude"
+                 "\n  or close Termux and open it again.")
     return True, told
 
 
-def _old_alias():
-    """Did an older version of this leave an alias behind?"""
+def _remove_old_alias():
+    """Take out the alias an older version of this wrote.
+
+    Warning about it was not enough. He is on a phone, and "edit
+    ~/.bashrc by hand" is not a fix -- it stayed there, kept winning
+    over the script, and every start failed the same old way.
+
+    Only lines that are plainly ours go: an `alias claude=` that
+    mentions proot-distro. The file is copied first.
+    """
+    brc = os.path.join(HOME, ".bashrc")
     try:
-        with open(os.path.join(HOME, ".bashrc")) as fh:
-            return OLD_ALIAS_MARK in fh.read()
+        with open(brc) as fh:
+            lines = fh.readlines()
     except OSError:
         return False
+    keep = [l for l in lines
+            if not (l.lstrip().startswith("alias claude=")
+                    and "proot-distro" in l)]
+    if len(keep) == len(lines):
+        return False
+    try:
+        shutil.copy2(brc, brc + ".before-wakeup")
+        with open(brc, "w") as fh:
+            fh.writelines(keep)
+    except OSError:
+        return False
+    return True
 
 
 # ==========================================================================
@@ -574,6 +598,14 @@ def selftest():
             inside = text[text.index("<<WRAPEOF"):text.index("\nWRAPEOF")]
         want("no backtick inside the heredoc that writes the claude word",
              "`" in inside, False)
+
+        # Nor in any `say` line. The heredoc was only where it bit
+        # FIRST. It then bit again inside a say, printing the output
+        # of running `claude` in the middle of a sentence about it.
+        loud = [n for n, l in enumerate(text.split("\n"), 1)
+                if l.lstrip().startswith("say ") and '"' in l and "`" in l]
+        want("no backtick in a double-quoted say line (lines %s)" % loud,
+             bool(loud), False)
     else:
         print("  (get-claude.sh is not here, so that one was not tried)")
 

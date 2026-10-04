@@ -309,9 +309,9 @@ else
     inside "ln -sf /bin/bash /usr/bin/bash" || true
   else
     say ""
-    say "Could not get a bash in there. The `claude` word works"
+    say "Could not get a bash in there. The claude word works"
     say "around it by using sh, so this is not fatal -- but"
-    say "`proot-distro login ubuntu` on its own will still fail."
+    say "proot-distro login ubuntu on its own will still fail."
   fi
 fi
 
@@ -419,16 +419,25 @@ WRAPEOF
 chmod +x "$WRAP"
 say "wrote $WRAP"
 
-# No alias is written. An alias and a script are two mechanisms for
-# one word, and in bash the alias silently wins -- so if an older
-# version left one behind, say so rather than adding another.
+# An alias beats a PATH script in bash. An older version of this
+# wrote one, so the fixed `claude` script below was being shadowed by
+# it and every start still failed the old way. WARNING about it was
+# not enough -- he is on a phone, and "edit ~/.bashrc by hand" is not
+# a fix. It is ours, so it is ours to take out.
 BRC="$HOME/.bashrc"
-if [ -f "$BRC" ] && grep -q "alias claude=" "$BRC" 2>/dev/null; then
+if [ -f "$BRC" ] && grep -q '^[[:space:]]*alias claude=.*proot-distro' "$BRC"; then
+  cp "$BRC" "$BRC.before-wakeup"
+  grep -v '^[[:space:]]*alias claude=.*proot-distro' "$BRC" > "$BRC.tidy" \
+    && mv "$BRC.tidy" "$BRC"
   say ""
-  say "Heads up: ~/.bashrc still has an \`alias claude=\` in it from an"
-  say "older version. It does the same job, but in bash the alias wins"
-  say "over the script above, so only one of the two is ever in use."
-  say "Take that line out when you get a moment:   nano ~/.bashrc"
+  say "Took an old  alias claude=...  out of ~/.bashrc. It was"
+  say "shadowing the program above, so the claude word kept failing"
+  say "the old way however many times this was run."
+  say "The previous file is kept as ~/.bashrc.before-wakeup"
+  say ""
+  say "This shell still has the alias loaded. Clear it with:"
+  say "    unalias claude"
+  say "or just close Termux and open it again."
 fi
 
 # ---------------------------------------------------------------------- done
