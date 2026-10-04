@@ -239,12 +239,19 @@ _CLAUDE_STEPS = [
 SHORTCUT = """#!{sh}
 # claude -- start Claude Code, which lives inside the proot Ubuntu.
 # Written by claude-ready.py. Safe to delete; run that again to restore.
-# Options go BEFORE the container name: proot-distro's own synopsis
-# is `login [OPTIONS] CONTAINER [-- COMMAND]`.
+#
+# No --bind for /sdcard: proot-distro already binds it, and binding it
+# twice warns on every start.
+#
+# It goes through sh because proot-distro wraps the command in the
+# container login shell, and a container whose /usr/bin/bash is
+# missing kills every start with execve: No such file or directory.
+#
+# Arguments are passed positionally, never pasted into a string, so
+# spaces and apostrophes survive without any quoting to get wrong.
 exec proot-distro login \\
-  --bind /storage/emulated/0:/sdcard \\
   --bind "$HOME:/root/phone" \\
-  ubuntu -- claude "$@"
+  ubuntu -- sh -lc 'exec claude "$@"' claude "$@"
 """
 
 # Nothing writes an alias any more. If an older version of this

@@ -287,6 +287,34 @@ else
   fi
 fi
 
+step "a shell for Ubuntu to log in with"
+# proot-distro's `login` runs the container's login shell, which for
+# root is /usr/bin/bash. Some rootfs come up without it, and then
+# EVERY login dies with
+#     proot error: execve("/usr/bin/bash"): No such file or directory
+# even though `-- sh -lc ...` works perfectly. The apt steps below go
+# through sh, so they succeed, and only `claude` fails -- which looks
+# like Claude being broken when it is the shell that is missing.
+if quietly 'test -x /usr/bin/bash'; then
+  skip "bash"
+else
+  say "Ubuntu here has no /usr/bin/bash, which is what proot-distro"
+  say "logs in with. Installing it."
+  inside "apt-get update -y" || true
+  inside "apt-get install -y bash" || true
+  if quietly 'test -x /usr/bin/bash'; then
+    say "bash is there now"
+  elif quietly 'test -x /bin/bash'; then
+    say "bash is at /bin/bash but not /usr/bin/bash. Linking it."
+    inside "ln -sf /bin/bash /usr/bin/bash" || true
+  else
+    say ""
+    say "Could not get a bash in there. The `claude` word works"
+    say "around it by using sh, so this is not fatal -- but"
+    say "`proot-distro login ubuntu` on its own will still fail."
+  fi
+fi
+
 step "Node.js, inside Ubuntu"
 HAVE_NODE="$(node_major)"
 if [ "$HAVE_NODE" -ge "$NEED_NODE" ] 2>/dev/null; then
@@ -328,11 +356,25 @@ fi
 
 # --------------------------------------------------- inside ubuntu: claude
 step "Claude Code, inside Ubuntu"
-if inside "command -v claude >/dev/null" >/dev/null 2>&1; then
-  skip "claude $(inside 'claude --version' 2>/dev/null | head -1 | tr -d '\r')"
+# Ask it its version, which means actually RUNNING it. `command -v`
+# only proves a file is on the PATH -- it said yes on his phone while
+# claude could not start at all, so the installer reported success
+# and claude-ready reported failure about the very same thing.
+CLAUDE_SAYS="$(quietly 'claude --version' | tr -d '\r' | head -1)"
+if [ -n "$CLAUDE_SAYS" ]; then
+  skip "claude $CLAUDE_SAYS"
 else
   say "installing it"
   inside "npm install -g @anthropic-ai/claude-code"
+  CLAUDE_SAYS="$(quietly 'claude --version' | tr -d '\r' | head -1)"
+  if [ -z "$CLAUDE_SAYS" ]; then
+    say ""
+    say "It installed but will not say its version, which means it"
+    say "will not start either. Look at what it says:"
+    say "    $PD login $DISTRO -- sh -lc 'claude --version'"
+    exit 1
+  fi
+  say "claude $CLAUDE_SAYS"
 fi
 
 # ------------------------------------------------------------- the shortcut
@@ -351,14 +393,28 @@ cat > "$WRAP" <<WRAPEOF
 #
 # Written by get-claude.sh. Safe to delete; rerun that to get it back.
 #
-# Your Termux home is /root/phone inside, and the phone's shared
-# storage is /sdcard, so Claude can see your own files either way.
-# Options go BEFORE the container name. proot-distro's own
-# synopsis is: login [OPTIONS] CONTAINER [-- COMMAND]
+# Three things here are deliberate, and all three were bugs first.
+#
+# NO --bind for /sdcard. proot-distro already binds it, and adding
+# it again printed a warning on every single start:
+#   "binding --bind=...:/sdcard overlaps with an existing one"
+#
+# It runs claude THROUGH sh. proot-distro wraps a command in the
+# container login shell, and when that shell was missing every
+# start died with:
+#   proot error: execve("/usr/bin/bash"): No such file or directory
+# sh is always there. get-claude.sh installs bash too, but this
+# way the word still works if something eats it again.
+#
+# The arguments go after the script as positional ones, NOT pasted
+# into a string. The first try built a quoted string with sed and
+# got it wrong -- an apostrophe in an argument came out mangled.
+# This form needs no quoting at all and so cannot be got wrong.
+#
+# Your Termux home appears inside as /root/phone.
 exec $PD login \\
-  --bind $SDCARD:/sdcard \\
   --bind "\$HOME:/root/phone" \\
-  $DISTRO -- claude "\$@"
+  $DISTRO -- sh -lc 'exec claude "\$@"' claude "\$@"
 WRAPEOF
 chmod +x "$WRAP"
 say "wrote $WRAP"
