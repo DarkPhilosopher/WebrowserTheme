@@ -169,7 +169,61 @@ settled fact.
 
 ---
 
-## 4. The shape of anything signed
+## 4. What position does, over and above what a thing is
+
+The organ rule says a part fails for **what it is**, never for where
+it was plugged in. This is its other half: a part is often *useful*
+for **where it sits**, in a way that has nothing to do with what it
+is made of.
+
+Worth saying out loud each time, because it is the part that gets
+lost when something is moved "somewhere tidier".
+
+| Thing | Where it sits | What the position itself does |
+|---|---|---|
+| `get.sh` | **inside the clone** | It reads its own folder and its own branch off where it is standing. Its position *is* its configuration — move the clone and it follows, with nothing to edit. A copy kept elsewhere would need to be told, and would be wrong the first time it was not |
+| the tag | **first line of a saved program** | `head -1` finds it without reading the file. First is the only position that is cheap, and the only one a reader sees before deciding to care |
+| `⟦W-02⟧` markers | **in the gap itself** | A list of what is missing, kept elsewhere, cannot tell you *where* it was taken from. The marker's position is half the record — it is the part a list cannot hold |
+| the catalogue | **baked inside `panel.html`** | Not tidiness: Chrome will not let a `file://` page fetch its own folder. Beside the page it is unreachable; inside it, it works with no server |
+| `~/.wakeup/programs` | **outside the clone** | The whole protection is positional. Delete the project, re-download it, break it — his work is untouched, because it was never in the blast radius |
+| `private/` | **named in `.gitignore`** | Its position in that one file is the entire safety mechanism. The folder is ordinary; the line is what makes it safe |
+| the `claude` script | **in `$PREFIX/bin`** | On the PATH is what turns a file into a *word you can type*. The same bytes one folder over are nothing |
+| `sparkblocks.pth` | **in site-packages** | Python reads that folder at startup. One line in the right place does what copying the whole package elsewhere would do badly |
+| header and footer | **at the two edges of a document** | They bracket. You can find either without parsing what is between them, which is what lets `sign.py` read back a document it did not write |
+| `8` | **last, in every menu** | Position is the affordance. The *word* back is findable anywhere; the **number** only works if it never moves |
+| `~/.sparkblocks/` | **a folder you made yourself** | Making it is the consent. Nothing is searched that you did not choose to create — the position carries the permission, so no setting is needed |
+
+### The rule that falls out of it
+
+**Before moving anything, ask what its position was doing.** Most of
+the list above looks arbitrary until you ask, and three of them —
+the baked catalogue, the gitignore line, the `.pth` — stop working
+entirely somewhere tidier.
+
+## 5. And what each thing is good for besides the obvious
+
+Everything here was built for one job. Several turned out to do a
+second one for nothing, and the second is sometimes the better.
+
+| Built for | Also, unasked |
+|---|---|
+| the **tag** — finding your programs | It survives being emailed, renamed, or dropped in Downloads by someone else. The name can change; what it *is* stays readable |
+| **`check-withheld.py`** — a guard | It is also the shopping list. Run it and you have an ordered account of everything to go and collect, and from where |
+| **`whereami.py --name`** — telling two phones apart | It is also what lets a saved program say which machine made it. Naming the phone retroactively signs everything saved after it |
+| **`BOXES.md`** — what is not built | It is also the record of things *decided against*. `NO WAY` has saved more time than `CERTAINLY`, because it stops the same idea being had twice |
+| **`sign.py`** chronology — provenance | It is also the material for the morning summary. Nobody has to write down what happened; it is already written |
+| **`saves.found()`** — finding programs | It also reports which of the likely folders *exist*, which is a quick read on how a machine is set up |
+| **eight choices** — not overwhelming anyone | It is also a limit on scope. When a menu wants a ninth thing, that is the design telling you it has become two menus |
+| **`get.sh` being safe to run twice** | That is also the entire recovery story. "Run it again" works because of it, and it is why there is no separate repair tool |
+| **`--selftest`** — stopping old bugs returning | It is also the honest history of what went wrong, in a form that cannot rot, because a lie in it fails the test |
+
+### Why this is worth writing down and not just noticing
+
+A second use that nobody has written down is a second use that gets
+**deleted in a tidy-up** — by someone who checked the first one and
+found it covered elsewhere.
+
+## 6. The shape of anything signed
 
 **This page is an example of itself** — the block above it and the
 block below it are what every signed document here carries.
@@ -191,7 +245,7 @@ python3 sign.py --stamp FILE "what"      add a line to the chronology
 python3 sign.py --who                    who can sign, and on what
 ```
 
-### 4.1 A signature is a name, an account, and an instrument
+### 6.1 A signature is a name, an account, and an instrument
 
 The same name on two machines is **not the same signer**:
 
@@ -210,7 +264,7 @@ Gabriel's signature has the same three parts — the person, the
 accounts, and which of his machines he was at. **His sits above mine**,
 always: he is the one the work is for.
 
-### 4.2 The chronology is append-only
+### 6.2 The chronology is append-only
 
 One line per thing that happened: when, what, who, on what instrument.
 Easy to leave out, and worth most later.
@@ -237,6 +291,8 @@ second kind.
   2026-10-04 11:09 MDT port routes written      Claude Opus 5
                                                 on cloud container
   2026-10-04 11:12 MDT wizard and container bui Claude Opus 5
+                                                on cloud container
+  2026-10-04 12:45 MDT position and second uses Claude Opus 5
                                                 on cloud container
 -----------------------------------------------------------------
 ```

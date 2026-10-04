@@ -194,6 +194,43 @@ safety classifier refused `ABOUT.md`; it was not worked around, and it
 is not to be. The row says `refused` and names what objected. That is
 the honest record, and it is also the useful one.
 
+## When explaining anything, say two more things
+
+Asked for on 2026-10-04, as a standing thing. Every time something is
+built or described, go past what it is and what it does:
+
+### 1. What its POSITION does
+
+Not what it is — what *where it sits* buys. The other half of the
+valve rule: a part fails for what it **is**, and is useful for where
+it **sits**.
+
+`get.sh` reads its own branch off the folder it is standing in, so
+its position is its configuration. The catalogue is baked inside
+`panel.html` because beside it, Chrome cannot reach it.
+`~/.wakeup/programs` is outside the clone, and that is the entire
+protection. `8` is the last choice everywhere, and the *number* only
+works if it never moves.
+
+**Before moving anything, ask what its position was doing.** Several
+things here stop working entirely somewhere tidier.
+
+### 2. What it is good for BESIDES the expected
+
+The second use, the one nobody asked for. `check-withheld.py` is a
+guard, and also the shopping list of what to go and collect.
+`whereami.py --name` tells two phones apart, and also retroactively
+signs every program saved after it. `BOXES.md` says what is not
+built, and also records what was decided against, which stops the
+same idea being had twice.
+
+A second use nobody wrote down is one that gets deleted in a
+tidy-up, by somebody who checked the first use and found it covered
+elsewhere.
+
+**Both of these go in `BLUEPRINTS.md` §4 and §5**, which is where to
+add to them rather than starting a new list.
+
 ## The rule everything here follows
 
 **Make everything out of parts, and make every part able to join any
