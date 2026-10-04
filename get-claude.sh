@@ -412,9 +412,18 @@ cat > "$WRAP" <<WRAPEOF
 # This form needs no quoting at all and so cannot be got wrong.
 #
 # Your Termux home appears inside as /root/phone.
+#
+# TERM has to be carried IN. A login into proot starts with a bare
+# environment, and Claude Code draws a full-screen interface -- with
+# no terminal type it enters the alternate screen and paints nothing,
+# which looks exactly like the program hanging on a black screen.
+#
+# sh -c, not sh -lc. A login shell also sources the container profile,
+# which can clear the screen before Claude ever draws on it.
 exec $PD login \\
   --bind "\$HOME:/root/phone" \\
-  $DISTRO -- sh -lc 'exec claude "\$@"' claude "\$@"
+  $DISTRO -- sh -c 'export TERM="\$1"; shift; cd /root/phone 2>/dev/null; exec claude "\$@"' \\
+  claude "\${TERM:-xterm-256color}" "\$@"
 WRAPEOF
 chmod +x "$WRAP"
 say "wrote $WRAP"

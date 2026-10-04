@@ -249,9 +249,17 @@ SHORTCUT = """#!{sh}
 #
 # Arguments are passed positionally, never pasted into a string, so
 # spaces and apostrophes survive without any quoting to get wrong.
+# TERM has to be carried IN. A login into proot starts with a bare
+# environment, and Claude Code draws a full-screen interface -- with
+# no terminal type it enters the alternate screen and paints nothing,
+# which looks exactly like the program hanging on a black screen.
+#
+# sh -c, not sh -lc. A login shell also sources the container's
+# profile, which can clear the screen before Claude ever draws.
 exec proot-distro login \\
   --bind "$HOME:/root/phone" \\
-  ubuntu -- sh -lc 'exec claude "$@"' claude "$@"
+  ubuntu -- sh -c 'export TERM="$1"; shift; cd /root/phone 2>/dev/null; exec claude "$@"' \\
+  claude "${TERM:-xterm-256color}" "$@"
 """
 
 # Nothing writes an alias any more. If an older version of this
